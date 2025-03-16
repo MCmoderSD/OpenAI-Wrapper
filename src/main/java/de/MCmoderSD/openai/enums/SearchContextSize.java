@@ -2,6 +2,7 @@ package de.MCmoderSD.openai.enums;
 
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
+@SuppressWarnings("unused")
 public enum SearchContextSize {
 
     // Enum Values

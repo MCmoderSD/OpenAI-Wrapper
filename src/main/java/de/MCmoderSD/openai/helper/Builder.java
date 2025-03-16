@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 public class Builder {
 
     // Setup

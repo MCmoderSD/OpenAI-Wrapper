@@ -11,6 +11,7 @@ import de.MCmoderSD.openai.objects.ChatPrompt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+@SuppressWarnings("unused")
 public class OpenAI {
 
     // Attributes
@@ -26,6 +27,7 @@ public class OpenAI {
         );
     }
 
+    // Constructor
     public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId) {
 
         // Initialize OpenAI Client
@@ -42,6 +44,7 @@ public class OpenAI {
         return client.chat().completions().create(params);
     }
 
+    // Prompt
     public String prompt(String prompt) {
 
         // Create Chat Completion
@@ -56,6 +59,7 @@ public class OpenAI {
         return Helper.getContent(message);
     }
 
+    // Prompt with ID
     public String prompt(Integer id, String prompt) {
 
         // Check if Chat History exists
@@ -75,5 +79,14 @@ public class OpenAI {
 
         // Return Content
         return Helper.getContent(message);
+    }
+
+    // Setters
+    public void clearChatHistory(Integer id) {
+        chatHistory.remove(id);
+    }
+
+    public void clearAllChatHistory() {
+        chatHistory.clear();
     }
 }

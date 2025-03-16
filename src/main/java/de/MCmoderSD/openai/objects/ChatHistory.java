@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+/**
+ * Represents the history of a chat session, storing chat prompts, messages, and token usage.
+ */
 @SuppressWarnings("unused")
 public class ChatHistory {
 
@@ -19,7 +22,11 @@ public class ChatHistory {
     private long outputTokens;
     private long totalTokens;
 
-    // Constructor
+    /**
+     * Constructs a new ChatHistory instance.
+     *
+     * @param chatPrompt An optional initial chat prompt to be added to the history.
+     */
     public ChatHistory(@Nullable ChatPrompt chatPrompt) {
 
         // Initialize Attributes
@@ -35,7 +42,13 @@ public class ChatHistory {
         if (chatPrompt != null) addPrompt(chatPrompt);
     }
 
+    /**
+     * Adds a chat prompt to the history and updates token counts.
+     *
+     * @param chatPrompt The chat prompt to be added.
+     */
     public void addPrompt(ChatPrompt chatPrompt) {
+
         // Add ChatPrompt to History
         chatPrompts.add(chatPrompt);
 
@@ -49,23 +62,47 @@ public class ChatHistory {
         totalTokens += chatPrompt.getTotalTokens();
     }
 
-    // Getters
+    /**
+     * Returns the list of chat prompts stored in the history.
+     *
+     * @return A list of chat prompts.
+     */
     public ArrayList<ChatPrompt> getPrompts() {
         return chatPrompts;
     }
 
+    /**
+     * Returns the list of chat completion messages stored in the history.
+     *
+     * @return A list of chat messages.
+     */
     public ArrayList<ChatCompletionMessageParam> getMessages() {
         return messages;
     }
 
+    /**
+     * Returns the total number of input tokens used.
+     *
+     * @return The number of input tokens.
+     */
     public long getInputTokens() {
         return inputTokens;
     }
 
+    /**
+     * Returns the total number of output tokens generated.
+     *
+     * @return The number of output tokens.
+     */
     public long getOutputTokens() {
         return outputTokens;
     }
 
+    /**
+     * Returns the total number of tokens used (input + output).
+     *
+     * @return The total token count.
+     */
     public long getTotalTokens() {
         return totalTokens;
     }
