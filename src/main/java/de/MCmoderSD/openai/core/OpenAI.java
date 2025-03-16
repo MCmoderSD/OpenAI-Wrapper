@@ -55,9 +55,18 @@ public class OpenAI {
         return prompt(null, null, null, null, null, null, null, null, null, prompt, null);
     }
 
+    public String prompt(String user, String prompt) {
+        return prompt(null, user, null, null, null, null, null, null, null, prompt, null);
+    }
+
     // Prompt with ID
     public String prompt(Integer id, String prompt) {
         return prompt(null, null, null, null, null, null, null, null, null, prompt, id);
+    }
+
+    // Prompt with User and ID
+    public String prompt(String user, Integer id, String prompt) {
+        return prompt(null, user, null, null, null, null, null, null, null, prompt, id);
     }
 
     public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, Integer id) {
@@ -78,7 +87,7 @@ public class OpenAI {
                 n,                  // Number of Completions
                 devMessage,         // Developer Message
                 prompt,             // Prompt
-                messages         // Messages
+                messages            // Messages
         );
 
         // Execute Chat Completion
