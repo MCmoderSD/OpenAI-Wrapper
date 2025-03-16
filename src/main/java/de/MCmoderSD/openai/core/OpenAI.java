@@ -102,4 +102,17 @@ public class OpenAI {
     public void clearAllChatHistory() {
         chatHistory.clear();
     }
+
+    // Getters
+    public boolean chatHistoryExists(Integer id) {
+        return chatHistory.containsKey(id);
+    }
+
+    public ChatHistory getChatHistory(Integer id) {
+        return chatHistoryExists(id) ? chatHistory.get(id) : null;
+    }
+
+    public HashMap<Integer, ChatHistory> getChatHistories() {
+        return chatHistory;
+    }
 }
