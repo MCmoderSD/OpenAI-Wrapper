@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.MCmoderSD</groupId>
-    <artifactId>OpenAI-Wrapper</artifactId>
+    <artifactId>OpenAI</artifactId>
     <version>2.0.0</version>
 
-    <name>OpenAI-Wrapper</name>
+    <name>OpenAI</name>
     <description>A Java Wrapper for the official OpenAI Java SDK</description>
 
     <distributionManagement>
