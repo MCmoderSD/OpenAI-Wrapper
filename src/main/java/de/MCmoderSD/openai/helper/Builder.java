@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public class Builder {
 
     // Setup
-    private static ChatModel chatModel = ChatModel.GPT_4O_MINI;
-    private static String user = "Developer";
-    private static String devMessage;
+    private static ChatModel chatModel = ChatModel.CHATGPT_4O_LATEST;
+    private static String user = "";
+    private static String devMessage = "";
 
     // Configuration
     private static Double temperature = 1d;
@@ -21,20 +21,20 @@ public class Builder {
     private static Double frequencyPenalty = 0d;
     private static Double presencePenalty = 0d;
     private static Long n = 1L;
-    private static Integer maxTokens = 120;
+    private static Long maxTokens = 120L;
 
-    public static ChatCompletionCreateParams buildParams(String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages) {
+    public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages) {
 
         // Create Chat Completion Parameters
         var params = ChatCompletionCreateParams.builder()
-                .model(chatModel)                   // Model
-                .user(user)                         // User
-                .maxCompletionTokens(maxTokens)     // Max Tokens
-                .temperature(temperature)           // Temperature
-                .topP(topP)                         // Top P
-                .frequencyPenalty(frequencyPenalty) // Frequency Penalty
-                .presencePenalty(presencePenalty)   // Presence Penalty
-                .n(n);                              // Number of Completions
+                .model(chatModel != null ? chatModel : Builder.chatModel)                                   // Model
+                .user(user != null ? user : Builder.user)                                                   // User
+                .maxCompletionTokens(maxTokens != null ? maxTokens : Builder.maxTokens)                     // Max Tokens
+                .temperature(Temperature != null ? Temperature : Builder.temperature)                       // Temperature
+                .topP(topP != null ? topP : Builder.topP)                                                   // Top P
+                .frequencyPenalty(frequencyPenalty != null ? frequencyPenalty : Builder.frequencyPenalty)   // Frequency Penalty
+                .presencePenalty(presencePenalty != null ? presencePenalty : Builder.presencePenalty)       // Presence Penalty
+                .n(n != null ? n : Builder.n);                                                              // Number of Completions
 
         // Add Message History
         if (messages != null && !messages.isEmpty()) {
@@ -43,8 +43,8 @@ public class Builder {
                 if (i % 2 == 0) params.addMessage(message.asUser());
                 else params.addMessage(message.asAssistant());
             }
-        } else params.addDeveloperMessage(devMessage);  // Add Developer Message
-        return params.addUserMessage(prompt).build();   // Add User Message
+        } else params.addDeveloperMessage(devMessage != null ? devMessage : Builder.devMessage);            // Add Developer Message
+        return params.addUserMessage(prompt).build();                                                       // Add User Message
     }
 
     // Setter
@@ -64,7 +64,7 @@ public class Builder {
         frequencyPenalty = config.has("frequencyPenalty") ? config.get("frequencyPenalty").asDouble() : 0d;
         presencePenalty = config.has("presencePenalty") ? config.get("presencePenalty").asDouble() : 0d;
         n = config.has("n") ? config.get("n").asLong() : 1L;
-        maxTokens = config.has("maxTokens") ? config.get("maxTokens").asInt() : 120;
+        maxTokens = config.has("maxTokens") ? config.get("maxTokens").asLong() : 120;
     }
 
     public static void setTemperature(Double temperature) {
@@ -87,7 +87,7 @@ public class Builder {
         Builder.n = n;
     }
 
-    public static void setMaxTokens(Integer maxTokens) {
+    public static void setMaxTokens(Long maxTokens) {
         Builder.maxTokens = maxTokens;
     }
 
@@ -124,7 +124,7 @@ public class Builder {
         return n;
     }
 
-    public static Integer getMaxTokens() {
+    public static Long getMaxTokens() {
         return maxTokens;
     }
 

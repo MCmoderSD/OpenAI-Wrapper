@@ -3,6 +3,7 @@ package de.MCmoderSD.openai.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.*;
 import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.helper.Helper;
@@ -28,6 +29,11 @@ public class OpenAI {
     }
 
     // Constructor
+    public OpenAI(String apiKey) {
+        this(apiKey, null, null);
+    }
+
+    // Constructor
     public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId) {
 
         // Initialize OpenAI Client
@@ -46,27 +52,34 @@ public class OpenAI {
 
     // Prompt
     public String prompt(String prompt) {
-
-        // Create Chat Completion
-        var params = Builder.buildParams(prompt, null);
-
-        // Execute Chat Completion
-        var completion = createChatCompletion(params);
-
-        // Get Chat Completion Message
-        var message = Helper.getMessage(completion);
-
-        return Helper.getContent(message);
+        return prompt(null, null, null, null, null, null, null, null, null, prompt, null);
     }
 
     // Prompt with ID
     public String prompt(Integer id, String prompt) {
+        return prompt(null, null, null, null, null, null, null, null, null, prompt, id);
+    }
+
+    public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, Integer id) {
 
         // Check if Chat History exists
-        if (!chatHistory.containsKey(id)) chatHistory.put(id, new ChatHistory(null));
+        if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
+        var messages = id != null ? chatHistory.get(id).getMessages() : null;
 
         // Create Chat Completion
-        var params = Builder.buildParams(prompt, chatHistory.get(id).getMessages());
+        var params = Builder.buildParams(
+                chatModel,          // Chat Model
+                user,               // User
+                maxTokens,          // Max Tokens
+                Temperature,        // Max Tokens
+                topP,               // Top P
+                frequencyPenalty,   // Frequency Penalty
+                presencePenalty,    // Presence Penalty
+                n,                  // Number of Completions
+                devMessage,         // Developer Message
+                prompt,             // Prompt
+                messages         // Messages
+        );
 
         // Execute Chat Completion
         var completion = createChatCompletion(params);
@@ -75,7 +88,7 @@ public class OpenAI {
         var message = Helper.getMessage(completion);
 
         // Add ChatPrompt to History
-        chatHistory.get(id).addPrompt(new ChatPrompt(prompt, completion));
+        if (id != null) chatHistory.get(id).addPrompt(new ChatPrompt(prompt, completion));
 
         // Return Content
         return Helper.getContent(message);
