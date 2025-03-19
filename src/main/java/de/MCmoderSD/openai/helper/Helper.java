@@ -1,6 +1,7 @@
 package de.MCmoderSD.openai.helper;
 
 import com.openai.models.ChatModel;
+import com.openai.models.audio.AudioModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 
@@ -24,6 +25,17 @@ public class Helper {
         else {
             try {
                 return ChatModel.Companion.of(model);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static AudioModel getAudioModel(String model) {
+        if (model == null || model.isBlank()) return null;
+        else {
+            try {
+                return AudioModel.Companion.of(model);
             } catch (IllegalArgumentException e) {
                 return null;
             }

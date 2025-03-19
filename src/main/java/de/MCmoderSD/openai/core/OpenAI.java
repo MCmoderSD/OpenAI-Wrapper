@@ -3,14 +3,25 @@ package de.MCmoderSD.openai.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.http.HttpResponse;
 import com.openai.models.ChatModel;
+import com.openai.models.audio.AudioModel;
+import com.openai.models.audio.speech.SpeechCreateParams;
+import com.openai.models.audio.transcriptions.Transcription;
+import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.*;
+import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.helper.Helper;
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 @SuppressWarnings("unused")
 public class OpenAI {
@@ -50,6 +61,14 @@ public class OpenAI {
         return client.chat().completions().create(params);
     }
 
+    private Transcription createTranscription(TranscriptionCreateParams params) {
+        return client.audio().transcriptions().create(params).asTranscription();
+    }
+
+    private HttpResponse createSpeech(SpeechCreateParams params) {
+        return client.audio().speech().create(params);
+    }
+
     // Prompt
     public String prompt(String prompt) {
         return prompt(null, null, null, null, null, null, null, null, null, prompt, null);
@@ -76,7 +95,7 @@ public class OpenAI {
         var messages = id != null ? chatHistory.get(id).getMessages() : null;
 
         // Create Chat Completion
-        var params = Builder.buildParams(
+        var params = Builder.Chat.buildParams(
                 chatModel,          // Chat Model
                 user,               // User
                 maxTokens,          // Max Tokens
@@ -101,6 +120,96 @@ public class OpenAI {
 
         // Return Content
         return Helper.getContent(message);
+    }
+
+    // Transcription
+    public String transcribe(byte[] data) {
+        return transcribe(null, null, null, null, data);
+    }
+
+    // Transcription with Language
+    public String transcribe(Language language, byte[] data) {
+        return transcribe(null, null, null, null, data);
+    }
+
+    // Transcription with Prompt
+    public String transcribe(@Nullable String prompt, byte[] data) {
+        return transcribe(null, null, null, prompt, data);
+    }
+
+    // Transcription with Language and Prompt
+    public String transcribe(@Nullable Language language, @Nullable String prompt, byte[] data) {
+        return transcribe(null, language, prompt, data, null);
+    }
+
+    // Transcription with Language, Prompt and ID
+    public String transcribe(@Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data, Integer id) {
+        return transcribe(null, temperature, language, prompt, data);
+    }
+
+    @SuppressWarnings("resource")
+    public String transcribe(@Nullable AudioModel model, @Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data) {
+
+        // Variables
+        var chunkSize = 25 * 1024 * 1024; // 25MB
+        var offset = 0;
+        var length = data.length;
+        var chunkCount = (int) Math.ceil((double) length / chunkSize);
+
+        // Array of Chunks
+        var transcription = new StringBuilder();
+        var chunks = new File[chunkCount];
+        var params = new TranscriptionCreateParams[chunkCount];
+        var responses = new Transcription[chunkCount];
+
+        // Split Audio Data into Chunks
+        for (var i = 0; i < chunkCount; i++) {
+            var chunk = new byte[Math.min(chunkSize, length - offset)];
+            System.arraycopy(data, offset, chunk, 0, chunk.length);
+            try {
+                chunks[i] = File.createTempFile(String.valueOf(Arrays.hashCode(chunk)), ".wav");
+                var stream = new FileOutputStream(chunks[i]);
+                stream.write(chunk);
+            } catch (IOException e) {
+                System.err.println("Error writing chunk " + i + ": " + e.getMessage());
+            }
+            offset += chunkSize;
+        }
+
+        // Create Transcription Params
+        for (var i = 0; i < chunkCount; i++) {
+            params[i] = Builder.Transcription.buildParams(
+                    model,               // Model
+                    temperature,         // Temperature
+                    language,            // Language
+                    prompt,              // Prompt
+                    chunks[i]            // File
+            );
+        }
+
+        // Execute Transcription
+        for (var i = 0; i < chunkCount; i++) responses[i] = createTranscription(params[i]);
+
+        // Combine Transcription Responses
+        for (var i = 0; i < chunkCount; i++) {
+            var response = responses[i];
+            if (response != null) {
+                var content = response.text();
+                if (!content.isBlank()) transcription.append(content);
+            }
+        }
+
+        // Clean up temporary files
+        for (var chunk : chunks) {
+            try {
+                Files.deleteIfExists(chunk.toPath());
+            } catch (IOException e) {
+                System.err.println("Error deleting chunk file: " + e.getMessage());
+            }
+        }
+
+        // Return Transcription
+        return transcription.toString();
     }
 
     // Setters

@@ -7,11 +7,11 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 
 ### Supported Features:
 - **Chat API**: Generate conversational responses with advanced models.
+- **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 
 ### Planned Features:
 - **Image API**: Create stunning visuals using OpenAI's image generation tools.
 - **Speech API**: Convert text to speech with customizable voices and formats.
-- **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 
 This utility simplifies complex interactions, making it easier than ever to harness the power of OpenAI in your Java projects.
 
@@ -33,7 +33,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.0.3</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
@@ -55,7 +55,14 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "presencePenalty": 0,
     "n" : 1,
     "maxTokens": 120,
-    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr."
+    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr.",
+  },
+
+  "transcription": {
+    "model": "whisper-1",
+    "temperature": 0,
+    "language": "",
+    "prompt": ""
   }
 }
 ```
@@ -63,10 +70,10 @@ Note: <br>
 - Obtain your API key from [OpenAI](https://platform.openai.com/signup). <br>
 - The `user` field such as the` organizationId` and `projectId` are optional. Leaving them empty or removing them will not affect the functionality of the wrapper. <br>
 - The IDs are used for tracking purposes and can be obtained from the [OpenAI dashboard](https://platform.openai.com/settings/organization/general). <br>
+
 <hr>
 
 ### Chat Configuration
-
 | **Field**        | **Description**                                                                                |
 |:-----------------|:-----------------------------------------------------------------------------------------------|
 | model            | Model used for generating text. (Default: `chatgpt-4o-latest`)                                 |
@@ -76,6 +83,14 @@ Note: <br>
 | frequencyPenalty | Reduces repetition of words. Values range from `0` to `1`. (Default: `0`)                      |
 | presencePenalty  | Discourages repeating words from the conversation. Values range from `0` to `1` (Default: `0`) |
 | devMessage       | Provides guidance for the bot's behavior.                                                      |
+
+### Transcription Configuration
+| **Field**        | **Description**                                                            |
+|:-----------------|:---------------------------------------------------------------------------|
+| model            | Model used for generating text. (Default: `whisper-1`)                     |
+| temperature      | Controls randomness: `0` (deterministic) to `2` (creative). (Default: `0`) |
+| language         | Language of the input audio.                                               |
+| prompt           | Provides context for the transcription.                                    |
 
 ## Usage Example
 ```java
