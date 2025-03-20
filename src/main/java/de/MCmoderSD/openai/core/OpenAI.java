@@ -7,6 +7,7 @@ import com.openai.core.http.HttpResponse;
 import com.openai.models.ChatModel;
 import com.openai.models.audio.AudioModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
+import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.*;
@@ -210,6 +211,46 @@ public class OpenAI {
 
         // Return Transcription
         return transcription.toString();
+    }
+
+    // Speech
+    public byte[] speech(String input) throws IOException {
+        return speech(null, null, null, null, input);
+    }
+
+    // Speech with Speed
+    public byte[] speech(@Nullable Double speed, String input) throws IOException {
+        return speech(null, null, null, speed, input);
+    }
+
+    // Speech with Voice
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable String input) throws IOException {
+        return speech(null, voice, null, null, input);
+    }
+
+    // Speech with Voice and Speed
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable Double speed, String input) throws IOException {
+        return speech(null, voice, null, speed, input);
+    }
+
+    // Speech with Voice, Format and Speed
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
+        return speech(null, voice, format, speed, input);
+    }
+
+    public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
+
+        // Create Speech Params
+        var params = Builder.Speech.buildParams(
+                speechModel,         // Model
+                voice,               // Voice
+                format,              // Format
+                speed,               // Speed
+                input                // Input
+        );
+
+        // Execute Speech
+        return createSpeech(params).body().readAllBytes();
     }
 
     // Setters

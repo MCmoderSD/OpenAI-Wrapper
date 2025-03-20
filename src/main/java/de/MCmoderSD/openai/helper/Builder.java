@@ -3,6 +3,8 @@ package de.MCmoderSD.openai.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.openai.models.ChatModel;
 import com.openai.models.audio.AudioModel;
+import com.openai.models.audio.speech.SpeechCreateParams;
+import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.*;
 import de.MCmoderSD.openai.enums.Language;
@@ -56,21 +58,22 @@ public class Builder {
         // Setter
         public static void setConfig(JsonNode config) {
 
-            // Load Setup
-            model = config.has("model") ? Helper.getChatModel(config.get("model").asText()) : ChatModel.CHATGPT_4O_LATEST;
-            user = config.has("user") ? config.get("user").asText() : "";
+            // Load Module
+            if (!config.has("chat")) return;
+            JsonNode chat = config.get("chat");
 
-            // Load Chat Configuration
-            config = config.get("chat");
-            devMessage = config.has("devMessage") ? config.get("devMessage").asText() : "";
+            // Load Setup
+            model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : ChatModel.CHATGPT_4O_LATEST;
+            user = config.has("user") ? config.get("user").asText() : "";
+            devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : "";
 
             // Load Configuration
-            temperature = config.has("temperature") ? config.get("temperature").asDouble() : 1d;
-            topP = config.has("topP") ? config.get("topP").asDouble() : 1d;
-            frequencyPenalty = config.has("frequencyPenalty") ? config.get("frequencyPenalty").asDouble() : 0d;
-            presencePenalty = config.has("presencePenalty") ? config.get("presencePenalty").asDouble() : 0d;
-            n = config.has("n") ? config.get("n").asLong() : 1L;
-            maxTokens = config.has("maxTokens") ? config.get("maxTokens").asLong() : 120;
+            temperature = chat.has("temperature") ? chat.get("temperature").asDouble() : 1d;
+            topP = chat.has("topP") ? chat.get("topP").asDouble() : 1d;
+            frequencyPenalty = chat.has("frequencyPenalty") ? chat.get("frequencyPenalty").asDouble() : 0d;
+            presencePenalty = chat.has("presencePenalty") ? chat.get("presencePenalty").asDouble() : 0d;
+            n = chat.has("n") ? chat.get("n").asLong() : 1L;
+            maxTokens = chat.has("maxTokens") ? chat.get("maxTokens").asLong() : 120;
         }
 
         public static void setTemperature(Double temperature) {
@@ -178,14 +181,17 @@ public class Builder {
         // Setter
         public static void setConfig(JsonNode config) {
 
+            // Load Module
+            if (!config.has("chat")) return;
+            JsonNode transcription = config.get("transcription");
+
             // Load Setup
-            model = config.has("model") ? Helper.getAudioModel(config.get("model").asText()) : AudioModel.WHISPER_1;
-            language = config.has("language") ? Language.fromCode(config.get("language").asText()) : null;
-            prompt = config.has("prompt") ? config.get("prompt").asText() : "";
+            model = transcription.has("model") ? Helper.getAudioModel(transcription.get("model").asText()) : AudioModel.WHISPER_1;
+            language = transcription.has("language") ? Language.fromCode(transcription.get("language").asText()) : null;
+            prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : "";
 
             // Load Configuration
-            config = config.get("transcription");
-            temperature = config.has("temperature") ? config.get("temperature").asDouble() : 1d;
+            temperature = transcription.has("temperature") ? transcription.get("temperature").asDouble() : 1d;
         }
 
         public static void setTemperature(Double temperature) {
@@ -219,6 +225,73 @@ public class Builder {
 
         public static String getPrompt() {
             return prompt;
+        }
+    }
+
+    public static class Speech {
+
+        // Setup
+        private static SpeechModel model = SpeechModel.TTS_1;
+        private static SpeechCreateParams.Voice voice = SpeechCreateParams.Voice.ALLOY;
+        private static SpeechCreateParams.ResponseFormat format = SpeechCreateParams.ResponseFormat.WAV;
+        private static Double speed = 1.0;
+
+        // Builder
+        public static SpeechCreateParams buildParams(@Nullable SpeechModel model, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) {
+            return SpeechCreateParams.builder()
+                    .model(model != null ? model : Speech.model)                // Model
+                    .voice(voice != null ? voice : Speech.voice)                // Voice
+                    .responseFormat(format != null ? format : Speech.format)    // Format
+                    .speed(speed != null ? speed : Speech.speed)                // Speed
+                    .input(input)                                               // Input
+                    .build();
+        }
+
+        // Setter
+        public static void setConfig(JsonNode config) {
+
+            // Load Module
+            if (!config.has("speech")) return;
+            JsonNode speech = config.get("speech");
+
+            // Load Setup
+            model = speech.has("model") ? Helper.getSpeechModel(speech.get("model").asText()) : SpeechModel.TTS_1;
+            voice = speech.has("voice") ? Helper.getVoice(speech.get("voice").asText()) : SpeechCreateParams.Voice.ALLOY;
+            format = speech.has("format") ? Helper.getResponseFormat(speech.get("format").asText()) : SpeechCreateParams.ResponseFormat.WAV;
+            speed = speech.has("speed") ? speech.get("speed").asDouble() : 1.0;
+        }
+
+        public static void setModel(SpeechModel model) {
+            Speech.model = model;
+        }
+
+        public static void setVoice(SpeechCreateParams.Voice voice) {
+            Speech.voice = voice;
+        }
+
+        public static void setFormat(SpeechCreateParams.ResponseFormat format) {
+            Speech.format = format;
+        }
+
+        public static void setSpeed(Double speed) {
+            Speech.speed = speed;
+        }
+
+        // Getter
+        public static SpeechModel getModel() {
+            return model;
+        }
+
+        public static SpeechCreateParams.Voice getVoice() {
+            return voice;
+        }
+
+        public static SpeechCreateParams.ResponseFormat getFormat() {
+            return format;
+        }
+
+        public static Double getSpeed() {
+            return speed;
         }
     }
 }

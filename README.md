@@ -8,10 +8,10 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 ### Supported Features:
 - **Chat API**: Generate conversational responses with advanced models.
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
+- **Speech API**: Convert text to speech with customizable voices and formats.
 
 ### Planned Features:
 - **Image API**: Create stunning visuals using OpenAI's image generation tools.
-- **Speech API**: Convert text to speech with customizable voices and formats.
 
 This utility simplifies complex interactions, making it easier than ever to harness the power of OpenAI in your Java projects.
 
@@ -55,7 +55,7 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "presencePenalty": 0,
     "n" : 1,
     "maxTokens": 120,
-    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr.",
+    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr."
   },
 
   "transcription": {
@@ -63,6 +63,13 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "temperature": 0,
     "language": "",
     "prompt": ""
+  },
+
+  "speech": {
+    "model": "tts-1-hd",
+    "format": "wav",
+    "voice": "onyx",
+    "speed": 1
   }
 }
 ```
@@ -91,6 +98,14 @@ Note: <br>
 | temperature      | Controls randomness: `0` (deterministic) to `2` (creative). (Default: `0`) |
 | language         | Language of the input audio.                                               |
 | prompt           | Provides context for the transcription.                                    |
+
+### Speech Configuration
+| **Field**        | **Description**                                     |
+|:-----------------|:----------------------------------------------------|
+| model            | Model used for generating text. (Default: `tts-1`)  |
+| format           | Output format for the audio. (Default: `wav`)       |
+| voice            | Voice used for speech synthesis. (Default: `alloy`) |
+| speed            | Speed of the speech synthesis. (Default: `1`)       |
 
 ## Usage Example
 ```java

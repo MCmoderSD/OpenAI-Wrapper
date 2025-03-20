@@ -20,9 +20,6 @@ public class Main {
 
         // Initialize OpenAI
         OpenAI openAI = new OpenAI(config);
-
-        // Prompt Loop
-        chatLoop(openAI);
     }
 
     private static void promptLoop(OpenAI openAI) {
