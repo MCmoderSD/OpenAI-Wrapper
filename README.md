@@ -9,11 +9,10 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Chat API**: Generate conversational responses with advanced models.
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 - **Speech API**: Convert text to speech with customizable voices and formats.
+- **Image API**: Generate images from text prompts with various styles and qualities.
 
 ### Planned Features:
-- **Image API**: Create stunning visuals using OpenAI's image generation tools.
-
-This utility simplifies complex interactions, making it easier than ever to harness the power of OpenAI in your Java projects.
+- **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
 
 ## Usage
 
@@ -33,7 +32,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.2.2</version>
+    <version>2.3.0</version>
 </dependency>
 ```
 
@@ -70,6 +69,14 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "format": "wav",
     "voice": "onyx",
     "speed": 1
+  },
+
+  "image": {
+    "model": "dall-e-2",
+    "size": "256x256",
+    "quality": "",
+    "style": "",
+    "n": 1
   }
 }
 ```
@@ -85,10 +92,11 @@ Note: <br>
 |:-----------------|:-----------------------------------------------------------------------------------------------|
 | model            | Model used for generating text. (Default: `chatgpt-4o-latest`)                                 |
 | temperature      | Controls randomness: `0` (deterministic) to `2` (creative). (Default: `1`)                     |
-| maxOutputTokens  | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
 | topP             | Nucleus sampling: `0` (plain) to `1` (creative). (Default: `1`)                                |
 | frequencyPenalty | Reduces repetition of words. Values range from `0` to `1`. (Default: `0`)                      |
 | presencePenalty  | Discourages repeating words from the conversation. Values range from `0` to `1` (Default: `0`) |
+| n                | Number of completions to generate. (Default: `1`)                                              |
+| maxTokens        | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
 | devMessage       | Provides guidance for the bot's behavior.                                                      |
 
 ### Transcription Configuration
@@ -106,6 +114,24 @@ Note: <br>
 | format           | Output format for the audio. (Default: `wav`)       |
 | voice            | Voice used for speech synthesis. (Default: `alloy`) |
 | speed            | Speed of the speech synthesis. (Default: `1`)       |
+
+### Image Configuration
+| **Field** | **Description**                                         |
+|:----------|:--------------------------------------------------------|
+| model     | Model used for generating images. (Default: `dall-e-2`) |
+| size      | Size of the generated image. (Default: `256x256`)       |
+| quality   | Quality of the generated image. (Default: `standard`)   |
+| style     | Style of the generated image. (Default: `vivid`)        |
+| n         | Number of images to generate. (Default: `1`)            |
+
+Options for image generation:
+- **model**: `dall-e-2`, `dall-e-3`
+- **size**: `256x256`, `512x512`, `1024x1024` (for `dall-e-2`), `1024x1024`, `1792x1024`, `1024x1792` (for `dall-e-3`)
+- **quality**: `standard`, `high` (only for `dall-e-3`)
+- **style**: `vivid`, `natural` (only for `dall-e-3`)
+- **n**: `1` to `10` (only for `dall-e-2`)
+
+<br>
 
 ## Usage Example
 ```java
@@ -339,6 +365,100 @@ public class SpeechExample {
 
         // Print Transcription
         System.out.println("Transcription: " + transcription);
+    }
+}
+```
+
+### Image Example
+```java
+import com.fasterxml.jackson.databind.JsonNode;
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ImagePrompt;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class ImageExample {
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(config);
+
+        System.out.println("Enter your prompt \nYou: ");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+
+        // Configure OpenAI
+        Builder.Images.setConfig(config);
+
+        // Prompt
+        ArrayList<ImagePrompt> response = openAI.generateImage(
+                null,   // Model (optional)
+                null,   // Size (optional)
+                null,   // Response Format (optional)
+                null,   // Number of Images (optional)
+                null,   // Style (optional)
+                null,   // Quality (optional)
+                input   // Prompt (required)
+        );
+
+        // Print Response
+        for (ImagePrompt imagePrompt : response) showImage(imagePrompt);
+
+        // Save image
+        for (ImagePrompt imagePrompt : response) saveImage(imagePrompt);
+    }
+
+    // Show image
+    public static void showImage(ImagePrompt imagePrompt) {
+
+        // Create frame
+        JFrame frame = new JFrame(imagePrompt.getInput());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(256, 256);
+        frame.setResizable(false);
+        frame.setIconImage(imagePrompt.getImage());
+
+        // Create panel
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(imagePrompt.getImage(), 0, 0, null);
+            }
+        };
+
+        // Add panel to frame
+        frame.add(panel);
+
+        // Center frame
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+
+        // Show frame
+        frame.setVisible(true);
+    }
+
+    // Save image to file
+    public static void saveImage(ImagePrompt imagePrompt) {
+        try {
+            ImageIO.write(imagePrompt.getImage(), "png", new File(String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+        } catch (IOException e) {
+            System.err.println("Error saving image: " + e.getMessage());
+        }
     }
 }
 ```

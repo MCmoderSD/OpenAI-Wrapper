@@ -6,7 +6,13 @@ import com.openai.models.audio.AudioModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
-import com.openai.models.chat.completions.*;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionMessageParam;
+import com.openai.models.images.ImageGenerateParams.Quality;
+import com.openai.models.images.ImageGenerateParams.Size;
+import com.openai.models.images.ImageGenerateParams.Style;
+import com.openai.models.images.ImageGenerateParams;
+import com.openai.models.images.ImageModel;
 import de.MCmoderSD.openai.enums.Language;
 import org.jetbrains.annotations.Nullable;
 
@@ -251,8 +257,8 @@ public class Builder {
         public static void setConfig(JsonNode config) {
 
             // Load Module
-            if (!config.has("speech")) return;
-            JsonNode speech = config.get("speech");
+            if (!config.has("image")) return;
+            JsonNode speech = config.get("image");
 
             // Load Setup
             model = speech.has("model") ? Helper.getSpeechModel(speech.get("model").asText()) : SpeechModel.TTS_1;
@@ -292,6 +298,145 @@ public class Builder {
 
         public static Double getSpeed() {
             return speed;
+        }
+    }
+
+    public static class Images {
+
+        // Setup
+        private static ImageModel model = ImageModel.DALL_E_2;
+        private static String user = "";
+
+        // Configuration
+        private static Size size = Size._256X256;
+        private static Quality quality = null;
+        private static Style style = null;
+        private static Integer n = 1;
+
+        // Builder
+        public static ImageGenerateParams buildParams(@Nullable ImageModel model, @Nullable String user, @Nullable Size size, @Nullable Quality quality, @Nullable Style style, @Nullable Integer n, String prompt) {
+
+            // Determine Parameters
+            ImageModel m = model != null ? model : Images.model;
+            Size s = size != null ? size : Images.size;
+            Quality q = quality != null ? quality : Images.quality;
+            Style y = style != null ? style : Images.style;
+            Integer i = n != null ? n : Images.n;
+
+            // Check Model
+            if (ImageModel.DALL_E_2.equals(m)) {
+                if (q != null || y != null) System.err.println("Warning: DALL-E 2 does not support quality or style parameters, ignoring them.");
+                return buildParams(user, s, i, prompt);
+            }
+
+            if (ImageModel.DALL_E_3.equals(m)) {
+                if (n != null && n > 1) System.err.println("Warning: DALL-E 3 only supports 1 image per prompt, ignoring n parameter.");
+                return buildParams(user, s, i, prompt);
+            }
+
+            throw new IllegalArgumentException("Invalid Images Model: " + m);
+        }
+
+        // DALL-E 2
+        public static ImageGenerateParams buildParams(@Nullable String user, @Nullable Size size, @Nullable Integer n, String prompt) {
+
+            // Determine Size and check for DALL-E 2
+            Size s = size != null ? size : Images.size;
+            if (!(s == Size._1024X1024 || s == Size._512X512 || s == Size._256X256)) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
+
+            // Build Parameters
+            return ImageGenerateParams.builder()
+                    .model(ImageModel.DALL_E_2)
+                    .user(user != null ? user : Images.user)
+                    .size(s)
+                    .n(n != null ? n : Images.n)
+                    .prompt(prompt)
+                    .build();
+        }
+
+        // DALL-E 3
+        private static ImageGenerateParams buildParams(@Nullable String user, @Nullable Size size, @Nullable Quality quality, @Nullable Style style, String prompt) {
+
+            // Determine Size and check for DALL-E 3
+            Size s = size != null ? size : Images.size;
+            if (s == Size._512X512 || s == Size._256X256) throw new IllegalArgumentException("DALL-E 3 only supports sizes 1024x1024, 1024x1792, 1792x1024 and only 1 image per prompt");
+
+            // Build Parameters
+            return ImageGenerateParams.builder()
+                    .model(ImageModel.DALL_E_3)
+                    .user(user != null ? user : Images.user)
+                    .size(s)
+                    .quality(quality != null ? quality : Images.quality)
+                    .style(style != null ? style : Images.style)
+                    .prompt(prompt)
+                    .build();
+        }
+
+        // Setter
+        public static void setConfig(JsonNode config) {
+
+            // Load Module
+            if (!config.has("image")) return;
+            JsonNode image = config.get("image");
+
+            // Load Setup
+            model = image.has("model") ? Helper.getImageModel(image.get("model").asText()) : ImageModel.DALL_E_2;
+            user = config.has("user") ? config.get("user").asText() : "";
+
+            // Load Configuration
+            size = image.has("size") ? Helper.getSize(image.get("size").asText()) : Size._1024X1024;
+            quality = image.has("quality") ? Helper.getQuality(image.get("quality").asText()) : null;
+            style = image.has("style") ? Helper.getStyle(image.get("style").asText()) : null;
+            n = image.has("n") ? image.get("n").asInt() : 1;
+        }
+
+        public static void setModel(ImageModel model) {
+            Images.model = model;
+        }
+
+        public static void setUser(String user) {
+            Images.user = user;
+        }
+
+        public static void setSize(Size size) {
+            Images.size = size;
+        }
+
+        public static void setQuality(@Nullable Quality quality) {
+            Images.quality = quality;
+        }
+
+        public static void setStyle(@Nullable Style style) {
+            Images.style = style;
+        }
+
+        public static void setN(Integer n) {
+            Images.n = n;
+        }
+
+        // Getter
+        public static ImageModel getModel() {
+            return model;
+        }
+
+        public static String getUser() {
+            return user;
+        }
+
+        public static Size getSize() {
+            return size;
+        }
+
+        public static Quality getQuality() {
+            return quality;
+        }
+
+        public static Style getStyle() {
+            return style;
+        }
+
+        public static Integer getN() {
+            return n;
         }
     }
 }

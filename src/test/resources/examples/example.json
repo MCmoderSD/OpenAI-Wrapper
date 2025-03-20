@@ -27,5 +27,13 @@
     "format": "wav",
     "voice": "onyx",
     "speed": 1
+  },
+
+  "image": {
+    "model": "dall-e-2",
+    "size": "256x256",
+    "quality": "",
+    "style": "",
+    "n": 1
   }
 }

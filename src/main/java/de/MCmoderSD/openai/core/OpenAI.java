@@ -5,22 +5,32 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.http.HttpResponse;
 import com.openai.models.ChatModel;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.audio.AudioModel;
-import com.openai.models.audio.speech.SpeechCreateParams;
-import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
-import com.openai.models.chat.completions.*;
+import com.openai.models.audio.speech.SpeechModel;
+import com.openai.models.audio.speech.SpeechCreateParams;
+import com.openai.models.images.Image;
+import com.openai.models.images.ImageModel;
+import com.openai.models.images.ImagesResponse;
+import com.openai.models.images.ImageGenerateParams;
+
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
+import de.MCmoderSD.openai.objects.ImagePrompt;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -72,6 +82,10 @@ public class OpenAI {
         return client.audio().speech().create(params);
     }
 
+    private ImagesResponse createImage(ImageGenerateParams params) {
+        return client.images().generate(params);
+    }
+
     // Prompt
     public String prompt(String prompt) {
         return prompt(null, null, null, null, null, null, null, null, null, null, prompt);
@@ -91,6 +105,7 @@ public class OpenAI {
         return prompt(null, user, null, null, null, null, null, null, null, id, prompt);
     }
 
+    // Prompt with all Parameters
     public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
 
         // Check Parameters
@@ -153,6 +168,7 @@ public class OpenAI {
         return transcribe(null, temperature, language, prompt, data);
     }
 
+    // Transcription with all Parameters
     @SuppressWarnings("resource")
     public String transcribe(@Nullable AudioModel model, @Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data) {
 
@@ -245,6 +261,7 @@ public class OpenAI {
         return speech(null, voice, format, speed, input);
     }
 
+    // Speech with all Parameters
     public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
 
         // Check Parameters
@@ -261,6 +278,92 @@ public class OpenAI {
 
         // Execute Speech
         return createSpeech(params).body().readAllBytes();
+    }
+
+    // Image Generation
+    public ArrayList<ImagePrompt> generateImage(String prompt) {
+        return generateImage(null, null, null, null, null, null, prompt);
+    }
+
+    // Image Generation with Model
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, String prompt) {
+        return generateImage(model, null, null, null, null, null, prompt);
+    }
+
+    // Image Generation with User
+    public ArrayList<ImagePrompt> generateImage(@Nullable String user, String prompt) {
+        return generateImage(null, user, null, null, null, null, prompt);
+    }
+
+    // Image Generation with Model and User
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, String prompt) {
+        return generateImage(model, user, null, null, null, null, prompt);
+    }
+
+    // Image Generation with Size
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable Integer n, String prompt) {
+        return generateImage(model, user, null, null, null, n, prompt);
+    }
+
+    // Image Generation with Size and User
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, String prompt) {
+        return generateImage(model, user, size, null, null, null, prompt);
+    }
+
+    // Image Generation with Size and Style
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable Integer n, String prompt) {
+        return generateImage(model, user, size, null, null, n, prompt);
+    }
+
+    // Image Generation with Size and Quality
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable ImageGenerateParams.Style style, @Nullable Integer n, String prompt) {
+        return generateImage(model, user, size, null, style, n, prompt);
+    }
+
+    // Image Generation with Size and Quality
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable ImageGenerateParams.Quality quality, @Nullable Integer n, String prompt) {
+        return generateImage(model, user, size, quality, null, n, prompt);
+    }
+
+    // Image Generation with Size, Quality and Style
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable ImageGenerateParams.Quality quality, @Nullable ImageGenerateParams.Style style, String prompt) {
+        return generateImage(model, user, size, quality, style, null, prompt);
+    }
+
+    // Image Generation with all Parameters
+    public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable ImageGenerateParams.Quality quality, @Nullable ImageGenerateParams.Style style, @Nullable Integer n, String prompt) {
+
+        // Create Image Params
+        var params = Builder.Images.buildParams(
+                model,               // Model
+                user,                // User
+                size,                // Size
+                quality,             // Quality
+                style,               // Style
+                n,                   // Number of Images
+                prompt               // Prompt
+        );
+
+        // Execute Image Generation
+        var response = createImage(params);
+
+        var created = response.created();
+        ArrayList<ImagePrompt> images = new ArrayList<>();
+
+        // Extract Images
+        for (Image image : response.data()) {
+            try {
+                images.add(new ImagePrompt(prompt, image, created));
+            } catch (IOException | URISyntaxException e) {
+                System.err.println("Error generating image: " + e.getMessage());
+            }
+        }
+
+        // Check if Images are empty
+        if (images.isEmpty()) return null;
+
+        // Return Images
+        return images;
     }
 
     // Setters

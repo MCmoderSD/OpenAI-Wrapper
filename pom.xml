@@ -35,6 +35,13 @@
 
     <dependencies>
 
+        <!-- ImageLoader -->
+        <dependency>
+            <groupId>de.MCmoderSD</groupId>
+            <artifactId>ImageLoader</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
         <!-- Json -->
         <dependency>
             <groupId>de.MCmoderSD</groupId>

@@ -1,5 +1,8 @@
 package de.MCmoderSD.openai.enums;
 
+/**
+ * Enum representing various languages with their respective codes and names.
+ */
 @SuppressWarnings("unused")
 public enum Language {
 
@@ -66,31 +69,66 @@ public enum Language {
     private final String code;
     private final String name;
 
-    // Constructor
+    /**
+     * Constructor for Language enum.
+     *
+     * @param code The language code.
+     * @param name The language name.
+     */
     Language(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    // Getter
+    /**
+     * Gets the language code.
+     *
+     * @return The language code.
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Gets the language name.
+     *
+     * @return The language name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the Language enum corresponding to the given code.
+     *
+     * @param code The language code.
+     * @return The Language enum.
+     * @throws IllegalArgumentException If the code is invalid.
+     */
     public static Language fromCode(String code) {
         for (Language language : Language.values()) if (language.getCode().equalsIgnoreCase(code)) return language;
         throw new IllegalArgumentException("Invalid language code: " + code);
     }
 
+    /**
+     * Returns the Language enum corresponding to the given name.
+     *
+     * @param name The language name.
+     * @return The Language enum.
+     * @throws IllegalArgumentException If the name is invalid.
+     */
     public static Language fromName(String name) {
         for (Language language : Language.values()) if (language.getName().equalsIgnoreCase(name)) return language;
         throw new IllegalArgumentException("Invalid language name: " + name);
     }
 
+    /**
+     * Returns the Language enum corresponding to the given language string.
+     *
+     * @param language The language string (code, name, or enum name).
+     * @return The Language enum.
+     * @throws IllegalArgumentException If the language string is invalid.
+     */
     public static Language getLanguage(String language) {
         if (language == null || language.isBlank()) return null;
         for (Language values : Language.values()) if (values.getCode().equalsIgnoreCase(language) || values.getName().equalsIgnoreCase(language) || values.name().equalsIgnoreCase(language)) return values;

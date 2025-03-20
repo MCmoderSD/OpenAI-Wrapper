@@ -6,6 +6,8 @@ import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
+import com.openai.models.images.ImageGenerateParams;
+import com.openai.models.images.ImageModel;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.InvalidParameterException;
@@ -14,7 +16,6 @@ public class Helper {
 
     // Constants
     public static final int FILE_SIZE_LIMIT = 25 * 1024 * 1024; // 25MB
-
 
     // Methods
     public static boolean checkParameter(@Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n) {
@@ -85,6 +86,17 @@ public class Helper {
         }
     }
 
+    public static ImageModel getImageModel(String model) {
+        if (model == null || model.isBlank()) return null;
+        else {
+            try {
+                return ImageModel.Companion.of(model);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
     public static SpeechCreateParams.Voice getVoice(String voice) {
         if (voice == null || voice.isBlank()) return null;
         else {
@@ -101,6 +113,39 @@ public class Helper {
         else {
             try {
                 return SpeechCreateParams.ResponseFormat.Companion.of(format);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static ImageGenerateParams.Size getSize(String size) {
+        if (size == null || size.isBlank()) return null;
+        else {
+            try {
+                return ImageGenerateParams.Size.Companion.of(size);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static ImageGenerateParams.Quality getQuality(String quality) {
+        if (quality == null || quality.isBlank()) return null;
+        else {
+            try {
+                return ImageGenerateParams.Quality.Companion.of(quality);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static ImageGenerateParams.Style getStyle(String style) {
+        if (style == null || style.isBlank()) return null;
+        else {
+            try {
+                return ImageGenerateParams.Style.Companion.of(style);
             } catch (IllegalArgumentException e) {
                 return null;
             }

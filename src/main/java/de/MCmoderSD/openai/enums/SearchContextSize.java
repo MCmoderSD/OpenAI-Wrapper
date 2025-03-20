@@ -2,6 +2,9 @@ package de.MCmoderSD.openai.enums;
 
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
+/**
+ * Enum representing different search context sizes for web search options.
+ */
 @SuppressWarnings("unused")
 public enum SearchContextSize {
 
@@ -13,12 +16,20 @@ public enum SearchContextSize {
     // Attributes
     private final ChatCompletionCreateParams.WebSearchOptions.SearchContextSize searchContextSize;
 
-    // Constructor
+    /**
+     * Constructor for SearchContextSize enum.
+     *
+     * @param searchContextSize The search context size.
+     */
     SearchContextSize(ChatCompletionCreateParams.WebSearchOptions.SearchContextSize searchContextSize) {
         this.searchContextSize = searchContextSize;
     }
 
-    // Getter
+    /**
+     * Returns the search context size.
+     *
+     * @return The search context size.
+     */
     public ChatCompletionCreateParams.WebSearchOptions.SearchContextSize size() {
         return searchContextSize;
     }
