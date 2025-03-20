@@ -169,7 +169,7 @@ public class Builder {
             // Set Parameters
             builder.model(model != null ? model : Transcription.model);
             if (language != null) builder.language(language.getName());
-            else if (Transcription.language != null) builder.language(Transcription.language.getName());
+            else if (Transcription.language != null) builder.language(Transcription.language.getCode());
             if (!(prompt == null || prompt.isBlank())) builder.prompt(prompt);
             else if (!(Transcription.prompt == null || Transcription.prompt.isBlank())) builder.prompt(Transcription.prompt);
             builder.temperature(temperature != null ? temperature : Transcription.temperature);

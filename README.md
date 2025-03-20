@@ -60,9 +60,9 @@ To configure the utility, provide a `JsonNode` with the following structure:
 
   "transcription": {
     "model": "whisper-1",
-    "temperature": 0,
-    "language": "",
-    "prompt": ""
+    "temperature": 1,
+    "language": "en",
+    "prompt": "Transcribe the following audio to text."
   },
 
   "speech": {
@@ -315,7 +315,7 @@ public class SpeechExample {
         // Configure OpenAI
         Builder.Speech.setConfig(config);
         Builder.Transcription.setConfig(config);
-        
+
         // Speech Synthesis and Transcription Example
         String text = "Hello, this is a test of the speech synthesis feature.";
 

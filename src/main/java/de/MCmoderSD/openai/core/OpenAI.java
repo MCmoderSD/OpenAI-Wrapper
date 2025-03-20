@@ -92,7 +92,7 @@ public class OpenAI {
     public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
 
         // Check Parameters
-        if (Helper.checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
+        if (!Helper.checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
 
         // Check if Chat History exists
         if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
@@ -155,7 +155,7 @@ public class OpenAI {
     public String transcribe(@Nullable AudioModel model, @Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data) {
 
         // Check Parameters
-        if (Helper.checkParameter(temperature, data)) return null;
+        if (!Helper.checkParameter(temperature, data)) return null;
 
         // Variables
         var chunkSize = 25 * 1024 * 1024; // 25MB
@@ -211,7 +211,7 @@ public class OpenAI {
             try {
                 Files.deleteIfExists(chunk.toPath());
             } catch (IOException e) {
-                System.err.println("Error deleting chunk file: " + e.getMessage());
+                chunk.deleteOnExit();
             }
         }
 
@@ -247,7 +247,7 @@ public class OpenAI {
     public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
 
         // Check Parameters
-        if (Helper.checkParameter(speed, input)) return null;
+        if (!Helper.checkParameter(speed, input)) return null;
 
         // Create Speech Params
         var params = Builder.Speech.buildParams(
