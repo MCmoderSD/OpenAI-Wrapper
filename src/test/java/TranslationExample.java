@@ -35,7 +35,7 @@ public class TranslationExample {
             System.out.print("Language: ");
             String devMessage = "Please translate the following text to " + scanner.nextLine();
             String response = openAI.prompt(
-                    null,       // Chat Model
+                    null,               // Chat Model
                     null,               // User
                     null,               // Max Tokens
                     0d,                 // Temperature
@@ -44,8 +44,8 @@ public class TranslationExample {
                     null,               // Presence Penalty
                     null,               // Number of Completions
                     devMessage,         // Developer Message
-                    userInput,          // User Message
-                    null                // ID
+                    null,               // ID
+                    userInput           // User Message
             );
             System.out.println("Response: " + response);
             System.out.print("You: ");
