@@ -13,7 +13,6 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.*;
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
-import de.MCmoderSD.openai.helper.Helper;
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +23,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import static de.MCmoderSD.openai.helper.Helper.*;
+
 @SuppressWarnings("unused")
 public class OpenAI {
 
@@ -92,7 +94,7 @@ public class OpenAI {
     public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
 
         // Check Parameters
-        if (!Helper.checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
+        if (!checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
 
         // Check if Chat History exists
         if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
@@ -117,13 +119,13 @@ public class OpenAI {
         var completion = createChatCompletion(params);
 
         // Get Chat Completion Message
-        var message = Helper.getMessage(completion);
+        var message = getMessage(completion);
 
         // Add ChatPrompt to History
         if (id != null) chatHistory.get(id).addPrompt(new ChatPrompt(prompt, completion));
 
         // Return Content
-        return Helper.getContent(message);
+        return getContent(message);
     }
 
     // Transcription
@@ -155,13 +157,12 @@ public class OpenAI {
     public String transcribe(@Nullable AudioModel model, @Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data) {
 
         // Check Parameters
-        if (!Helper.checkParameter(temperature, data)) return null;
+        if (!checkParameter(temperature, data)) return null;
 
         // Variables
-        var chunkSize = 25 * 1024 * 1024; // 25MB
         var offset = 0;
         var length = data.length;
-        var chunkCount = (int) Math.ceil((double) length / chunkSize);
+        var chunkCount = (int) Math.ceil((double) length / FILE_SIZE_LIMIT);
 
         // Array of Chunks
         var transcription = new StringBuilder();
@@ -171,7 +172,7 @@ public class OpenAI {
 
         // Split Audio Data into Chunks
         for (var i = 0; i < chunkCount; i++) {
-            var chunk = new byte[Math.min(chunkSize, length - offset)];
+            var chunk = new byte[Math.min(FILE_SIZE_LIMIT, length - offset)];
             System.arraycopy(data, offset, chunk, 0, chunk.length);
             try {
                 chunks[i] = File.createTempFile(String.valueOf(Arrays.hashCode(chunk)), ".wav");
@@ -180,7 +181,7 @@ public class OpenAI {
             } catch (IOException e) {
                 System.err.println("Error writing chunk " + i + ": " + e.getMessage());
             }
-            offset += chunkSize;
+            offset += FILE_SIZE_LIMIT;
         }
 
         // Create Transcription Params
@@ -247,7 +248,7 @@ public class OpenAI {
     public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
 
         // Check Parameters
-        if (!Helper.checkParameter(speed, input)) return null;
+        if (!checkParameter(speed, input)) return null;
 
         // Create Speech Params
         var params = Builder.Speech.buildParams(

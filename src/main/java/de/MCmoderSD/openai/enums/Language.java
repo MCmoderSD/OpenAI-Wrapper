@@ -90,4 +90,10 @@ public enum Language {
         for (Language language : Language.values()) if (language.getName().equalsIgnoreCase(name)) return language;
         throw new IllegalArgumentException("Invalid language name: " + name);
     }
+
+    public static Language getLanguage(String language) {
+        if (language == null || language.isBlank()) return null;
+        for (Language values : Language.values()) if (values.getCode().equalsIgnoreCase(language) || values.getName().equalsIgnoreCase(language) || values.name().equalsIgnoreCase(language)) return values;
+        throw new IllegalArgumentException("Invalid language code: " + language);
+    }
 }

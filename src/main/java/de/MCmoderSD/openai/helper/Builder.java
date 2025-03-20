@@ -187,7 +187,7 @@ public class Builder {
 
             // Load Setup
             model = transcription.has("model") ? Helper.getAudioModel(transcription.get("model").asText()) : AudioModel.WHISPER_1;
-            language = transcription.has("language") ? Language.fromCode(transcription.get("language").asText()) : null;
+            language = transcription.has("language") ? Language.getLanguage(transcription.get("language").asText()) : null;
             prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : "";
 
             // Load Configuration

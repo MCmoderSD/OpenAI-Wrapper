@@ -12,6 +12,11 @@ import java.security.InvalidParameterException;
 
 public class Helper {
 
+    // Constants
+    public static final int FILE_SIZE_LIMIT = 25 * 1024 * 1024; // 25MB
+
+
+    // Methods
     public static boolean checkParameter(@Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n) {
         if (maxTokens != null && maxTokens <= 0) throw new InvalidParameterException("maxTokens must be greater than 0");                                                   // maxTokens
         if (Temperature != null && (Temperature < 0 || Temperature > 2))throw new InvalidParameterException("Temperature must be between 0 and 2");                         // Temperature
