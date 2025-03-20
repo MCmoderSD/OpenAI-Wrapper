@@ -12,6 +12,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Image API**: Generate images from text prompts with various styles and qualities.
 
 ### Planned Features:
+- **Moderation API**: Implement content moderation capabilities.
 - **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
 
 ## Usage
@@ -32,7 +33,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
 </dependency>
 ```
 

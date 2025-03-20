@@ -23,10 +23,14 @@ public class ChatPrompt {
     private final String model;
     private final String systemFingerprint;
     private final CompletionUsage usage;
+    private final CompletionUsage.PromptTokensDetails promptTokensDetails;
+    private final CompletionUsage.CompletionTokensDetails completionTokensDetails;
 
     // Usage
-    private final long promptTokens;
-    private final long completionTokens;
+    private final long inputTokens;
+    private final long cachedInputTokens;
+    private final long outputTokens;
+    private final long reasoningTokens;
     private final long totalTokens;
 
     // Content
@@ -40,7 +44,6 @@ public class ChatPrompt {
      * @param input  The user's input prompt.
      * @param output The AI-generated response associated with the input.
      */
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public ChatPrompt(String input, ChatCompletion output) {
 
         // Initialize Parameters
@@ -51,13 +54,21 @@ public class ChatPrompt {
         id = output.id();
         timestamp = new Timestamp(output.created() * 1000L);
         model = output.model();
-        systemFingerprint = output.systemFingerprint().get();
-        usage = output.usage().get();
+        systemFingerprint = output.systemFingerprint().orElse(null);
+        usage = output.usage().orElse(null);
 
         // Extract Usage
-        promptTokens = usage.promptTokens();
-        completionTokens = usage.completionTokens();
-        totalTokens = usage.totalTokens();
+        promptTokensDetails = usage != null ? usage.promptTokensDetails().orElse(null) : null;
+        completionTokensDetails = usage != null ? usage.completionTokensDetails().orElse(null) : null;
+
+        // Extract Token Usage
+        inputTokens = usage != null ? usage.promptTokens() : 0L;
+        outputTokens = usage != null ? usage.completionTokens() : 0L;
+        totalTokens = usage != null ? usage.promptTokens() : 0L;
+
+        // Extract Cached and Reasoning Tokens
+        cachedInputTokens = promptTokensDetails != null ? promptTokensDetails.cachedTokens().orElse(0L) : 0L;
+        reasoningTokens = completionTokensDetails != null ? completionTokensDetails.reasoningTokens().orElse(0L) : 0L;
 
         // Extract Content
         choices = new ArrayList<>(output.choices());
@@ -70,157 +81,71 @@ public class ChatPrompt {
         });
     }
 
-    /**
-     * Returns the user input.
-     *
-     * @return The input string.
-     */
+    // Getter
     public String getInput() {
         return input;
     }
 
-    /**
-     * Returns the AI-generated output.
-     *
-     * @return The ChatCompletion output.
-     */
     public ChatCompletion getOutput() {
         return output;
     }
 
-    /**
-     * Returns the unique identifier of the chat session.
-     *
-     * @return The chat session ID.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Returns the timestamp of when the chat completion was created.
-     *
-     * @return The timestamp of the completion.
-     */
     public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    /**
-     * Returns the model used for generating the response.
-     *
-     * @return The model name.
-     */
     public String getModel() {
         return model;
     }
 
-    /**
-     * Returns the system fingerprint associated with the AI response.
-     *
-     * @return The system fingerprint.
-     */
     public String getSystemFingerprint() {
         return systemFingerprint;
     }
 
-    /**
-     * Returns the token usage statistics.
-     *
-     * @return The CompletionUsage object.
-     */
     public CompletionUsage getUsage() {
         return usage;
     }
 
-    /**
-     * Returns the number of tokens used in the prompt.
-     *
-     * @return The prompt token count.
-     */
-    public long getPromptTokens() {
-        return promptTokens;
+    public CompletionUsage.PromptTokensDetails getPromptTokensDetails() {
+        return promptTokensDetails;
     }
 
-    /**
-     * Returns the number of tokens used in the completion.
-     *
-     * @return The completion token count.
-     */
-    public long getCompletionTokens() {
-        return completionTokens;
+    public CompletionUsage.CompletionTokensDetails getCompletionTokensDetails() {
+        return completionTokensDetails;
     }
 
-    /**
-     * Returns the total number of tokens used.
-     *
-     * @return The total token count.
-     */
+    public long getInputTokens() {
+        return inputTokens;
+    }
+
+    public long getCachedInputTokens() {
+        return cachedInputTokens;
+    }
+
+    public long getOutputTokens() {
+        return outputTokens;
+    }
+
+    public long getReasoningTokens() {
+        return reasoningTokens;
+    }
+
     public long getTotalTokens() {
         return totalTokens;
     }
 
-    /**
-     * Returns the first choice from the list of AI-generated choices.
-     *
-     * @return The first ChatCompletion.Choice object.
-     */
-    public ChatCompletion.Choice getChoice() {
-        return choices.getFirst();
-    }
-
-    /**
-     * Returns a specific choice by index from the list of AI-generated choices.
-     *
-     * @param index The index of the choice.
-     * @return The ChatCompletion.Choice at the specified index.
-     */
-    public ChatCompletion.Choice getChoice(int index) {
-        return choices.get(index);
-    }
-
-    /**
-     * Returns all choices generated by the AI.
-     *
-     * @return A list of ChatCompletion.Choice objects.
-     */
     public ArrayList<ChatCompletion.Choice> getChoices() {
         return choices;
     }
 
-    /**
-     * Returns the first message from the AI response.
-     *
-     * @return The first ChatCompletionMessage.
-     */
-    public ChatCompletionMessage getMessage() {
-        return choices.getFirst().message();
-    }
-
-    /**
-     * Returns a specific message by index from the AI response.
-     *
-     * @param index The index of the message.
-     * @return The ChatCompletionMessage at the specified index.
-     */
-    public ChatCompletionMessage getMessage(int index) {
-        return choices.get(index).message();
-    }
-
-    /**
-     * Returns all messages from the AI response.
-     *
-     * @return A list of ChatCompletionMessage objects.
-     */
     public ArrayList<ChatCompletionMessage> getMessages() {
         return messages;
     }
 
-    /**
-     * Returns all textual content extracted from the AI response.
-     *
-     * @return A list of strings representing the response content.
-     */
     public ArrayList<String> getContent() {
         return content;
     }

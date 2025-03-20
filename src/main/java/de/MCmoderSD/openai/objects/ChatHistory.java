@@ -54,11 +54,11 @@ public class ChatHistory {
 
         // Add User Message to History
         messages.add(ChatCompletionMessageParam.ofUser(ChatCompletionUserMessageParam.builder().content(chatPrompt.getInput()).build()));
-        messages.add(ChatCompletionMessageParam.ofAssistant(chatPrompt.getMessage().toParam()));
+        messages.add(ChatCompletionMessageParam.ofAssistant(chatPrompt.getMessages().getFirst().toParam()));
 
         // Update Tokens
-        inputTokens += chatPrompt.getPromptTokens();
-        outputTokens += chatPrompt.getCompletionTokens();
+        inputTokens += chatPrompt.getInputTokens();
+        outputTokens += chatPrompt.getOutputTokens();
         totalTokens += chatPrompt.getTotalTokens();
     }
 

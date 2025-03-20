@@ -20,7 +20,9 @@ public class ImagePrompt {
     private final Timestamp timestamp;
 
     // Attributes
+    private final String revisedPrompt;
     private final String url;
+    private final String base64;
 
     // Content
     private final BufferedImage image;
@@ -34,7 +36,6 @@ public class ImagePrompt {
      * @throws IOException        If an I/O error occurs while loading the image.
      * @throws URISyntaxException If the URL of the image is malformed.
      */
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public ImagePrompt(String input, Image output, long created) throws IOException, URISyntaxException {
 
         // Initialize Parameters
@@ -43,10 +44,16 @@ public class ImagePrompt {
         timestamp = new Timestamp(created * 1000L);
 
         // Extract Data
-        url = output.url().get();
+        revisedPrompt = output.revisedPrompt().orElse(null);
+        url = output.url().orElse(null);
+        base64 = output.b64Json().orElse(null);
+
+        // Validate URL or Base64
+        String imageData = url == null ? base64 : url;
+        if (imageData == null || imageData.isEmpty()) throw new IOException("Image URL or Base64 data is missing.");
 
         // Initialize Content
-        image = ImageLoader.loadImage(url, false);
+        image = ImageLoader.loadImage(imageData, false);
     }
 
     /**
@@ -77,12 +84,30 @@ public class ImagePrompt {
     }
 
     /**
+     * Returns the revised prompt used to generate the image.
+     *
+     * @return The revised prompt string.
+     */
+    public String getRevisedPrompt() {
+        return revisedPrompt;
+    }
+
+    /**
      * Returns the URL of the AI-generated image.
      *
      * @return The image URL.
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * Returns the Base64-encoded string of the AI-generated image.
+     *
+     * @return The Base64-encoded image string.
+     */
+    public String getBase64() {
+        return base64;
     }
 
     /**

@@ -342,7 +342,7 @@ public class Builder {
 
             // Determine Size and check for DALL-E 2
             Size s = size != null ? size : Images.size;
-            if (!(s == Size._1024X1024 || s == Size._512X512 || s == Size._256X256)) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
+            if (s == Size._1024X1792 || s == Size._1792X1024) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
 
             // Build Parameters
             return ImageGenerateParams.builder()
