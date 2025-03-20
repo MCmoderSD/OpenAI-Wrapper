@@ -129,7 +129,7 @@ public class Example {
         OpenAI openAI = new OpenAI(config);
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // Prompt
         String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?");
@@ -171,7 +171,7 @@ public class PromptExample {
         );
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // ChatPrompt Loop
         System.out.println("Enter your prompt (type 'exit' to quit):\nYou: ");
@@ -216,7 +216,7 @@ public class ChatExample {
         );
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // ChatPrompt Loop
         System.out.println("Enter your prompt (type 'exit' to quit):\nYou: ");
@@ -260,7 +260,7 @@ public class TranslationExample {
         );
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // Translation Loop
         System.out.println("Enter the text to translate (type 'exit' to quit):\nYou: ");

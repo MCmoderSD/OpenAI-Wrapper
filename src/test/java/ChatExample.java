@@ -28,7 +28,7 @@ public class ChatExample {
         );
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // ChatPrompt Loop
         System.out.println("Enter your prompt (type 'exit' to quit):\nYou: ");

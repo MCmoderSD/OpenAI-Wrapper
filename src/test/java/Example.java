@@ -18,7 +18,7 @@ public class Example {
         OpenAI openAI = new OpenAI(config);
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // Prompt
         String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?");

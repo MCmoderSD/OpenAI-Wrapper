@@ -27,7 +27,7 @@ public class TranslationExample {
         );
 
         // Configure OpenAI
-        Builder.setConfig(config);
+        Builder.Chat.setConfig(config);
 
         // Translation Loop
         System.out.println("Enter the text to translate (type 'exit' to quit):\nYou: ");
