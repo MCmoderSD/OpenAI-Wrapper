@@ -82,7 +82,7 @@ public class ImageExample {
     // Save image to file
     public static void saveImage(ImagePrompt imagePrompt) {
         try {
-            ImageIO.write(imagePrompt.getImage(), "png", new File(String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+            ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
         } catch (IOException e) {
             System.err.println("Error saving image: " + e.getMessage());
         }

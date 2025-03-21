@@ -8,6 +8,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
+import com.openai.models.moderations.ModerationModel;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.InvalidParameterException;
@@ -91,6 +92,17 @@ public class Helper {
         else {
             try {
                 return ImageModel.Companion.of(model);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static ModerationModel getModerationModel(String model) {
+        if (model == null || model.isBlank()) return null;
+        else {
+            try {
+                return ModerationModel.Companion.of(model);
             } catch (IllegalArgumentException e) {
                 return null;
             }

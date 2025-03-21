@@ -5,6 +5,11 @@ import de.MCmoderSD.imageloader.ImageLoader;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayInputStream;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 
@@ -12,7 +17,7 @@ import java.sql.Timestamp;
  * Represents an image prompt containing user input, AI-generated image output, and metadata.
  */
 @SuppressWarnings("unused")
-public class ImagePrompt {
+public class ImagePrompt implements Serializable {
 
     // Parameters
     private final String input;
@@ -117,5 +122,31 @@ public class ImagePrompt {
      */
     public BufferedImage getImage() {
         return image;
+    }
+
+    /**
+     * Serializes this ImagePrompt instance to a byte array.
+     *
+     * @return The serialized ImagePrompt as a byte array
+     * @throws IOException If an I/O error occurs during serialization
+     */
+    public byte[] getBytes() throws IOException {
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        ObjectOutputStream stream = new ObjectOutputStream(data);
+        stream.writeObject(this);
+        stream.flush();
+        return data.toByteArray();
+    }
+
+    /**
+     * Deserializes a ImagePrompt instance from a byte array.
+     *
+     * @param bytes The byte array containing the serialized ImagePrompt
+     * @return The deserialized ImagePrompt instance
+     * @throws IOException            If an I/O error occurs during deserialization
+     * @throws ClassNotFoundException If the class of the serialized object cannot be found
+     */
+    public static ImagePrompt fromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
+        return (ImagePrompt) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
     }
 }

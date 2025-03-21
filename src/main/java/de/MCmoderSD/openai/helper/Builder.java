@@ -13,6 +13,8 @@ import com.openai.models.images.ImageGenerateParams.Size;
 import com.openai.models.images.ImageGenerateParams.Style;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
+import com.openai.models.moderations.ModerationCreateParams;
+import com.openai.models.moderations.ModerationModel;
 import de.MCmoderSD.openai.enums.Language;
 import org.jetbrains.annotations.Nullable;
 
@@ -437,6 +439,35 @@ public class Builder {
 
         public static Integer getN() {
             return n;
+        }
+    }
+
+    public static class Moderation {
+
+        // Setup
+        private static ModerationModel model = ModerationModel.OMNI_MODERATION_LATEST;
+
+        // Builder
+        public static ModerationCreateParams buildParams(@Nullable ModerationModel model, String input) {
+            return ModerationCreateParams.builder()
+                    .model(model != null ? model : Moderation.model)
+                    .input(input)
+                    .build();
+        }
+
+        // Setter
+        public static void setConfig(JsonNode config) {
+
+            // Load Module
+            if (!config.has("moderation")) return;
+            JsonNode moderation = config.get("moderation");
+
+            // Load Setup
+            model = moderation.has("model") ? Helper.getModerationModel(moderation.get("model").asText()) : ModerationModel.OMNI_MODERATION_LATEST;
+        }
+
+        public static void setModel(ModerationModel model) {
+            Moderation.model = model;
         }
     }
 }

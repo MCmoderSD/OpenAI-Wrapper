@@ -10,9 +10,9 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 - **Speech API**: Convert text to speech with customizable voices and formats.
 - **Image API**: Generate images from text prompts with various styles and qualities.
+- **Moderation API**: Detect and filter inappropriate content from text inputs.
 
 ### Planned Features:
-- **Moderation API**: Implement content moderation capabilities.
 - **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
 
 ## Usage
@@ -33,7 +33,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.3.1</version>
+    <version>2.4.0</version>
 </dependency>
 ```
 
@@ -78,6 +78,10 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "quality": "",
     "style": "",
     "n": 1
+  },
+
+  "moderation": {
+    "model": "omni-moderation-latest"
   }
 }
 ```
@@ -131,6 +135,11 @@ Options for image generation:
 - **quality**: `standard`, `high` (only for `dall-e-3`)
 - **style**: `vivid`, `natural` (only for `dall-e-3`)
 - **n**: `1` to `10` (only for `dall-e-2`)
+
+### Moderation Configuration
+| **Field** | **Description**                                                     |
+|:----------|:--------------------------------------------------------------------|
+| model     | Model used for text moderation. (Default: `omni-moderation-latest`) |
 
 <br>
 
@@ -456,9 +465,55 @@ public class ImageExample {
     // Save image to file
     public static void saveImage(ImagePrompt imagePrompt) {
         try {
-            ImageIO.write(imagePrompt.getImage(), "png", new File(String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+            ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
         } catch (IOException e) {
             System.err.println("Error saving image: " + e.getMessage());
+        }
+    }
+}
+```
+
+### Moderation Example
+```java
+import com.fasterxml.jackson.databind.JsonNode;
+
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.objects.ModerationPrompt;
+import de.MCmoderSD.openai.objects.Rating;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+public class ModerationExample {
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+
+        // Initialize Scanner
+        Scanner scanner = new Scanner(System.in);
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(config);
+
+        String input;
+        System.out.println("User Input:");
+        while (!(input = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Prompt
+            ModerationPrompt prompt = openAI.moderate(input);
+
+            // Print Response
+            Rating rating = new Rating(prompt.getModerations().getFirst());
+            String data = rating.getData(Rating.Data.POSITIVE);
+            System.out.println("\nPositive Flags:\n" + data);
+            System.out.println("Hit: " + (data.split(":").length - 1) + "/13");
+
+            // User Input
+            System.out.println("\n\nUser Input:");
         }
     }
 }

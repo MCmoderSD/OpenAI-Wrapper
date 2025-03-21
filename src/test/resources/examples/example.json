@@ -35,5 +35,9 @@
     "quality": "",
     "style": "",
     "n": 1
+  },
+
+  "moderation": {
+    "model": "omni-moderation-latest"
   }
 }

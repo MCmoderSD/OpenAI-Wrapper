@@ -17,12 +17,16 @@ import com.openai.models.images.ImageModel;
 import com.openai.models.images.ImagesResponse;
 import com.openai.models.images.ImageGenerateParams;
 
+import com.openai.models.moderations.ModerationCreateParams;
+import com.openai.models.moderations.ModerationCreateResponse;
+import com.openai.models.moderations.ModerationModel;
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
 import de.MCmoderSD.openai.objects.ImagePrompt;
 
+import de.MCmoderSD.openai.objects.ModerationPrompt;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -84,6 +88,10 @@ public class OpenAI {
 
     private ImagesResponse createImage(ImageGenerateParams params) {
         return client.images().generate(params);
+    }
+
+    private ModerationCreateResponse createModeration(ModerationCreateParams params) {
+        return client.moderations().create(params);
     }
 
     // Prompt
@@ -366,6 +374,27 @@ public class OpenAI {
         return images;
     }
 
+    // Moderation
+    public ModerationPrompt moderate(String input) {
+        return moderate(null, input);
+    }
+
+    // Moderation with Model
+    public ModerationPrompt moderate(@Nullable ModerationModel model, String input) {
+
+        // Create Moderation Params
+        var params = Builder.Moderation.buildParams(
+                model,               // Model
+                input                // Input
+        );
+
+        // Execute Moderation
+        var response = createModeration(params);
+
+        // Return Moderation Prompt
+        return new ModerationPrompt(input, response);
+    }
+
     // Setters
     public void clearChatHistory(Integer id) {
         chatHistory.remove(id);
@@ -373,6 +402,10 @@ public class OpenAI {
 
     public void clearAllChatHistory() {
         chatHistory.clear();
+    }
+
+    public void addChatHistory(Integer id, ChatHistory chatHistory) {
+        this.chatHistory.put(id, chatHistory);
     }
 
     // Getters
