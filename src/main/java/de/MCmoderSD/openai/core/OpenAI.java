@@ -16,17 +16,17 @@ import com.openai.models.images.Image;
 import com.openai.models.images.ImageModel;
 import com.openai.models.images.ImagesResponse;
 import com.openai.models.images.ImageGenerateParams;
-
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
 import com.openai.models.moderations.ModerationModel;
+
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
 import de.MCmoderSD.openai.objects.ImagePrompt;
-
 import de.MCmoderSD.openai.objects.ModerationPrompt;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -95,26 +95,26 @@ public class OpenAI {
     }
 
     // Prompt
-    public String prompt(String prompt) {
+    public ChatPrompt prompt(String prompt) {
         return prompt(null, null, null, null, null, null, null, null, null, null, prompt);
     }
 
-    public String prompt(@Nullable String user, String prompt) {
+    public ChatPrompt prompt(@Nullable String user, String prompt) {
         return prompt(null, user, null, null, null, null, null, null, null, null, prompt);
     }
 
     // Prompt with ID
-    public String prompt(@Nullable Integer id, String prompt) {
+    public ChatPrompt prompt(@Nullable Integer id, String prompt) {
         return prompt(null, null, null, null, null, null, null, null, null, id, prompt);
     }
 
     // Prompt with User and ID
-    public String prompt(@Nullable String user, @Nullable Integer id, String prompt) {
+    public ChatPrompt prompt(@Nullable String user, @Nullable Integer id, String prompt) {
         return prompt(null, user, null, null, null, null, null, null, null, id, prompt);
     }
 
     // Prompt with all Parameters
-    public String prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
+    public ChatPrompt prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
 
         // Check Parameters
         if (!checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
@@ -141,14 +141,12 @@ public class OpenAI {
         // Execute Chat Completion
         var completion = createChatCompletion(params);
 
-        // Get Chat Completion Message
-        var message = getMessage(completion);
+        var chatPrompt = new ChatPrompt(prompt, completion);
 
         // Add ChatPrompt to History
-        if (id != null) chatHistory.get(id).addPrompt(new ChatPrompt(prompt, completion));
+        if (id != null) chatHistory.get(id).addPrompt(chatPrompt);
 
-        // Return Content
-        return getContent(message);
+        return chatPrompt;
     }
 
     // Transcription
@@ -177,7 +175,6 @@ public class OpenAI {
     }
 
     // Transcription with all Parameters
-    @SuppressWarnings("resource")
     public String transcribe(@Nullable AudioModel model, @Nullable Double temperature, @Nullable Language language, @Nullable String prompt, byte[] data) {
 
         // Check Parameters
@@ -200,8 +197,9 @@ public class OpenAI {
             System.arraycopy(data, offset, chunk, 0, chunk.length);
             try {
                 chunks[i] = File.createTempFile(String.valueOf(Arrays.hashCode(chunk)), ".wav");
-                var stream = new FileOutputStream(chunks[i]);
-                stream.write(chunk);
+                try (var stream = new FileOutputStream(chunks[i])) {
+                    stream.write(chunk);
+                }
             } catch (IOException e) {
                 System.err.println("Error writing chunk " + i + ": " + e.getMessage());
             }
@@ -285,7 +283,17 @@ public class OpenAI {
         );
 
         // Execute Speech
-        return createSpeech(params).body().readAllBytes();
+        var response = createSpeech(params);
+
+        // Check Status Code
+        if (response.statusCode() != 200) {
+            int statusCode = response.statusCode();
+            String errorMessage = new String(response.body().readAllBytes());
+            System.err.println("Error generating speech: " + statusCode + " - " + errorMessage);
+            return null;
+        }
+
+        return response.body().readAllBytes();
     }
 
     // Image Generation

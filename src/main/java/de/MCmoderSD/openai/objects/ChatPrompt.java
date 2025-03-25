@@ -4,12 +4,6 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.completions.CompletionUsage;
 
-import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -19,7 +13,7 @@ import java.util.ArrayList;
  * including tokens usage statistics, response content, and timestamp information.
  */
 @SuppressWarnings("unused")
-public class ChatPrompt implements Serializable {
+public class ChatPrompt {
 
     // Parameters
     private final String input;
@@ -47,7 +41,7 @@ public class ChatPrompt implements Serializable {
     private final ArrayList<String> content = new ArrayList<>();
 
     /**
-     * Constructs a ChatPrompt instance with the provided user input and AI-generated response.
+     * Constructs a new ChatPrompt with the specified input and output.
      *
      * @param input  The user's input text message
      * @param output The AI-generated response associated with the input
@@ -90,181 +84,164 @@ public class ChatPrompt implements Serializable {
     }
 
     /**
-     * Returns the user input text.
+     * Gets the input text for the chat prompt.
      *
-     * @return The user's input string
+     * @return The input text
      */
     public String getInput() {
         return input;
     }
 
     /**
-     * Returns the complete ChatCompletion object from the API.
+     * Gets the response from the chat completion API.
      *
-     * @return The ChatCompletion response object
+     * @return The chat completion response
      */
     public ChatCompletion getOutput() {
         return output;
     }
 
     /**
-     * Returns the unique identifier for this chat completion.
+     * Gets the ID of the chat completion response.
      *
-     * @return The identifier string
+     * @return The response ID
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Returns the timestamp when the response was created.
+     * Gets the timestamp of the chat completion response.
      *
-     * @return The creation timestamp
+     * @return The response timestamp
      */
     public Timestamp getTimestamp() {
         return timestamp;
     }
 
     /**
-     * Returns the model used to generate the response.
+     * Gets the model used for the chat completion response.
      *
-     * @return The model identifier string
+     * @return The model
      */
     public String getModel() {
         return model;
     }
 
     /**
-     * Returns the system fingerprint associated with this response.
+     * Gets the system fingerprint of the chat completion response.
      *
-     * @return The system fingerprint string, or null if not provided
+     * @return The system fingerprint
      */
     public String getSystemFingerprint() {
         return systemFingerprint;
     }
 
     /**
-     * Returns the token usage statistics for this completion.
+     * Gets the usage details of the chat completion response.
      *
-     * @return The CompletionUsage object, or null if not provided
+     * @return The usage details
      */
     public CompletionUsage getUsage() {
         return usage;
     }
 
     /**
-     * Returns detailed information about prompt tokens.
+     * Gets the prompt tokens details of the chat completion response.
      *
-     * @return The PromptTokensDetails object, or null if not provided
+     * @return The prompt tokens details
      */
     public CompletionUsage.PromptTokensDetails getPromptTokensDetails() {
         return promptTokensDetails;
     }
 
     /**
-     * Returns detailed information about completion tokens.
+     * Gets the completion tokens details of the chat completion response.
      *
-     * @return The CompletionTokensDetails object, or null if not provided
+     * @return The completion tokens details
      */
     public CompletionUsage.CompletionTokensDetails getCompletionTokensDetails() {
         return completionTokensDetails;
     }
 
     /**
-     * Returns the number of tokens used in the input prompt.
+     * Gets the number of input tokens used in the chat completion response.
      *
-     * @return The count of input tokens
+     * @return The number of input tokens
      */
     public long getInputTokens() {
         return inputTokens;
     }
 
     /**
-     * Returns the number of cached input tokens.
+     * Gets the number of cached input tokens used in the chat completion response.
      *
-     * @return The count of cached input tokens
+     * @return The number of cached input tokens
      */
     public long getCachedInputTokens() {
         return cachedInputTokens;
     }
 
     /**
-     * Returns the number of tokens in the output completion.
+     * Gets the number of output tokens used in the chat completion response.
      *
-     * @return The count of output tokens
+     * @return The number of output tokens
      */
     public long getOutputTokens() {
         return outputTokens;
     }
 
     /**
-     * Returns the number of tokens used for reasoning in the completion.
+     * Gets the number of reasoning tokens used in the chat completion response.
      *
-     * @return The count of reasoning tokens
+     * @return The number of reasoning tokens
      */
     public long getReasoningTokens() {
         return reasoningTokens;
     }
 
     /**
-     * Returns the total number of tokens used.
+     * Gets the total number of tokens used in the chat completion response.
      *
-     * @return The total token count
+     * @return The total number of tokens
      */
     public long getTotalTokens() {
         return totalTokens;
     }
 
     /**
-     * Returns the list of choices provided in the completion response.
+     * Gets the list of choices from the chat completion response.
      *
-     * @return An ArrayList of Choice objects
+     * @return The list of choices
      */
     public ArrayList<ChatCompletion.Choice> getChoices() {
         return choices;
     }
 
     /**
-     * Returns the list of message objects from the response.
+     * Gets the list of messages from the chat completion response.
      *
-     * @return An ArrayList of ChatCompletionMessage objects
+     * @return The list of messages
      */
     public ArrayList<ChatCompletionMessage> getMessages() {
         return messages;
     }
 
     /**
-     * Returns the extracted text content from all messages.
+     * Gets the list of content strings from the chat completion response.
      *
-     * @return An ArrayList of content strings
+     * @return The list of content strings
      */
     public ArrayList<String> getContent() {
         return content;
     }
 
     /**
-     * Serializes this ChatPrompt instance to a byte array.
+     * Gets the first content string from the chat completion response.
      *
-     * @return The serialized ChatPrompt as a byte array
-     * @throws IOException If an I/O error occurs during serialization
+     * @return The first content string
      */
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(data);
-        stream.writeObject(this);
-        stream.flush();
-        return data.toByteArray();
-    }
-
-    /**
-     * Deserializes a ChatPrompt instance from a byte array.
-     *
-     * @param bytes The byte array containing the serialized ChatPrompt
-     * @return The deserialized ChatPrompt instance
-     * @throws IOException            If an I/O error occurs during deserialization
-     * @throws ClassNotFoundException If the class of the serialized object cannot be found
-     */
-    public static ChatPrompt fromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
-        return (ChatPrompt) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+    public String getText() {
+        return content.getFirst();
     }
 }

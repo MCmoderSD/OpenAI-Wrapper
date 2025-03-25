@@ -7,10 +7,10 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 
 ### Supported Features:
 - **Chat API**: Generate conversational responses with advanced models.
+- **Moderation API**: Detect and filter inappropriate content from text inputs.
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 - **Speech API**: Convert text to speech with customizable voices and formats.
 - **Image API**: Generate images from text prompts with various styles and qualities.
-- **Moderation API**: Detect and filter inappropriate content from text inputs.
 
 ### Planned Features:
 - **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
@@ -33,7 +33,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
 </dependency>
 ```
 
@@ -58,6 +58,10 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr."
   },
 
+  "moderation": {
+    "model": "omni-moderation-latest"
+  },
+
   "transcription": {
     "model": "whisper-1",
     "temperature": 1,
@@ -78,10 +82,6 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "quality": "",
     "style": "",
     "n": 1
-  },
-
-  "moderation": {
-    "model": "omni-moderation-latest"
   }
 }
 ```
@@ -103,6 +103,11 @@ Note: <br>
 | n                | Number of completions to generate. (Default: `1`)                                              |
 | maxTokens        | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
 | devMessage       | Provides guidance for the bot's behavior.                                                      |
+
+### Moderation Configuration
+| **Field** | **Description**                                                     |
+|:----------|:--------------------------------------------------------------------|
+| model     | Model used for text moderation. (Default: `omni-moderation-latest`) |
 
 ### Transcription Configuration
 | **Field**        | **Description**                                                            |
@@ -136,11 +141,6 @@ Options for image generation:
 - **style**: `vivid`, `natural` (only for `dall-e-3`)
 - **n**: `1` to `10` (only for `dall-e-2`)
 
-### Moderation Configuration
-| **Field** | **Description**                                                     |
-|:----------|:--------------------------------------------------------------------|
-| model     | Model used for text moderation. (Default: `omni-moderation-latest`) |
-
 <br>
 
 ## Usage Example
@@ -168,7 +168,7 @@ public class Example {
         Builder.Chat.setConfig(config);
 
         // Prompt
-        String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?");
+        String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?").getText();
 
         // Print Response
         System.out.println("Response: " + response);
@@ -178,10 +178,13 @@ public class Example {
 
 ### Single Prompt Example
 ```java
+package chat;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ChatPrompt;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -189,10 +192,13 @@ import java.util.Scanner;
 
 public class PromptExample {
 
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Variables
-        Scanner scanner = new Scanner(System.in);
         String userInput;
 
         // Load Config
@@ -201,20 +207,42 @@ public class PromptExample {
 
         // Initialize OpenAI
         OpenAI openAI = new OpenAI(
-                apiKey,             // API Key (required)
-                null,               // Organization (optional)
-                null                // Project (optional)
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
         );
 
         // Configure OpenAI
         Builder.Chat.setConfig(config);
 
-        // ChatPrompt Loop
-        System.out.println("Enter your prompt (type 'exit' to quit):\nYou: ");
+        // Setup Chat
+        System.out.println("Enter your prompt (type 'exit' to quit):");
+        System.out.println("You: ");
+
+        // Prompt Loop
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
-            String response = openAI.prompt(userInput);
-            System.out.println("Response: " + response);
-            System.out.print("You: ");
+
+            // Generate Chat Prompt
+            ChatPrompt chatPrompt = openAI.prompt(
+                    null,       // Chat Model
+                    null,       // User
+                    null,       // Max Tokens
+                    null,       // Temperature
+                    null,       // Top P
+                    null,       // Frequency Penalty
+                    null,       // Presence Penalty
+                    null,       // Number of Completions
+                    null,       // Developer Message
+                    null,       // ID
+                    userInput   // User Message
+            );
+
+            // Get Response
+            String response = chatPrompt.getText();
+
+            // Print Response
+            System.out.println("\nResponse: \n" + response + "\n");
+            System.out.print("You: \n");
         }
     }
 }
@@ -222,10 +250,13 @@ public class PromptExample {
 
 ### Chat Example
 ```java
+package chat;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ChatPrompt;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -233,33 +264,58 @@ import java.util.Scanner;
 
 public class ChatExample {
 
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Variables
-        Scanner scanner = new Scanner(System.in);
+        int userId = 1;
         String userInput;
 
         // Load Config
         JsonNode config = JsonUtility.loadJson("/config.json", false);
         String apiKey = config.get("apiKey").asText();
-        int userId = 1; // Example user ID
 
         // Initialize OpenAI
         OpenAI openAI = new OpenAI(
-                apiKey,             // API Key (required)
-                null,               // Organization (optional)
-                null                // Project (optional)
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
         );
 
         // Configure OpenAI
         Builder.Chat.setConfig(config);
 
-        // ChatPrompt Loop
-        System.out.println("Enter your prompt (type 'exit' to quit):\nYou: ");
+        // Setup Chat
+        System.out.println("Enter your prompt (type 'exit' to quit):");
+        System.out.println("You: ");
+
+        // Chat Loop
         while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
-            String response = openAI.prompt(userId, userInput);
-            System.out.println("Response: " + response);
-            System.out.print("You: ");
+
+            // Generate Chat Prompt
+            ChatPrompt chatPrompt = openAI.prompt(
+                    null,       // Chat Model
+                    null,       // User
+                    null,       // Max Tokens
+                    null,       // Temperature
+                    null,       // Top P
+                    null,       // Frequency Penalty
+                    null,       // Presence Penalty
+                    null,       // Number of Completions
+                    null,       // Developer Message
+                    userId,     // ID
+                    userInput   // User Message
+            );
+
+            // Get Response
+            String response = chatPrompt.getText();
+
+            // Print Response
+            System.out.println("\nResponse: \n" + response + "\n");
+            System.out.print("You: \n");
         }
     }
 }
@@ -267,6 +323,156 @@ public class ChatExample {
 
 ### Translation Example
 ```java
+package chat;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ChatPrompt;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+public class TranslationExample {
+
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String instruction = "Please translate the following text to ";
+        String userInput;
+        String devMessage;
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
+
+        // Configure OpenAI
+        Builder.Chat.setConfig(config);
+
+        // Setup Chat
+        System.out.println("Enter the text to translate (type 'exit' to quit):");
+        System.out.print("You: ");
+
+        // Translation Loop
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Get Language Input
+            System.out.print("Language: ");
+            devMessage = instruction + scanner.nextLine();
+
+            // Generate Chat Prompt
+            ChatPrompt chatPrompt = openAI.prompt(
+                    null,           // Chat Model
+                    null,           // User
+                    null,           // Max Tokens
+                    0d,             // Temperature (Override Config)
+                    null,           // Top P
+                    null,           // Frequency Penalty
+                    null,           // Presence Penalty
+                    null,           // Number of Completions
+                    devMessage,     // Developer Message (Override Config)
+                    null,           // ID
+                    userInput       // User Message
+            );
+
+            // Get Response
+            String response = chatPrompt.getText();
+
+            // Print Response
+            System.out.println("\nResponse: \n" + response + "\n");
+            System.out.print("You: \n");
+        }
+    }
+}
+```
+
+### Moderation Example
+```java
+package chat;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ModerationPrompt;
+import de.MCmoderSD.openai.objects.Rating;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+public class ModerationExample {
+
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
+
+        // Configure OpenAI
+        Builder.Moderation.setConfig(config);
+
+        // Setup Chat
+        System.out.println("User Input:");
+
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Prompt
+            ModerationPrompt prompt = openAI.moderate(
+                    null,       // Model
+                    userInput       // User Message
+            );
+
+            // Get Rating
+            Rating rating = prompt.getRatings().getFirst();
+
+            System.out.println("\nSize: " + rating.getBytes().length + " bytes\n");
+
+            // Get Data
+            String data = rating.getData(Rating.Data.POSITIVE);
+
+            // Print Data
+            System.out.println("\nPositive Flags:\n" + data);
+            System.out.println("Hit: " + (data.split(":").length - 1) + "/13");
+
+            // User Input
+            System.out.println("\n\nUser Input: \n");
+        }
+    }
+}
+```
+
+### Speech & Transcription Example
+```java
+package audio;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
@@ -276,66 +482,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
-public class TranslationExample {
+public class SpeechExample {
 
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Variables
-        Scanner scanner = new Scanner(System.in);
         String userInput;
-
-        // Load Config
-        JsonNode config = JsonUtility.loadJson("/config.json", false);
-        String apiKey = config.get("apiKey").asText();
-
-        // Initialize OpenAI
-        OpenAI openAI = new OpenAI(
-                apiKey,             // API Key (required)
-                null,               // Organization (optional)
-                null                // Project (optional)
-        );
-
-        // Configure OpenAI
-        Builder.Chat.setConfig(config);
-
-        // Translation Loop
-        System.out.println("Enter the text to translate (type 'exit' to quit):\nYou: ");
-        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
-            System.out.print("Language: ");
-            String devMessage = "Please translate the following text to " + scanner.nextLine();
-            String response = openAI.prompt(
-                    null,               // Chat Model
-                    null,               // User
-                    null,               // Max Tokens
-                    0d,                 // Temperature
-                    null,               // Top P
-                    null,               // Frequency Penalty
-                    null,               // Presence Penalty
-                    null,               // Number of Completions
-                    devMessage,         // Developer Message
-                    userInput,          // User Message
-                    null                // ID
-            );
-            System.out.println("Response: " + response);
-            System.out.print("You: ");
-        }
-    }
-}
-```
-
-### Speech & Transcription Example
-```java
-import com.fasterxml.jackson.databind.JsonNode;
-import de.MCmoderSD.json.JsonUtility;
-import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.helper.Builder;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-public class SpeechExample {
-
-    public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Load Config
         JsonNode config = JsonUtility.loadJson("/config.json", false);
@@ -352,35 +508,41 @@ public class SpeechExample {
         Builder.Speech.setConfig(config);
         Builder.Transcription.setConfig(config);
 
-        // Speech Synthesis and Transcription Example
-        String text = "Hello, this is a test of the speech synthesis feature.";
+        // Setup Input
+        System.out.println("Enter the text to convert to speech:");
+        userInput = scanner.nextLine();
 
         // Generate Speech
         byte[] audioData = openAI.speech(
-                null,   // Model (optional)
-                null,   // Voice (optional)
-                null,   // Response Format (optional)
-                null,   // Speed (optional)
-                text    // Text (required)
+                null,       // Model
+                null,       // Voice
+                null,       // Response Format
+                null,       // Speed
+                userInput   // Text
         );
+
+        // Print Audio Data Size
+        System.out.println("\nAudio data size: " + audioData.length + " bytes");
 
         // Transcribe Speech
         String transcription = openAI.transcribe(
-                null,       // Model (optional)
-                null,       // Language (optional)
-                null,       // Prompt (optional)
-                null,       // Temperature (optional)
-                audioData   // Audio Data (required)
+                null,       // Model
+                null,       // Language
+                null,       // Prompt
+                null,       // Temperature
+                audioData   // Audio Data
         );
 
         // Print Transcription
-        System.out.println("Transcription: " + transcription);
+        System.out.println("\nTranscription: \n" + transcription);
     }
 }
 ```
 
 ### Image Example
 ```java
+package image;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
@@ -388,8 +550,13 @@ import de.MCmoderSD.openai.helper.Builder;
 import de.MCmoderSD.openai.objects.ImagePrompt;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -398,60 +565,89 @@ import java.util.Scanner;
 
 public class ImageExample {
 
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
     public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
 
         // Load Config
         JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
 
         // Initialize OpenAI
-        OpenAI openAI = new OpenAI(config);
-
-        System.out.println("Enter your prompt \nYou: ");
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
 
         // Configure OpenAI
         Builder.Images.setConfig(config);
 
-        // Prompt
-        ArrayList<ImagePrompt> response = openAI.generateImage(
-                null,   // Model (optional)
-                null,   // Size (optional)
-                null,   // Response Format (optional)
-                null,   // Number of Images (optional)
-                null,   // Style (optional)
-                null,   // Quality (optional)
-                input   // Prompt (required)
-        );
+        // Setup Chat
+        System.out.println("Enter your prompt (type 'exit' to quit):");
+        System.out.println("You: ");
 
-        // Print Response
-        for (ImagePrompt imagePrompt : response) showImage(imagePrompt);
+        // Image Generation Loop
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
 
-        // Save image
-        for (ImagePrompt imagePrompt : response) saveImage(imagePrompt);
+            // Generate Images
+            ArrayList<ImagePrompt> response = openAI.generateImage(
+                    null,       // Model
+                    null,       // Size
+                    null,       // Response Format
+                    null,       // Number of Images
+                    null,       // Style
+                    null,       // Quality
+                    userInput   // Prompt
+            );
+
+            // Show images
+            for (ImagePrompt imagePrompt : response) showImage(imagePrompt);
+
+            // Save images
+            for (ImagePrompt imagePrompt : response) ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+
+            // Wait for user to press 'Enter'
+            System.out.println("\n\nPress 'Enter' to continue...");
+            scanner.nextLine();
+            System.out.print("You: \n");
+
+            // Close all open frames
+            for (Window window : Window.getWindows()) if (window instanceof JFrame) window.dispose();
+        }
     }
 
     // Show image
-    public static void showImage(ImagePrompt imagePrompt) {
+    private static void showImage(ImagePrompt imagePrompt) {
+
+        // Get Image
+        BufferedImage image = imagePrompt.getImage();
+        Dimension size = new Dimension(image.getWidth(), image.getHeight());
 
         // Create frame
         JFrame frame = new JFrame(imagePrompt.getInput());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setSize(256, 256);
+        frame.setSize(size);
         frame.setResizable(false);
-        frame.setIconImage(imagePrompt.getImage());
+        frame.setIconImage(image);
 
         // Create panel
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(imagePrompt.getImage(), 0, 0, null);
+                g.drawImage(image, 0, 0, null);
             }
         };
 
         // Add panel to frame
+        panel.setPreferredSize(size);
         frame.add(panel);
 
         // Center frame
@@ -460,61 +656,6 @@ public class ImageExample {
 
         // Show frame
         frame.setVisible(true);
-    }
-
-    // Save image to file
-    public static void saveImage(ImagePrompt imagePrompt) {
-        try {
-            ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
-        } catch (IOException e) {
-            System.err.println("Error saving image: " + e.getMessage());
-        }
-    }
-}
-```
-
-### Moderation Example
-```java
-import com.fasterxml.jackson.databind.JsonNode;
-
-import de.MCmoderSD.json.JsonUtility;
-import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.objects.ModerationPrompt;
-import de.MCmoderSD.openai.objects.Rating;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Scanner;
-
-public class ModerationExample {
-
-    public static void main(String[] args) throws IOException, URISyntaxException {
-
-        // Load Config
-        JsonNode config = JsonUtility.loadJson("/config.json", false);
-
-        // Initialize Scanner
-        Scanner scanner = new Scanner(System.in);
-
-        // Initialize OpenAI
-        OpenAI openAI = new OpenAI(config);
-
-        String input;
-        System.out.println("User Input:");
-        while (!(input = scanner.nextLine()).equalsIgnoreCase("exit")) {
-
-            // Prompt
-            ModerationPrompt prompt = openAI.moderate(input);
-
-            // Print Response
-            Rating rating = new Rating(prompt.getModerations().getFirst());
-            String data = rating.getData(Rating.Data.POSITIVE);
-            System.out.println("\nPositive Flags:\n" + data);
-            System.out.println("Hit: " + (data.split(":").length - 1) + "/13");
-
-            // User Input
-            System.out.println("\n\nUser Input:");
-        }
     }
 }
 ```

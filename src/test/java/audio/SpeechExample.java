@@ -1,3 +1,5 @@
+package audio;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
@@ -5,10 +7,18 @@ import de.MCmoderSD.openai.helper.Builder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 public class SpeechExample {
 
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
     public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
 
         // Load Config
         JsonNode config = JsonUtility.loadJson("/config.json", false);
@@ -25,28 +35,32 @@ public class SpeechExample {
         Builder.Speech.setConfig(config);
         Builder.Transcription.setConfig(config);
 
-        // Speech Synthesis and Transcription Example
-        String text = "Hello, this is a test of the speech synthesis feature.";
+        // Setup Input
+        System.out.println("Enter the text to convert to speech:");
+        userInput = scanner.nextLine();
 
         // Generate Speech
         byte[] audioData = openAI.speech(
-                null,   // Model (optional)
-                null,   // Voice (optional)
-                null,   // Response Format (optional)
-                null,   // Speed (optional)
-                text    // Text (required)
+                null,       // Model
+                null,       // Voice
+                null,       // Response Format
+                null,       // Speed
+                userInput   // Text
         );
+
+        // Print Audio Data Size
+        System.out.println("\nAudio data size: " + audioData.length + " bytes");
 
         // Transcribe Speech
         String transcription = openAI.transcribe(
-                null,       // Model (optional)
-                null,       // Language (optional)
-                null,       // Prompt (optional)
-                null,       // Temperature (optional)
-                audioData   // Audio Data (required)
+                null,       // Model
+                null,       // Language
+                null,       // Prompt
+                null,       // Temperature
+                audioData   // Audio Data
         );
 
         // Print Transcription
-        System.out.println("Transcription: " + transcription);
+        System.out.println("\nTranscription: \n" + transcription);
     }
 }

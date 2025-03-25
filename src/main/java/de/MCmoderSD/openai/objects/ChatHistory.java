@@ -5,20 +5,15 @@ import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Maintains a history of chat prompts and messages exchanged between a user and an AI assistant.
- * Tracks token usage and provides serialization capabilities for persistence.
+ * Represents the history of chat prompts and messages.
+ * This class maintains a list of chat prompts and their associated messages,
+ * along with token usage statistics.
  */
 @SuppressWarnings("unused")
-public class ChatHistory implements Serializable {
+public class ChatHistory {
 
     // Attributes
     private final ArrayList<ChatPrompt> chatPrompts;
@@ -30,9 +25,9 @@ public class ChatHistory implements Serializable {
     private long totalTokens;
 
     /**
-     * Creates a new chat history, optionally with an initial chat prompt.
+     * Constructs a new ChatHistory with an optional initial chat prompt.
      *
-     * @param chatPrompt The first chat prompt to add to the history, can be null
+     * @param chatPrompt The initial chat prompt to add to the history, or null if none
      */
     public ChatHistory(@Nullable ChatPrompt chatPrompt) {
 
@@ -50,7 +45,7 @@ public class ChatHistory implements Serializable {
     }
 
     /**
-     * Adds a new chat prompt to the history and updates token counts.
+     * Adds a chat prompt to the history and updates token usage statistics.
      *
      * @param chatPrompt The chat prompt to add
      */
@@ -70,73 +65,47 @@ public class ChatHistory implements Serializable {
     }
 
     /**
-     * Returns all chat prompts in this history.
+     * Gets the list of chat prompts in the history.
      *
-     * @return ArrayList of chat prompts
+     * @return The list of chat prompts
      */
     public ArrayList<ChatPrompt> getPrompts() {
         return chatPrompts;
     }
 
     /**
-     * Returns all message parameters in this history for API communication.
+     * Gets the list of chat completion message parameters in the history.
      *
-     * @return ArrayList of message parameters
+     * @return The list of chat completion message parameters
      */
     public ArrayList<ChatCompletionMessageParam> getMessages() {
         return messages;
     }
 
     /**
-     * Returns the total number of input tokens consumed.
+     * Gets the total number of input tokens used in the chat history.
      *
-     * @return Number of input tokens
+     * @return The total number of input tokens
      */
     public long getInputTokens() {
         return inputTokens;
     }
 
     /**
-     * Returns the total number of output tokens generated.
+     * Gets the total number of output tokens used in the chat history.
      *
-     * @return Number of output tokens
+     * @return The total number of output tokens
      */
     public long getOutputTokens() {
         return outputTokens;
     }
 
     /**
-     * Returns the combined total of input and output tokens.
+     * Gets the total number of tokens used in the chat history.
      *
-     * @return Total number of tokens
+     * @return The total number of tokens
      */
     public long getTotalTokens() {
         return totalTokens;
-    }
-
-    /**
-     * Serializes this chat history to a byte array.
-     *
-     * @return Byte array representation of this chat history
-     * @throws IOException If an I/O error occurs during serialization
-     */
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(data);
-        stream.writeObject(this);
-        stream.flush();
-        return data.toByteArray();
-    }
-
-    /**
-     * Deserializes a chat history from a byte array.
-     *
-     * @param bytes Byte array containing a serialized chat history
-     * @return The deserialized ChatHistory object
-     * @throws IOException If an I/O error occurs during deserialization
-     * @throws ClassNotFoundException If the class of the serialized object cannot be found
-     */
-    public static ChatHistory fromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
-        return (ChatHistory) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
     }
 }

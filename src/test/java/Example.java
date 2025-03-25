@@ -21,7 +21,7 @@ public class Example {
         Builder.Chat.setConfig(config);
 
         // Prompt
-        String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?");
+        String response = openAI.prompt("Where and how often does the letter E appear in the German word Heidelbeere?").getText();
 
         // Print Response
         System.out.println("Response: " + response);

@@ -4,11 +4,10 @@ import com.openai.models.ChatModel;
 import com.openai.models.audio.AudioModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechModel;
-import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationModel;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.security.InvalidParameterException;
@@ -16,9 +15,9 @@ import java.security.InvalidParameterException;
 public class Helper {
 
     // Constants
-    public static final int FILE_SIZE_LIMIT = 25 * 1024 * 1024; // 25MB
+    public static final int FILE_SIZE_LIMIT = 26214400; // 25MB = (25 * 1024 * 1024)
 
-    // Methods
+    // Check Parameters
     public static boolean checkParameter(@Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n) {
         if (maxTokens != null && maxTokens <= 0) throw new InvalidParameterException("maxTokens must be greater than 0");                                                   // maxTokens
         if (Temperature != null && (Temperature < 0 || Temperature > 2))throw new InvalidParameterException("Temperature must be between 0 and 2");                         // Temperature
@@ -41,19 +40,7 @@ public class Helper {
         return true;
     }
 
-    public static ChatCompletionMessage getMessage(ChatCompletion completion) {
-        if (completion.choices().isEmpty()) return null;
-        else return completion.choices().getFirst().message();
-    }
-
-    public static String getContent(ChatCompletionMessage message) {
-        if (message == null) return null;
-        StringBuilder content = new StringBuilder();
-        message.content().ifPresent(content::append);
-        if (content.isEmpty()) return null;
-        else return content.toString();
-    }
-
+    // Get Models
     public static ChatModel getChatModel(String model) {
         if (model == null || model.isBlank()) return null;
         else {

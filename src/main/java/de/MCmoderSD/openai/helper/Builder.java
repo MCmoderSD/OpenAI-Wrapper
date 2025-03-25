@@ -43,14 +43,14 @@ public class Builder {
         public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages) {
 
             var params = ChatCompletionCreateParams.builder()
-                    .model(chatModel != null ? chatModel : Chat.model)                                   // Model
-                    .user(user != null ? user : Chat.user)                                                   // User
-                    .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                     // Max Tokens
-                    .temperature(Temperature != null ? Temperature : Chat.temperature)                       // Temperature
-                    .topP(topP != null ? topP : Chat.topP)                                                   // Top P
-                    .frequencyPenalty(frequencyPenalty != null ? frequencyPenalty : Chat.frequencyPenalty)   // Frequency Penalty
-                    .presencePenalty(presencePenalty != null ? presencePenalty : Chat.presencePenalty)       // Presence Penalty
-                    .n(n != null ? n : Chat.n);                                                              // Number of Completions
+                    .model(chatModel != null ? chatModel : Chat.model)                                      // Model
+                    .user(user != null ? user : Chat.user)                                                  // User
+                    .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                    // Max Tokens
+                    .temperature(Temperature != null ? Temperature : Chat.temperature)                      // Temperature
+                    .topP(topP != null ? topP : Chat.topP)                                                  // Top P
+                    .frequencyPenalty(frequencyPenalty != null ? frequencyPenalty : Chat.frequencyPenalty)  // Frequency Penalty
+                    .presencePenalty(presencePenalty != null ? presencePenalty : Chat.presencePenalty)      // Presence Penalty
+                    .n(n != null ? n : Chat.n);                                                             // Number of Completions
 
             // Add Message History
             if (messages != null && !messages.isEmpty()) {
@@ -59,8 +59,8 @@ public class Builder {
                     if (i % 2 == 0) params.addMessage(message.asUser());
                     else params.addMessage(message.asAssistant());
                 }
-            } else params.addDeveloperMessage(devMessage != null ? devMessage : Chat.devMessage);            // Add Developer Message
-            return params.addUserMessage(prompt).build();                                                       // Add User Message
+            } else params.addDeveloperMessage(devMessage != null ? devMessage : Chat.devMessage);           // Add Developer Message
+            return params.addUserMessage(prompt).build();                                                   // Add User Message
         }
 
         // Setter
@@ -259,8 +259,8 @@ public class Builder {
         public static void setConfig(JsonNode config) {
 
             // Load Module
-            if (!config.has("image")) return;
-            JsonNode speech = config.get("image");
+            if (!config.has("speech")) return;
+            JsonNode speech = config.get("speech");
 
             // Load Setup
             model = speech.has("model") ? Helper.getSpeechModel(speech.get("model").asText()) : SpeechModel.TTS_1;

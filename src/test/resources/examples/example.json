@@ -15,6 +15,10 @@
     "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr."
   },
 
+  "moderation": {
+    "model": "omni-moderation-latest"
+  },
+
   "transcription": {
     "model": "whisper-1",
     "temperature": 0,
@@ -35,9 +39,5 @@
     "quality": "",
     "style": "",
     "n": 1
-  },
-
-  "moderation": {
-    "model": "omni-moderation-latest"
   }
 }

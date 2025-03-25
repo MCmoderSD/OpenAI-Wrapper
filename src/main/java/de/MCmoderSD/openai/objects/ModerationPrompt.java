@@ -3,23 +3,16 @@ package de.MCmoderSD.openai.objects;
 import com.openai.models.moderations.Moderation;
 import com.openai.models.moderations.ModerationCreateResponse;
 import com.openai.models.moderations.ModerationModel;
+
 import de.MCmoderSD.openai.helper.Helper;
 
-import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Represents a moderation request and response from OpenAI's content moderation API.
- * This class encapsulates both the input text to be moderated and the resulting
- * moderation data, including content policy violation assessments.
+ * Represents a moderation prompt with input text and output response.
  */
 @SuppressWarnings("unused")
-public class ModerationPrompt implements Serializable {
+public class ModerationPrompt {
 
     // Parameters
     private final String input;
@@ -34,10 +27,10 @@ public class ModerationPrompt implements Serializable {
     private final ArrayList<Rating> ratings;
 
     /**
-     * Constructs a new ModerationPrompt with the provided input text and moderation response.
+     * Constructs a new ModerationPrompt with the specified input and output.
      *
-     * @param input  The text content submitted for moderation
-     * @param output The response received from OpenAI's moderation API
+     * @param input  The input text for moderation
+     * @param output The response from the moderation API
      */
     public ModerationPrompt(String input, ModerationCreateResponse output) {
 
@@ -56,7 +49,7 @@ public class ModerationPrompt implements Serializable {
     }
 
     /**
-     * Gets the original text input that was submitted for moderation.
+     * Gets the input text for moderation.
      *
      * @return The input text
      */
@@ -65,25 +58,25 @@ public class ModerationPrompt implements Serializable {
     }
 
     /**
-     * Gets the raw moderation response from the API.
+     * Gets the response from the moderation API.
      *
-     * @return The full moderation API response
+     * @return The moderation response
      */
     public ModerationCreateResponse getOutput() {
         return output;
     }
 
     /**
-     * Gets the unique identifier for this moderation request.
+     * Gets the ID of the moderation response.
      *
-     * @return The request ID
+     * @return The response ID
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Gets the moderation model used for this content analysis.
+     * Gets the moderation model used for the response.
      *
      * @return The moderation model
      */
@@ -92,46 +85,20 @@ public class ModerationPrompt implements Serializable {
     }
 
     /**
-     * Gets the list of moderation results for the input content.
+     * Gets the list of moderations from the response.
      *
-     * @return List of moderation results
+     * @return The list of moderations
      */
     public ArrayList<Moderation> getModerations() {
         return moderations;
     }
 
     /**
-     * Gets the list of enhanced rating objects created from the moderation results.
+     * Gets the list of ratings derived from the moderations.
      *
-     * @return List of rating objects with additional functionality
+     * @return The list of ratings
      */
     public ArrayList<Rating> getRatings() {
         return ratings;
-    }
-
-    /**
-     * Serializes this ModerationPrompt instance to a byte array.
-     *
-     * @return A byte array containing the serialized ModerationPrompt
-     * @throws IOException If an I/O error occurs during serialization
-     */
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(data);
-        stream.writeObject(this);
-        stream.flush();
-        return data.toByteArray();
-    }
-
-    /**
-     * Deserializes a ModerationPrompt instance from a byte array.
-     *
-     * @param bytes The byte array containing the serialized ModerationPrompt
-     * @return The deserialized ModerationPrompt instance
-     * @throws IOException            If an I/O error occurs during deserialization
-     * @throws ClassNotFoundException If the class of the serialized object cannot be found
-     */
-    public static ModerationPrompt fromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
-        return (ModerationPrompt) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
     }
 }
