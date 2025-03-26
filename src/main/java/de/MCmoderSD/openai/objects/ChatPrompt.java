@@ -1,8 +1,10 @@
 package de.MCmoderSD.openai.objects;
 
+import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.completions.CompletionUsage;
+import de.MCmoderSD.openai.helper.Helper;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class ChatPrompt {
     // Data
     private final String id;
     private final Timestamp timestamp;
-    private final String model;
+    private final ChatModel model;
     private final String systemFingerprint;
     private final CompletionUsage usage;
     private final CompletionUsage.PromptTokensDetails promptTokensDetails;
@@ -55,7 +57,7 @@ public class ChatPrompt {
         // Extract Data
         id = output.id();
         timestamp = new Timestamp(output.created() * 1000L);
-        model = output.model();
+        model = Helper.getChatModel(output.model());
         systemFingerprint = output.systemFingerprint().orElse(null);
         usage = output.usage().orElse(null);
 
@@ -120,11 +122,11 @@ public class ChatPrompt {
     }
 
     /**
-     * Gets the model used for the chat completion response.
+     * Returns the chat model used for the chat completion response.
      *
-     * @return The model
+     * @return the chat model
      */
-    public String getModel() {
+    public ChatModel getModel() {
         return model;
     }
 

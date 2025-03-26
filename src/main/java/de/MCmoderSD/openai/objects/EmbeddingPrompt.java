@@ -1,6 +1,8 @@
 package de.MCmoderSD.openai.objects;
 
 import com.openai.models.embeddings.CreateEmbeddingResponse;
+import com.openai.models.embeddings.EmbeddingModel;
+import de.MCmoderSD.openai.helper.Helper;
 
 /**
  * Represents a prompt for creating an embedding using the OpenAI API.
@@ -13,7 +15,7 @@ public class EmbeddingPrompt {
     private final CreateEmbeddingResponse output;
 
     // Data
-    private final String model;
+    private final EmbeddingModel model;
     private final CreateEmbeddingResponse.Usage usage;
 
     // Usage
@@ -36,7 +38,7 @@ public class EmbeddingPrompt {
         this.output = output;
 
         // Extract Data
-        model = output.model();
+        model = Helper.getEmbeddingModel(output.model());
         usage = output.usage();
 
         // Extract Usage
@@ -66,11 +68,11 @@ public class EmbeddingPrompt {
     }
 
     /**
-     * Returns the model used for creating the embedding.
+     * Returns the embedding model used for creating the embedding.
      *
-     * @return the model used
+     * @return the embedding model
      */
-    public String getModel() {
+    public EmbeddingModel getModel() {
         return model;
     }
 
