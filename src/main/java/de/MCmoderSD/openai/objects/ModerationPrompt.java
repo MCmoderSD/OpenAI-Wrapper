@@ -6,6 +6,9 @@ import com.openai.models.moderations.ModerationModel;
 
 import de.MCmoderSD.openai.helper.Helper;
 
+/**
+ * Represents a moderation prompt containing input text and the corresponding moderation response.
+ */
 @SuppressWarnings("unused")
 public class ModerationPrompt {
 
@@ -21,7 +24,12 @@ public class ModerationPrompt {
     private final Moderation moderation;
     private final Rating rating;
 
-    // Constructor
+    /**
+     * Constructs a new ModerationPrompt with the specified input text and moderation response.
+     *
+     * @param input  The input text to be moderated.
+     * @param output The response from the moderation API.
+     */
     public ModerationPrompt(String input, ModerationCreateResponse output) {
 
         // Initialize Parameters
@@ -37,27 +45,56 @@ public class ModerationPrompt {
         rating = new Rating(moderation);
     }
 
-    // Getters
+    /**
+     * Gets the input text of this moderation prompt.
+     *
+     * @return The input text.
+     */
     public String getInput() {
         return input;
     }
 
+    /**
+     * Gets the moderation response of this moderation prompt.
+     *
+     * @return The moderation response.
+     */
     public ModerationCreateResponse getOutput() {
         return output;
     }
 
+    /**
+     * Gets the ID of this moderation prompt.
+     *
+     * @return The ID.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Gets the moderation model used for this moderation prompt.
+     *
+     * @return The moderation model.
+     */
     public ModerationModel getModel() {
         return model;
     }
 
+    /**
+     * Gets the moderation details of this moderation prompt.
+     *
+     * @return The moderation details.
+     */
     public Moderation getModeration() {
         return moderation;
     }
 
+    /**
+     * Gets the rating details of this moderation prompt.
+     *
+     * @return The rating details.
+     */
     public Rating getRating() {
         return rating;
     }

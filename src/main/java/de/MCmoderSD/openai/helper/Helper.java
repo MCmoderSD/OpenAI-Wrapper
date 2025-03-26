@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.security.InvalidParameterException;
 
+@SuppressWarnings("SameReturnValue")
 public class Helper {
 
     // Constants
@@ -38,6 +39,12 @@ public class Helper {
     public static boolean checkParameter(@Nullable Double speed, String input)  {
         if (speed != null && (speed < 0.25 || speed > 4)) throw new InvalidParameterException("Speed must be between 0.25 and 4");  // Speed
         if (input.isBlank()) throw new InvalidParameterException("Input must not be empty");                                        // Input
+        return true;
+    }
+
+    public static boolean checkParameter(@Nullable Long dimensions, String prompt) {
+        if (dimensions != null && (dimensions < 1 || dimensions > 3072)) throw new InvalidParameterException("Dimensions must be between 1 and 3072");  // Dimensions
+        if (prompt.isBlank()) throw new InvalidParameterException("Prompt must not be empty");                                                          // Prompt
         return true;
     }
 

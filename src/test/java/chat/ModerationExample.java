@@ -17,6 +17,7 @@ public class ModerationExample {
     // Scanner for user input
     private final static Scanner scanner = new Scanner(System.in);
 
+    // Main Method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Variables
@@ -48,7 +49,7 @@ public class ModerationExample {
             );
 
             // Get Rating
-            Rating rating = prompt.getRatings().getFirst();
+            Rating rating = prompt.getRating();
 
             System.out.println("\nSize: " + rating.getBytes().length + " bytes\n");
 

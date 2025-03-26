@@ -39,5 +39,10 @@
     "quality": "",
     "style": "",
     "n": 1
+  },
+
+  "embeddings": {
+    "model": "text-embedding-3-large",
+    "dimensions": 3072
   }
 }

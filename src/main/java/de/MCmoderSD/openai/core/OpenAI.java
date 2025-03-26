@@ -363,6 +363,8 @@ public class OpenAI {
     // Image Generation with all Parameters
     public ArrayList<ImagePrompt> generateImage(@Nullable ImageModel model, @Nullable String user, @Nullable ImageGenerateParams.Size size, @Nullable ImageGenerateParams.Quality quality, @Nullable ImageGenerateParams.Style style, @Nullable Integer n, String prompt) {
 
+
+
         // Create Image Params
         var params = Builder.Images.buildParams(
                 model,               // Model
@@ -454,6 +456,9 @@ public class OpenAI {
 
     // Embedding with all Parameters
     public EmbeddingPrompt embedding(@Nullable EmbeddingModel model, @Nullable String user, @Nullable Long dimensions, String prompt) {
+
+        // Check Parameters
+        if (!checkParameter(dimensions, prompt)) return null;
 
         // Create Embedding Params
         var params = Builder.Embeddings.buildParams(

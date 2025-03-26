@@ -11,9 +11,9 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
 - **Speech API**: Convert text to speech with customizable voices and formats.
 - **Image API**: Generate images from text prompts with various styles and qualities.
+- **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 
 ### Planned Features:
-- **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 - **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
 
 ## Usage
@@ -34,7 +34,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.4.1</version>
+    <version>2.5.0</version>
 </dependency>
 ```
 
@@ -83,6 +83,11 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "quality": "",
     "style": "",
     "n": 1
+  },
+
+  "embeddings": {
+    "model": "text-embedding-3-large",
+    "dimensions": 3072
   }
 }
 ```
@@ -142,6 +147,16 @@ Options for image generation:
 - **style**: `vivid`, `natural` (only for `dall-e-3`)
 - **n**: `1` to `10` (only for `dall-e-2`)
 
+### Embedding Configuration
+| **Field**  | **Description**                                                           |
+|:-----------|:--------------------------------------------------------------------------|
+| model      | Model used for generating embeddings. (Default: `text-embedding-3-large`) |
+| dimensions | Number of dimensions for the embeddings. (Default: `3072`)                |
+
+Options for embedding generation:
+- **model**: `text-embedding-3-large`, `text-embedding-3-small`, `text-embedding-ada-002`
+- **dimensions**: `1` to `3072` for `text-embedding-3-large`, otherwise only `1536`
+
 <br>
 
 ## Usage Example
@@ -157,6 +172,7 @@ import java.net.URISyntaxException;
 
 public class Example {
 
+    // Main Method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Load Config
@@ -421,6 +437,7 @@ public class ModerationExample {
     // Scanner for user input
     private final static Scanner scanner = new Scanner(System.in);
 
+    // Main Method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Variables
@@ -452,7 +469,7 @@ public class ModerationExample {
             );
 
             // Get Rating
-            Rating rating = prompt.getRatings().getFirst();
+            Rating rating = prompt.getRating();
 
             System.out.println("\nSize: " + rating.getBytes().length + " bytes\n");
 
@@ -657,6 +674,107 @@ public class ImageExample {
 
         // Show frame
         frame.setVisible(true);
+    }
+}
+```
+
+### Embedding Example
+```java
+package chat;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.Embedding;
+import de.MCmoderSD.openai.objects.EmbeddingPrompt;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+public class EmbeddingExample {
+
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main Method
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
+
+        // Configure OpenAI
+        Builder.Embeddings.setConfig(config);
+
+        // Setup Chat
+        System.out.println("User Input A: ");
+
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Prompt
+            EmbeddingPrompt promptA = openAI.embedding(
+                    null,
+                    null,
+                    null,
+                    userInput
+            );
+
+            // Get Embedding
+            Embedding vectorA = promptA.getEmbedding();
+
+            // Print Prompt A Data
+            System.out.println("\nPrompt A Data:");
+            System.out.println("Prompt Tokens : " + promptA.getPromptTokens());
+            System.out.println("Total Tokens: " + promptA.getTotalTokens());
+            System.out.println("Size: " + vectorA.getBytes().length + " bytes\n");
+
+            System.out.println("User Input B: ");
+            userInput = scanner.nextLine();
+
+            // Prompt again
+            EmbeddingPrompt promptB = openAI.embedding(userInput);
+
+            // Get Embedding
+            Embedding vectorB = promptB.getEmbedding();
+
+            // Print Prompt B Data
+            System.out.println("\nPrompt B Data:");
+            System.out.println("Prompt Tokens : " + promptB.getPromptTokens());
+            System.out.println("Total Tokens: " + promptB.getTotalTokens());
+            System.out.println("Size: " + vectorB.getBytes().length + " bytes\n");
+
+            // Calculate Cosine Similarity
+            double similarity = vectorA.cosineSimilarity(vectorB);
+            System.out.println("Cosine Similarity: " + similarity);
+
+            // Calculate Euclidean Distance
+            double distance = vectorA.euclideanDistance(vectorB);
+            System.out.println("Euclidean Distance: " + distance);
+
+            // Calculate Manhattan Distance
+            double manhattan = vectorA.manhattanDistance(vectorB);
+            System.out.println("Manhattan Distance: " + manhattan);
+
+            // Calculate Angle
+            double angle = vectorA.angleBetween(vectorB);
+            System.out.println("Angle: " + angle);
+
+            // User Input
+            System.out.println("\n\nUser Input A: ");
+        }
     }
 }
 ```

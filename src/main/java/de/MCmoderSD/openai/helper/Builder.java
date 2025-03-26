@@ -499,7 +499,7 @@ public class Builder {
 
             // Check Model
             if (EmbeddingModel.TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
-            else if (d != null && d != 0) System.err.println("Warning: Only TEXT_EMBEDDING_3_LARGE supports custom dimensions, ignoring them.");
+            else if (d != null && d != 0) System.err.println("Warning: Only text-embedding-3-large supports custom dimensions, ignoring them.");
 
             // Return
             return params.input(prompt).build();

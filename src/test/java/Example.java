@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 
 public class Example {
 
+    // Main Method
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         // Load Config
