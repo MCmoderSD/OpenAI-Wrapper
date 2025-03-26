@@ -4,6 +4,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.audio.AudioModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechModel;
+import com.openai.models.embeddings.EmbeddingModel;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationModel;
@@ -90,6 +91,17 @@ public class Helper {
         else {
             try {
                 return ModerationModel.Companion.of(model);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static EmbeddingModel getEmbeddingModel(String model) {
+        if (model == null || model.isBlank()) return null;
+        else {
+            try {
+                return EmbeddingModel.Companion.of(model);
             } catch (IllegalArgumentException e) {
                 return null;
             }

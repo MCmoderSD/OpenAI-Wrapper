@@ -12,6 +12,9 @@ import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
+import com.openai.models.embeddings.CreateEmbeddingResponse;
+import com.openai.models.embeddings.EmbeddingCreateParams;
+import com.openai.models.embeddings.EmbeddingModel;
 import com.openai.models.images.Image;
 import com.openai.models.images.ImageModel;
 import com.openai.models.images.ImagesResponse;
@@ -74,6 +77,16 @@ public class OpenAI {
         this.chatHistory = new HashMap<>();
     }
 
+    // Set Config
+    public static void setConfig(JsonNode config) {
+        Builder.Chat.setConfig(config);
+        Builder.Transcription.setConfig(config);
+        Builder.Speech.setConfig(config);
+        Builder.Images.setConfig(config);
+        Builder.Moderation.setConfig(config);
+        Builder.Embeddings.setConfig(config);
+    }
+
     private ChatCompletion createChatCompletion(ChatCompletionCreateParams params) {
         return client.chat().completions().create(params);
     }
@@ -92,6 +105,10 @@ public class OpenAI {
 
     private ModerationCreateResponse createModeration(ModerationCreateParams params) {
         return client.moderations().create(params);
+    }
+
+    private CreateEmbeddingResponse createEmbedding(EmbeddingCreateParams params) {
+        return client.embeddings().create(params);
     }
 
     // Prompt
@@ -243,35 +260,35 @@ public class OpenAI {
     }
 
     // Speech
-    public byte[] speech(String input) throws IOException {
-        return speech(null, null, null, null, input);
+    public byte[] speech(String prompt) throws IOException {
+        return speech(null, null, null, null, prompt);
     }
 
     // Speech with Speed
-    public byte[] speech(@Nullable Double speed, String input) throws IOException {
-        return speech(null, null, null, speed, input);
+    public byte[] speech(@Nullable Double speed, String prompt) throws IOException {
+        return speech(null, null, null, speed, prompt);
     }
 
     // Speech with Voice
-    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable String input) throws IOException {
-        return speech(null, voice, null, null, input);
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable String prompt) throws IOException {
+        return speech(null, voice, null, null, prompt);
     }
 
     // Speech with Voice and Speed
-    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable Double speed, String input) throws IOException {
-        return speech(null, voice, null, speed, input);
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable Double speed, String prompt) throws IOException {
+        return speech(null, voice, null, speed, prompt);
     }
 
     // Speech with Voice, Format and Speed
-    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
-        return speech(null, voice, format, speed, input);
+    public byte[] speech(@Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String prompt) throws IOException {
+        return speech(null, voice, format, speed, prompt);
     }
 
     // Speech with all Parameters
-    public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) throws IOException {
+    public byte[] speech(@Nullable SpeechModel speechModel, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String prompt) throws IOException {
 
         // Check Parameters
-        if (!checkParameter(speed, input)) return null;
+        if (!checkParameter(speed, prompt)) return null;
 
         // Create Speech Params
         var params = Builder.Speech.buildParams(
@@ -279,7 +296,7 @@ public class OpenAI {
                 voice,               // Voice
                 format,              // Format
                 speed,               // Speed
-                input                // Input
+                prompt               // prompt
         );
 
         // Execute Speech
@@ -383,24 +400,40 @@ public class OpenAI {
     }
 
     // Moderation
-    public ModerationPrompt moderate(String input) {
-        return moderate(null, input);
+    public ModerationPrompt moderate(String prompt) {
+        return moderate(null, prompt);
     }
 
     // Moderation with Model
-    public ModerationPrompt moderate(@Nullable ModerationModel model, String input) {
+    public ModerationPrompt moderate(@Nullable ModerationModel model, String prompt) {
 
         // Create Moderation Params
         var params = Builder.Moderation.buildParams(
                 model,               // Model
-                input                // Input
+                prompt               // prompt
         );
 
         // Execute Moderation
         var response = createModeration(params);
 
         // Return Moderation Prompt
-        return new ModerationPrompt(input, response);
+        return new ModerationPrompt(prompt, response);
+    }
+
+    public void embed(@Nullable EmbeddingModel model, @Nullable String user, @Nullable Long dimensions, String prompt) {
+
+        // Create Embedding Params
+        var params = Builder.Embeddings.buildParams(
+                model,               // Model
+                user,                // User
+                dimensions,          // Dimensions
+                prompt               // prompt
+        );
+
+        // Execute Embedding
+        var response = createEmbedding(params);
+
+
     }
 
     // Setters

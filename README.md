@@ -13,6 +13,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Image API**: Generate images from text prompts with various styles and qualities.
 
 ### Planned Features:
+- **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 - **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
 
 ## Usage

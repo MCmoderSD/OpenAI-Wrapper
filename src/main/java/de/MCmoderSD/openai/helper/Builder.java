@@ -8,6 +8,8 @@ import com.openai.models.audio.speech.SpeechModel;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessageParam;
+import com.openai.models.embeddings.EmbeddingCreateParams;
+import com.openai.models.embeddings.EmbeddingModel;
 import com.openai.models.images.ImageGenerateParams.Quality;
 import com.openai.models.images.ImageGenerateParams.Size;
 import com.openai.models.images.ImageGenerateParams.Style;
@@ -15,6 +17,7 @@ import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationModel;
+import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.enums.Language;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +26,10 @@ import java.util.ArrayList;
 
 @SuppressWarnings("unused")
 public class Builder {
+
+    public static void setConfig(JsonNode config) {
+        OpenAI.setConfig(config);
+    }
 
     public static class Chat {
 
@@ -245,13 +252,13 @@ public class Builder {
         private static Double speed = 1.0;
 
         // Builder
-        public static SpeechCreateParams buildParams(@Nullable SpeechModel model, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String input) {
+        public static SpeechCreateParams buildParams(@Nullable SpeechModel model, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String prompt) {
             return SpeechCreateParams.builder()
                     .model(model != null ? model : Speech.model)                // Model
                     .voice(voice != null ? voice : Speech.voice)                // Voice
                     .responseFormat(format != null ? format : Speech.format)    // Format
                     .speed(speed != null ? speed : Speech.speed)                // Speed
-                    .input(input)                                               // Input
+                    .input(prompt)                                              // Prompt
                     .build();
         }
 
@@ -468,6 +475,74 @@ public class Builder {
 
         public static void setModel(ModerationModel model) {
             Moderation.model = model;
+        }
+    }
+
+    public static class Embeddings {
+
+        // Setup
+        private static EmbeddingModel model = EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+        private static String user = "";
+
+        // Configuration
+        private static Long dimensions = null;
+
+        // Builder
+        public static EmbeddingCreateParams buildParams(@Nullable EmbeddingModel model, @Nullable String user, @Nullable Long dimensions, String prompt) {
+
+            // Determine Parameters
+            var m = model != null ? model : Embeddings.model;
+            var d = dimensions != null ? dimensions : Embeddings.dimensions;
+
+            // Build Parameters
+            var params = EmbeddingCreateParams.builder().model(m).user(user != null ? user : Embeddings.user);
+
+            // Check Model
+            if (EmbeddingModel.TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
+            else if (d != null && d != 0) System.err.println("Warning: Only TEXT_EMBEDDING_3_LARGE supports custom dimensions, ignoring them.");
+
+            // Return
+            return params.input(prompt).build();
+        }
+
+        // Setter
+        public static void setConfig(JsonNode config) {
+
+            // Load Module
+            if (!config.has("embeddings")) return;
+            JsonNode embeddings = config.get("embeddings");
+
+            // Load Setup
+            model = embeddings.has("model") ? Helper.getEmbeddingModel(embeddings.get("model").asText()) : EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+            user = config.has("user") ? config.get("user").asText() : "";
+
+            // Load Configuration
+            dimensions = embeddings.has("dimensions") ? embeddings.get("dimensions").asLong() : null;
+        }
+
+        public static void setModel(EmbeddingModel model) {
+            Embeddings.model = model;
+        }
+
+        public static void setUser(String user) {
+            Embeddings.user = user;
+        }
+
+        public static void setDimensions(Long dimensions) {
+            Embeddings.dimensions = dimensions;
+        }
+
+        // Getter
+        public static EmbeddingModel getModel() {
+            return model;
+        }
+
+        public static String getUser() {
+            return user;
+        }
+
+        public static Long getDimensions() {
+            return dimensions;
         }
     }
 }
