@@ -17,8 +17,9 @@ import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationModel;
-import de.MCmoderSD.openai.core.OpenAI;
+
 import de.MCmoderSD.openai.enums.Language;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -28,7 +29,12 @@ import java.util.ArrayList;
 public class Builder {
 
     public static void setConfig(JsonNode config) {
-        OpenAI.setConfig(config);
+        Builder.Chat.setConfig(config);
+        Builder.Transcription.setConfig(config);
+        Builder.Speech.setConfig(config);
+        Builder.Images.setConfig(config);
+        Builder.Moderation.setConfig(config);
+        Builder.Embeddings.setConfig(config);
     }
 
     public static class Chat {
@@ -197,7 +203,7 @@ public class Builder {
         public static void setConfig(JsonNode config) {
 
             // Load Module
-            if (!config.has("chat")) return;
+            if (!config.has("transcription")) return;
             JsonNode transcription = config.get("transcription");
 
             // Load Setup

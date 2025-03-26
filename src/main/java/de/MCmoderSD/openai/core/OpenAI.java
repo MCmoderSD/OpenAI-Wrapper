@@ -76,12 +76,7 @@ public class OpenAI {
 
     // Set Config
     public static void setConfig(JsonNode config) {
-        Builder.Chat.setConfig(config);
-        Builder.Transcription.setConfig(config);
-        Builder.Speech.setConfig(config);
-        Builder.Images.setConfig(config);
-        Builder.Moderation.setConfig(config);
-        Builder.Embeddings.setConfig(config);
+        Builder.setConfig(config);
     }
 
     private ChatCompletion createChatCompletion(ChatCompletionCreateParams params) {
