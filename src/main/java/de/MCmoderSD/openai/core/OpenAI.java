@@ -25,10 +25,7 @@ import com.openai.models.moderations.ModerationModel;
 
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
-import de.MCmoderSD.openai.objects.ChatHistory;
-import de.MCmoderSD.openai.objects.ChatPrompt;
-import de.MCmoderSD.openai.objects.ImagePrompt;
-import de.MCmoderSD.openai.objects.ModerationPrompt;
+import de.MCmoderSD.openai.objects.*;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -420,7 +417,43 @@ public class OpenAI {
         return new ModerationPrompt(prompt, response);
     }
 
-    public void embed(@Nullable EmbeddingModel model, @Nullable String user, @Nullable Long dimensions, String prompt) {
+    // Embedding
+    public EmbeddingPrompt embedding(String prompt) {
+        return embedding(null, null, null, prompt);
+    }
+
+    // Embedding with Dimensions
+    public EmbeddingPrompt embedding(@Nullable Long dimensions, String prompt) {
+        return embedding(null, null, dimensions, prompt);
+    }
+
+    // Embedding with User
+    public EmbeddingPrompt embedding(@Nullable String user, String prompt) {
+        return embedding(null, user, null, prompt);
+    }
+
+    // Embedding with Model
+    public EmbeddingPrompt embedding(@Nullable EmbeddingModel model, String prompt) {
+        return embedding(model, null, null, prompt);
+    }
+
+    // Embedding with Model and User
+    public EmbeddingPrompt embedding(@Nullable EmbeddingModel model, @Nullable String user, String prompt) {
+        return embedding(model, user, null, prompt);
+    }
+
+    // Embedding with Model and Dimensions
+    public EmbeddingPrompt embedding(@Nullable EmbeddingModel model, @Nullable Long dimensions, String prompt) {
+        return embedding(model, null, dimensions, prompt);
+    }
+
+    // Embedding with User and Dimensions
+    public EmbeddingPrompt embedding(@Nullable String user, @Nullable Long dimensions, String prompt) {
+        return embedding(null, user, dimensions, prompt);
+    }
+
+    // Embedding with all Parameters
+    public EmbeddingPrompt embedding(@Nullable EmbeddingModel model, @Nullable String user, @Nullable Long dimensions, String prompt) {
 
         // Create Embedding Params
         var params = Builder.Embeddings.buildParams(
@@ -433,7 +466,8 @@ public class OpenAI {
         // Execute Embedding
         var response = createEmbedding(params);
 
-
+        // Return Embedding Prompt
+        return new EmbeddingPrompt(prompt, response);
     }
 
     // Setters

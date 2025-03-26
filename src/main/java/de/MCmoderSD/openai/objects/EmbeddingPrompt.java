@@ -1,15 +1,13 @@
 package de.MCmoderSD.openai.objects;
 
 import com.openai.models.embeddings.CreateEmbeddingResponse;
-import com.openai.models.embeddings.Embedding;
 
-import java.util.ArrayList;
-
+@SuppressWarnings("unused")
 public class EmbeddingPrompt {
 
     // Parameters
     private final String input;
-    private final CreateEmbeddingResponse createEmbeddingResponse;
+    private final CreateEmbeddingResponse output;
 
     // Data
     private final String model;
@@ -20,24 +18,51 @@ public class EmbeddingPrompt {
     private final long totalTokens;
 
     // Content
-    private final ArrayList<Embedding> embeddings;
+    private final Embedding embedding;
 
-    public EmbeddingPrompt(String input, CreateEmbeddingResponse createEmbeddingResponse) {
+    public EmbeddingPrompt(String input, CreateEmbeddingResponse output) {
 
         // Initialize Parameters
         this.input = input;
-        this.createEmbeddingResponse = createEmbeddingResponse;
+        this.output = output;
 
         // Extract Data
-        model = createEmbeddingResponse.model();
-        usage = createEmbeddingResponse.usage();
+        model = output.model();
+        usage = output.usage();
 
         // Extract Usage
         promptTokens = usage.promptTokens();
         totalTokens = usage.totalTokens();
 
         // Extract Content
-        embeddings = new ArrayList<>(createEmbeddingResponse.data());
+        embedding = new Embedding(output.data().getFirst().embedding());
     }
 
+    public String getInput() {
+        return input;
+    }
+
+    public CreateEmbeddingResponse getOutput() {
+        return output;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public CreateEmbeddingResponse.Usage getUsage() {
+        return usage;
+    }
+
+    public long getPromptTokens() {
+        return promptTokens;
+    }
+
+    public long getTotalTokens() {
+        return totalTokens;
+    }
+
+    public Embedding getEmbedding() {
+        return embedding;
+    }
 }
