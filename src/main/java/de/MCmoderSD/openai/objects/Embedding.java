@@ -60,10 +60,36 @@ public class Embedding implements Serializable {
 
         // Convert Data
         for (var i = 0; i < dimension; i++) {
+
+            // Data
             var d = BigDecimal.valueOf(data.get(i));
-            var f = BigDecimal.valueOf(d.floatValue()).setScale(d.scale(), RoundingMode.HALF_UP);
-            if (d.equals(f)) vector[i] = f.floatValue();
-            else throw new ArithmeticException("Precision loss detected during float conversion: " + d);
+            var f = BigDecimal.valueOf(d.floatValue());
+
+            // Convert to Float
+            try {
+
+                // Convert to Float HALF_UP
+                f = BigDecimal.valueOf(d.floatValue()).setScale(d.scale(), RoundingMode.HALF_UP);
+                if (d.equals(f)) vector[i] = f.floatValue();
+                else throw new ArithmeticException("Precision loss detected during float conversion: " + d.abs().subtract(f.abs()) + "difference");
+
+            } catch (ArithmeticException up) {
+                try {
+
+                    // Convert to Float HALF_DOWN
+                    f = BigDecimal.valueOf(d.doubleValue()).setScale(d.scale(), RoundingMode.HALF_DOWN);
+                    if (d.equals(f)) vector[i] = f.floatValue();
+                    else throw new ArithmeticException("Precision loss detected during double conversion: " + d.abs().subtract(f.abs()) + "difference");
+
+                } catch (ArithmeticException down) {
+
+                    // Convert to Float UNNECESSARY
+                    f = BigDecimal.valueOf(d.doubleValue()).setScale(d.scale(), RoundingMode.UNNECESSARY);
+                    if (d.equals(f)) vector[i] = f.floatValue();
+                    else throw new ArithmeticException("Precision loss detected during double conversion: " + d.abs().subtract(f.abs()) + "difference");
+
+                }
+            }
         }
 
         // Compute Magnitude
