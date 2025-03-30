@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.SpeechPrompt;
+import de.MCmoderSD.openai.objects.TranscriptionPrompt;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -40,19 +42,23 @@ public class SpeechExample {
         userInput = scanner.nextLine();
 
         // Generate Speech
-        byte[] audioData = openAI.speech(
+        SpeechPrompt speechPrompt = openAI.speech(
                 null,       // Model
                 null,       // Voice
                 null,       // Response Format
                 null,       // Speed
+                null,       // Instructions
                 userInput   // Text
         );
+
+        // Audio Data
+        byte[] audioData = speechPrompt.getAudioData();
 
         // Print Audio Data Size
         System.out.println("\nAudio data size: " + audioData.length + " bytes");
 
         // Transcribe Speech
-        String transcription = openAI.transcribe(
+        TranscriptionPrompt transcription = openAI.transcription(
                 null,       // Model
                 null,       // Language
                 null,       // Prompt

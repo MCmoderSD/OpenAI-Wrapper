@@ -1,13 +1,9 @@
 package de.MCmoderSD.openai.helper;
 
 import com.openai.models.ChatModel;
-import com.openai.models.audio.AudioModel;
 import com.openai.models.audio.speech.SpeechCreateParams;
-import com.openai.models.audio.speech.SpeechModel;
-import com.openai.models.embeddings.EmbeddingModel;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
-import com.openai.models.moderations.ModerationModel;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -60,55 +56,11 @@ public class Helper {
         }
     }
 
-    public static AudioModel getAudioModel(String model) {
-        if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return AudioModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
-
-    public static SpeechModel getSpeechModel(String model) {
-        if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return SpeechModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
-
     public static ImageModel getImageModel(String model) {
         if (model == null || model.isBlank()) return null;
         else {
             try {
                 return ImageModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
-
-    public static ModerationModel getModerationModel(String model) {
-        if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return ModerationModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-    }
-
-    public static EmbeddingModel getEmbeddingModel(String model) {
-        if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return EmbeddingModel.Companion.of(model);
             } catch (IllegalArgumentException e) {
                 return null;
             }

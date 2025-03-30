@@ -1,29 +1,34 @@
 package de.MCmoderSD.openai.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import com.openai.models.ChatModel;
-import com.openai.models.audio.AudioModel;
+import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.speech.SpeechCreateParams;
-import com.openai.models.audio.speech.SpeechModel;
+import com.openai.models.audio.speech.SpeechCreateParams.Voice;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessageParam;
 import com.openai.models.embeddings.EmbeddingCreateParams;
-import com.openai.models.embeddings.EmbeddingModel;
-import com.openai.models.images.ImageGenerateParams.Quality;
-import com.openai.models.images.ImageGenerateParams.Size;
-import com.openai.models.images.ImageGenerateParams.Style;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationCreateParams;
-import com.openai.models.moderations.ModerationModel;
 
 import de.MCmoderSD.openai.enums.Language;
+
+import de.MCmoderSD.openai.model.AudioModel;
+import de.MCmoderSD.openai.model.EmbeddingModel;
+import de.MCmoderSD.openai.model.ModerationModel;
+import de.MCmoderSD.openai.model.SpeechModel;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*;
+import static com.openai.models.audio.speech.SpeechCreateParams.Voice.*;
+import static com.openai.models.images.ImageGenerateParams.*;
 
 @SuppressWarnings("unused")
 public class Builder {
@@ -188,12 +193,13 @@ public class Builder {
             var builder = TranscriptionCreateParams.builder();
 
             // Set Parameters
-            builder.model(model != null ? model : Transcription.model);
+            builder.model(model != null ? model.getModel() : Transcription.model.getModel());
             if (language != null) builder.language(language.getName());
             else if (Transcription.language != null) builder.language(Transcription.language.getCode());
             if (!(prompt == null || prompt.isBlank())) builder.prompt(prompt);
             else if (!(Transcription.prompt == null || Transcription.prompt.isBlank())) builder.prompt(Transcription.prompt);
             builder.temperature(temperature != null ? temperature : Transcription.temperature);
+            builder.responseFormat(AudioResponseFormat.JSON);
 
             // Set File and Build
             return builder.file(file.toPath()).build();
@@ -207,7 +213,7 @@ public class Builder {
             JsonNode transcription = config.get("transcription");
 
             // Load Setup
-            model = transcription.has("model") ? Helper.getAudioModel(transcription.get("model").asText()) : AudioModel.WHISPER_1;
+            model = transcription.has("model") ? AudioModel.getModel(transcription.get("model").asText()) : AudioModel.WHISPER_1;
             language = transcription.has("language") ? Language.getLanguage(transcription.get("language").asText()) : null;
             prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : "";
 
@@ -253,19 +259,26 @@ public class Builder {
 
         // Setup
         private static SpeechModel model = SpeechModel.TTS_1;
-        private static SpeechCreateParams.Voice voice = SpeechCreateParams.Voice.ALLOY;
-        private static SpeechCreateParams.ResponseFormat format = SpeechCreateParams.ResponseFormat.WAV;
+        private static Voice voice = ALLOY;
+        private static SpeechCreateParams.ResponseFormat format = WAV;
         private static Double speed = 1.0;
+        private static String instruction = null;
 
         // Builder
-        public static SpeechCreateParams buildParams(@Nullable SpeechModel model, @Nullable SpeechCreateParams.Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, String prompt) {
-            return SpeechCreateParams.builder()
-                    .model(model != null ? model : Speech.model)                // Model
-                    .voice(voice != null ? voice : Speech.voice)                // Voice
-                    .responseFormat(format != null ? format : Speech.format)    // Format
-                    .speed(speed != null ? speed : Speech.speed)                // Speed
-                    .input(prompt)                                              // Prompt
-                    .build();
+        public static SpeechCreateParams buildParams(@Nullable SpeechModel model, @Nullable Voice voice, @Nullable SpeechCreateParams.ResponseFormat format, @Nullable Double speed, @Nullable String instruction, String prompt) {
+
+            // Determine Instruction
+            String i = instruction != null ? instruction : Speech.instruction;
+
+            var params = SpeechCreateParams.builder()
+                    .model(model != null ? model.getModel() : Speech.model.getModel())      // Model
+                    .voice(voice != null ? voice : Speech.voice)                            // Voice
+                    .responseFormat(format != null ? format : Speech.format)                // Format
+                    .speed(speed != null ? speed : Speech.speed);                           // Speed
+
+            // Add Instruction
+            if (i != null) params.instructions(i);                                          // Instruction
+            return params.input(prompt).build();                                            // Prompt
         }
 
         // Setter
@@ -276,17 +289,18 @@ public class Builder {
             JsonNode speech = config.get("speech");
 
             // Load Setup
-            model = speech.has("model") ? Helper.getSpeechModel(speech.get("model").asText()) : SpeechModel.TTS_1;
-            voice = speech.has("voice") ? Helper.getVoice(speech.get("voice").asText()) : SpeechCreateParams.Voice.ALLOY;
-            format = speech.has("format") ? Helper.getResponseFormat(speech.get("format").asText()) : SpeechCreateParams.ResponseFormat.WAV;
+            model = speech.has("model") ? SpeechModel.getModel(speech.get("model").asText()) : SpeechModel.TTS_1;
+            voice = speech.has("voice") ? Helper.getVoice(speech.get("voice").asText()) : ALLOY;
+            format = speech.has("format") ? Helper.getResponseFormat(speech.get("format").asText()) : WAV;
             speed = speech.has("speed") ? speech.get("speed").asDouble() : 1.0;
+            instruction = speech.has("instruction") ? speech.get("instruction").asText() : null;
         }
 
         public static void setModel(SpeechModel model) {
             Speech.model = model;
         }
 
-        public static void setVoice(SpeechCreateParams.Voice voice) {
+        public static void setVoice(Voice voice) {
             Speech.voice = voice;
         }
 
@@ -298,12 +312,16 @@ public class Builder {
             Speech.speed = speed;
         }
 
+        public static void setInstruction(String instruction) {
+            Speech.instruction = instruction;
+        }
+
         // Getter
         public static SpeechModel getModel() {
             return model;
         }
 
-        public static SpeechCreateParams.Voice getVoice() {
+        public static Voice getVoice() {
             return voice;
         }
 
@@ -313,6 +331,10 @@ public class Builder {
 
         public static Double getSpeed() {
             return speed;
+        }
+
+        public static String getInstruction() {
+            return instruction;
         }
     }
 
@@ -360,7 +382,7 @@ public class Builder {
             if (s == Size._1024X1792 || s == Size._1792X1024) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
 
             // Build Parameters
-            return ImageGenerateParams.builder()
+            return builder()
                     .model(ImageModel.DALL_E_2)
                     .user(user != null ? user : Images.user)
                     .size(s)
@@ -377,7 +399,7 @@ public class Builder {
             if (s == Size._512X512 || s == Size._256X256) throw new IllegalArgumentException("DALL-E 3 only supports sizes 1024x1024, 1024x1792, 1792x1024 and only 1 image per prompt");
 
             // Build Parameters
-            return ImageGenerateParams.builder()
+            return builder()
                     .model(ImageModel.DALL_E_3)
                     .user(user != null ? user : Images.user)
                     .size(s)
@@ -463,9 +485,9 @@ public class Builder {
         // Builder
         public static ModerationCreateParams buildParams(@Nullable ModerationModel model, String input) {
             return ModerationCreateParams.builder()
-                    .model(model != null ? model : Moderation.model)
-                    .input(input)
-                    .build();
+                    .model(model != null ? model.getModel() : Moderation.model.getModel())  // Model
+                    .input(input)                                                           // Input
+                    .build();                                                               // Build
         }
 
         // Setter
@@ -476,7 +498,7 @@ public class Builder {
             JsonNode moderation = config.get("moderation");
 
             // Load Setup
-            model = moderation.has("model") ? Helper.getModerationModel(moderation.get("model").asText()) : ModerationModel.OMNI_MODERATION_LATEST;
+            model = moderation.has("model") ? ModerationModel.getModel(moderation.get("model").asText()) : ModerationModel.OMNI_MODERATION_LATEST;
         }
 
         public static void setModel(ModerationModel model) {
@@ -501,7 +523,7 @@ public class Builder {
             var d = dimensions != null ? dimensions : Embeddings.dimensions;
 
             // Build Parameters
-            var params = EmbeddingCreateParams.builder().model(m).user(user != null ? user : Embeddings.user);
+            var params = EmbeddingCreateParams.builder().model(m.getModel()).user(user != null ? user : Embeddings.user);
 
             // Check Model
             if (EmbeddingModel.TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
@@ -519,7 +541,7 @@ public class Builder {
             JsonNode embeddings = config.get("embeddings");
 
             // Load Setup
-            model = embeddings.has("model") ? Helper.getEmbeddingModel(embeddings.get("model").asText()) : EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+            model = embeddings.has("model") ? EmbeddingModel.getModel(embeddings.get("model").asText()) : EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
             user = config.has("user") ? config.get("user").asText() : "";
 
             // Load Configuration

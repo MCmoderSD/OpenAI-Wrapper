@@ -57,6 +57,8 @@ public class EmbeddingExample {
             System.out.println("\nPrompt A Data:");
             System.out.println("Prompt Tokens : " + promptA.getPromptTokens());
             System.out.println("Total Tokens: " + promptA.getTotalTokens());
+            System.out.println("Prompt Cost: " + promptA.getPromptCost());
+            System.out.println("Total Cost: " + promptA.getTotalCost());
             System.out.println("Size: " + vectorA.getBytes().length + " bytes\n");
 
             System.out.println("User Input B: ");
@@ -72,6 +74,8 @@ public class EmbeddingExample {
             System.out.println("\nPrompt B Data:");
             System.out.println("Prompt Tokens : " + promptB.getPromptTokens());
             System.out.println("Total Tokens: " + promptB.getTotalTokens());
+            System.out.println("Prompt Cost: " + promptB.getPromptCost());
+            System.out.println("Total Cost: " + promptB.getTotalCost());
             System.out.println("Size: " + vectorB.getBytes().length + " bytes\n");
 
             // Calculate Cosine Similarity

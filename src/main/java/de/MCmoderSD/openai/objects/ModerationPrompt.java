@@ -1,36 +1,27 @@
 package de.MCmoderSD.openai.objects;
 
 import com.openai.models.moderations.Moderation;
+import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
-import com.openai.models.moderations.ModerationModel;
+import de.MCmoderSD.openai.model.ModerationModel;
 
-import de.MCmoderSD.openai.helper.Helper;
-
-/**
- * Represents a moderation prompt containing input text and the corresponding moderation response.
- */
 @SuppressWarnings("unused")
 public class ModerationPrompt {
 
     // Parameters
-    private final String input;
+    private final ModerationCreateParams input;
     private final ModerationCreateResponse output;
 
     // Data
     private final String id;
     private final ModerationModel model;
+    private final String text;
 
     // Content
     private final Moderation moderation;
     private final Rating rating;
 
-    /**
-     * Constructs a new ModerationPrompt with the specified input text and moderation response.
-     *
-     * @param input  The input text to be moderated.
-     * @param output The response from the moderation API.
-     */
-    public ModerationPrompt(String input, ModerationCreateResponse output) {
+    public ModerationPrompt(ModerationCreateParams input, ModerationCreateResponse output) {
 
         // Initialize Parameters
         this.input = input;
@@ -38,7 +29,8 @@ public class ModerationPrompt {
 
         // Extract Data
         id = output.id();
-        model = Helper.getModerationModel(output.model());
+        model = ModerationModel.getModel(output.model());
+        text = input.input().asString();
 
         // Extract Content
         moderation = output.results().getFirst();
@@ -46,11 +38,11 @@ public class ModerationPrompt {
     }
 
     /**
-     * Gets the input text of this moderation prompt.
+     * Gets the input parameters of this moderation prompt.
      *
-     * @return The input text.
+     * @return The input parameters.
      */
-    public String getInput() {
+    public ModerationCreateParams getInput() {
         return input;
     }
 
@@ -79,6 +71,15 @@ public class ModerationPrompt {
      */
     public ModerationModel getModel() {
         return model;
+    }
+
+    /**
+     * Gets the input text of this moderation prompt.
+     *
+     * @return The input text.
+     */
+    public String getText() {
+        return text;
     }
 
     /**

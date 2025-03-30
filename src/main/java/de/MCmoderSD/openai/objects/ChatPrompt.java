@@ -4,6 +4,8 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.completions.CompletionUsage;
+import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
+import com.openai.models.completions.CompletionUsage.PromptTokensDetails;
 import de.MCmoderSD.openai.helper.Helper;
 
 import java.sql.Timestamp;
@@ -27,8 +29,8 @@ public class ChatPrompt {
     private final ChatModel model;
     private final String systemFingerprint;
     private final CompletionUsage usage;
-    private final CompletionUsage.PromptTokensDetails promptTokensDetails;
-    private final CompletionUsage.CompletionTokensDetails completionTokensDetails;
+    private final PromptTokensDetails promptTokensDetails;
+    private final CompletionTokensDetails completionTokensDetails;
 
     // Usage
     private final long inputTokens;
@@ -153,7 +155,7 @@ public class ChatPrompt {
      *
      * @return The prompt tokens details
      */
-    public CompletionUsage.PromptTokensDetails getPromptTokensDetails() {
+    public PromptTokensDetails getPromptTokensDetails() {
         return promptTokensDetails;
     }
 
@@ -162,7 +164,7 @@ public class ChatPrompt {
      *
      * @return The completion tokens details
      */
-    public CompletionUsage.CompletionTokensDetails getCompletionTokensDetails() {
+    public CompletionTokensDetails getCompletionTokensDetails() {
         return completionTokensDetails;
     }
 

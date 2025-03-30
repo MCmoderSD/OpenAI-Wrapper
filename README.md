@@ -34,7 +34,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.5.3</version>
+    <version>2.5.4</version>
 </dependency>
 ```
 
@@ -74,7 +74,8 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "model": "tts-1-hd",
     "format": "wav",
     "voice": "onyx",
-    "speed": 1
+    "speed": 1,
+    "instruction": "Talk like a pirate."
   },
 
   "image": {
@@ -124,12 +125,13 @@ Note: <br>
 | prompt           | Provides context for the transcription.                                    |
 
 ### Speech Configuration
-| **Field**        | **Description**                                     |
-|:-----------------|:----------------------------------------------------|
-| model            | Model used for generating text. (Default: `tts-1`)  |
-| format           | Output format for the audio. (Default: `wav`)       |
-| voice            | Voice used for speech synthesis. (Default: `alloy`) |
-| speed            | Speed of the speech synthesis. (Default: `1`)       |
+| **Field**    | **Description**                                     |
+|:-------------|:----------------------------------------------------|
+| model        | Model used for generating text. (Default: `tts-1`)  |
+| format       | Output format for the audio. (Default: `wav`)       |
+| voice        | Voice used for speech synthesis. (Default: `alloy`) |
+| speed        | Speed of the speech synthesis. (Default: `1`)       |
+| instructions | Instructions for the speech synthesis.              |
 
 ### Image Configuration
 | **Field** | **Description**                                         |
@@ -488,6 +490,7 @@ public class ModerationExample {
 ```
 
 ### Speech & Transcription Example
+
 ```java
 package audio;
 
@@ -495,6 +498,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.SpeechPrompt;
+import de.MCmoderSD.openai.objects.TranscriptionPrompt;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -531,19 +536,23 @@ public class SpeechExample {
         userInput = scanner.nextLine();
 
         // Generate Speech
-        byte[] audioData = openAI.speech(
+        SpeechPrompt speechPrompt = openAI.speech(
                 null,       // Model
                 null,       // Voice
                 null,       // Response Format
                 null,       // Speed
+                null,       // Instructions
                 userInput   // Text
         );
+
+        // Audio Data
+        byte[] audioData = speechPrompt.getAudioData();
 
         // Print Audio Data Size
         System.out.println("\nAudio data size: " + audioData.length + " bytes");
 
         // Transcribe Speech
-        String transcription = openAI.transcribe(
+        TranscriptionPrompt transcription = openAI.transcription(
                 null,       // Model
                 null,       // Language
                 null,       // Prompt
@@ -628,7 +637,7 @@ public class ImageExample {
             for (ImagePrompt imagePrompt : response) showImage(imagePrompt);
 
             // Save images
-            for (ImagePrompt imagePrompt : response) ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+            for (ImagePrompt imagePrompt : response) ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getPrompt().split(" ")) + ".png"));
 
             // Wait for user to press 'Enter'
             System.out.println("\n\nPress 'Enter' to continue...");
@@ -648,7 +657,7 @@ public class ImageExample {
         Dimension size = new Dimension(image.getWidth(), image.getHeight());
 
         // Create frame
-        JFrame frame = new JFrame(imagePrompt.getInput());
+        JFrame frame = new JFrame(imagePrompt.getPrompt());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setSize(size);
@@ -739,6 +748,8 @@ public class EmbeddingExample {
             System.out.println("\nPrompt A Data:");
             System.out.println("Prompt Tokens : " + promptA.getPromptTokens());
             System.out.println("Total Tokens: " + promptA.getTotalTokens());
+            System.out.println("Prompt Cost: " + promptA.getPromptCost());
+            System.out.println("Total Cost: " + promptA.getTotalCost());
             System.out.println("Size: " + vectorA.getBytes().length + " bytes\n");
 
             System.out.println("User Input B: ");
@@ -754,6 +765,8 @@ public class EmbeddingExample {
             System.out.println("\nPrompt B Data:");
             System.out.println("Prompt Tokens : " + promptB.getPromptTokens());
             System.out.println("Total Tokens: " + promptB.getTotalTokens());
+            System.out.println("Prompt Cost: " + promptB.getPromptCost());
+            System.out.println("Total Cost: " + promptB.getTotalCost());
             System.out.println("Size: " + vectorB.getBytes().length + " bytes\n");
 
             // Calculate Cosine Similarity

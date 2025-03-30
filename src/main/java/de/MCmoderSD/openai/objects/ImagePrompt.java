@@ -1,28 +1,41 @@
 package de.MCmoderSD.openai.objects;
 
 import com.openai.models.images.Image;
+import com.openai.models.images.ImageGenerateParams;
+import com.openai.models.images.ImageGenerateParams.Quality;
+import com.openai.models.images.ImageGenerateParams.ResponseFormat;
+import com.openai.models.images.ImageGenerateParams.Size;
+import com.openai.models.images.ImageGenerateParams.Style;
+import com.openai.models.images.ImageModel;
 import de.MCmoderSD.imageloader.ImageLoader;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ByteArrayInputStream;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 
 /**
- * Represents an image prompt containing user input, AI-generated image output, and metadata.
+ * Represents an image prompt containing input parameters, AI-generated response, and metadata.
+ * This class encapsulates all information related to a single image generation interaction with the OpenAI API,
+ * including response content and metadata.
  */
 @SuppressWarnings("unused")
-public class ImagePrompt implements Serializable {
+public class ImagePrompt {
 
     // Parameters
-    private final String input;
+    private final ImageGenerateParams input;
     private final Image output;
     private final Timestamp timestamp;
+
+    // Input
+    private final ImageModel model;
+    private final String user;
+    private final ResponseFormat responseFormat;
+    private final Size size;
+    private final Quality quality;
+    private final Style style;
+    private final long n;
+    private final String prompt;
 
     // Attributes
     private final String revisedPrompt;
@@ -33,20 +46,30 @@ public class ImagePrompt implements Serializable {
     private final BufferedImage image;
 
     /**
-     * Constructs an ImagePrompt instance with the provided user input and AI-generated image response.
+     * Constructs a new ImagePrompt with the specified input and output.
      *
-     * @param input   The user's input prompt.
-     * @param output  The AI-generated image response associated with the input.
-     * @param created The timestamp of when the image was created, in seconds since epoch.
-     * @throws IOException        If an I/O error occurs while loading the image.
-     * @throws URISyntaxException If the URL of the image is malformed.
+     * @param input   The input parameters for generating the image
+     * @param output  The AI-generated response associated with the input
+     * @param created The timestamp when the image was created
+     * @throws IOException        If there is an error loading the image
+     * @throws URISyntaxException If the URL syntax is incorrect
      */
-    public ImagePrompt(String input, Image output, long created) throws IOException, URISyntaxException {
+    public ImagePrompt(ImageGenerateParams input, Image output, long created) throws IOException, URISyntaxException {
 
         // Initialize Parameters
         this.input = input;
         this.output = output;
         timestamp = new Timestamp(created * 1000L);
+
+        // Extract Input
+        model = input.model().orElse(null);
+        user = input.user().orElse(null);
+        responseFormat = input.responseFormat().orElse(null);
+        size = input.size().orElse(null);
+        quality = input.quality().orElse(null);
+        style = input.style().orElse(null);
+        n = input.n().orElse(1L);
+        prompt = input.prompt();
 
         // Extract Data
         revisedPrompt = output.revisedPrompt().orElse(null);
@@ -62,91 +85,137 @@ public class ImagePrompt implements Serializable {
     }
 
     /**
-     * Returns the user input.
+     * Gets the input parameters for generating the image.
      *
-     * @return The input string.
+     * @return The input parameters
      */
-    public String getInput() {
+    public ImageGenerateParams getInput() {
         return input;
     }
 
     /**
-     * Returns the AI-generated image output.
+     * Gets the AI-generated response associated with the input.
      *
-     * @return The Image output.
+     * @return The AI-generated response
      */
     public Image getOutput() {
         return output;
     }
 
     /**
-     * Returns the timestamp of when the image was created.
+     * Gets the timestamp when the image was created.
      *
-     * @return The timestamp of the image creation.
+     * @return The timestamp
      */
     public Timestamp getTimestamp() {
         return timestamp;
     }
 
     /**
-     * Returns the revised prompt used to generate the image.
+     * Gets the image model used for the response.
      *
-     * @return The revised prompt string.
+     * @return The image model
+     */
+    public ImageModel getModel() {
+        return model;
+    }
+
+    /**
+     * Gets the user associated with the image generation request.
+     *
+     * @return The user
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * Gets the response format used for the image.
+     *
+     * @return The response format
+     */
+    public ResponseFormat getResponseFormat() {
+        return responseFormat;
+    }
+
+    /**
+     * Gets the size of the generated image.
+     *
+     * @return The size
+     */
+    public Size getSize() {
+        return size;
+    }
+
+    /**
+     * Gets the quality of the generated image.
+     *
+     * @return The quality
+     */
+    public Quality getQuality() {
+        return quality;
+    }
+
+    /**
+     * Gets the style of the generated image.
+     *
+     * @return The style
+     */
+    public Style getStyle() {
+        return style;
+    }
+
+    /**
+     * Gets the number of images generated.
+     *
+     * @return The number of images
+     */
+    public long getN() {
+        return n;
+    }
+
+    /**
+     * Gets the prompt used for generating the image.
+     *
+     * @return The prompt
+     */
+    public String getPrompt() {
+        return prompt;
+    }
+
+    /**
+     * Gets the revised prompt from the AI-generated response.
+     *
+     * @return The revised prompt
      */
     public String getRevisedPrompt() {
         return revisedPrompt;
     }
 
     /**
-     * Returns the URL of the AI-generated image.
+     * Gets the URL of the generated image.
      *
-     * @return The image URL.
+     * @return The URL
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * Returns the Base64-encoded string of the AI-generated image.
+     * Gets the Base64-encoded string of the generated image.
      *
-     * @return The Base64-encoded image string.
+     * @return The Base64-encoded string
      */
     public String getBase64() {
         return base64;
     }
 
     /**
-     * Returns the BufferedImage object of the AI-generated image.
+     * Gets the BufferedImage object of the generated image.
      *
-     * @return The BufferedImage object.
+     * @return The BufferedImage object
      */
     public BufferedImage getImage() {
         return image;
-    }
-
-    /**
-     * Serializes this ImagePrompt instance to a byte array.
-     *
-     * @return The serialized ImagePrompt as a byte array
-     * @throws IOException If an I/O error occurs during serialization
-     */
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(data);
-        stream.writeObject(this);
-        stream.flush();
-        return data.toByteArray();
-    }
-
-    /**
-     * Deserializes a ImagePrompt instance from a byte array.
-     *
-     * @param bytes The byte array containing the serialized ImagePrompt
-     * @return The deserialized ImagePrompt instance
-     * @throws IOException            If an I/O error occurs during deserialization
-     * @throws ClassNotFoundException If the class of the serialized object cannot be found
-     */
-    public static ImagePrompt fromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
-        return (ImagePrompt) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
     }
 }

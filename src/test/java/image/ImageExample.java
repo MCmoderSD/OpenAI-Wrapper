@@ -67,7 +67,7 @@ public class ImageExample {
             for (ImagePrompt imagePrompt : response) showImage(imagePrompt);
 
             // Save images
-            for (ImagePrompt imagePrompt : response) ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getInput().split(" ")) + ".png"));
+            for (ImagePrompt imagePrompt : response) ImageIO.write(imagePrompt.getImage(), "png", new File("src/test/resources/assets/" + String.join("-", imagePrompt.getPrompt().split(" ")) + ".png"));
 
             // Wait for user to press 'Enter'
             System.out.println("\n\nPress 'Enter' to continue...");
@@ -87,7 +87,7 @@ public class ImageExample {
         Dimension size = new Dimension(image.getWidth(), image.getHeight());
 
         // Create frame
-        JFrame frame = new JFrame(imagePrompt.getInput());
+        JFrame frame = new JFrame(imagePrompt.getPrompt());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setSize(size);
