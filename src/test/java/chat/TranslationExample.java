@@ -60,7 +60,8 @@ public class TranslationExample {
                     null,           // Number of Completions
                     devMessage,     // Developer Message (Override Config)
                     null,           // ID
-                    userInput       // User Message
+                    userInput,      // User Message
+                    null            // Images
             );
 
             // Get Response

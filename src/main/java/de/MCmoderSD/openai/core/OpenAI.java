@@ -27,7 +27,6 @@ import com.openai.models.images.ImagesResponse;
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
 
-
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.helper.Builder;
 
@@ -36,11 +35,18 @@ import de.MCmoderSD.openai.model.EmbeddingModel;
 import de.MCmoderSD.openai.model.ModerationModel;
 import de.MCmoderSD.openai.model.SpeechModel;
 
-import de.MCmoderSD.openai.objects.*;
+import de.MCmoderSD.openai.objects.ChatHistory;
+import de.MCmoderSD.openai.objects.ChatPrompt;
+import de.MCmoderSD.openai.objects.EmbeddingPrompt;
+import de.MCmoderSD.openai.objects.ImagePrompt;
+import de.MCmoderSD.openai.objects.ModerationPrompt;
+import de.MCmoderSD.openai.objects.SpeechPrompt;
+import de.MCmoderSD.openai.objects.TranscriptionPrompt;
 
 
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +58,8 @@ import java.util.HashMap;
 
 import static com.openai.models.audio.speech.SpeechCreateParams.*;
 import static com.openai.models.images.ImageGenerateParams.*;
+import static de.MCmoderSD.imageloader.Converter.convertToPNG;
+import static de.MCmoderSD.imageloader.Encoder.encodeToDataURI;
 import static de.MCmoderSD.openai.helper.Helper.*;
 
 @SuppressWarnings("unused")
@@ -119,28 +127,44 @@ public class OpenAI {
 
     // Prompt
     public ChatPrompt prompt(String prompt) {
-        return prompt(null, null, null, null, null, null, null, null, null, null, prompt);
+        return prompt(null, null, null, null, null, null, null, null, null, null, prompt, null);
     }
 
+    // Prompt with Images
+    public ChatPrompt prompt(String prompt, @Nullable ArrayList<BufferedImage> images) {
+        return prompt(null, null, null, null, null, null, null, null, null, null, prompt, images);
+    }
+
+    // Prompt with User
     public ChatPrompt prompt(@Nullable String user, String prompt) {
-        return prompt(null, user, null, null, null, null, null, null, null, null, prompt);
+        return prompt(null, user, null, null, null, null, null, null, null, null, prompt, null);
     }
 
     // Prompt with ID
     public ChatPrompt prompt(@Nullable Integer id, String prompt) {
-        return prompt(null, null, null, null, null, null, null, null, null, id, prompt);
+        return prompt(null, null, null, null, null, null, null, null, null, id, prompt, null);
     }
 
     // Prompt with User and ID
     public ChatPrompt prompt(@Nullable String user, @Nullable Integer id, String prompt) {
-        return prompt(null, user, null, null, null, null, null, null, null, id, prompt);
+        return prompt(null, user, null, null, null, null, null, null, null, id, prompt, null);
     }
 
     // Prompt with all Parameters
-    public ChatPrompt prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt) {
+    public ChatPrompt prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
+
+        // Encode Images
+        ArrayList<String> encodedImages = new ArrayList<>();
+        if (images != null && !images.isEmpty()) for (BufferedImage image : images) {
+            try {
+                encodedImages.add(encodeToDataURI(convertToPNG(image), "png"));
+            } catch (IOException e) {
+                System.err.println("Error encoding image: " + e.getMessage());
+            }
+        }
 
         // Check Parameters
-        if (!checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n)) return null;
+        if (!checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n, encodedImages)) return null;
 
         // Check if Chat History exists
         if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
@@ -158,7 +182,8 @@ public class OpenAI {
                 n,                  // Number of Completions
                 devMessage,         // Developer Message
                 prompt,             // Prompt
-                messages            // Messages
+                messages,           // Messages
+                encodedImages       // Images
         );
 
         // Execute Chat Completion

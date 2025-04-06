@@ -55,7 +55,8 @@ public class ChatExample {
                     null,       // Number of Completions
                     null,       // Developer Message
                     userId,     // ID
-                    userInput   // User Message
+                    userInput,  // User Message
+                    null        // Images
             );
 
             // Get Response

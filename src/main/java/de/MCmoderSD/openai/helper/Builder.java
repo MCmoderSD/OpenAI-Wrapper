@@ -7,6 +7,7 @@ import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechCreateParams.Voice;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionContentPart;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessageParam;
 import com.openai.models.embeddings.EmbeddingCreateParams;
@@ -26,9 +27,18 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.openai.models.ChatModel.*;
 import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*;
 import static com.openai.models.audio.speech.SpeechCreateParams.Voice.*;
 import static com.openai.models.images.ImageGenerateParams.*;
+import static com.openai.models.images.ImageGenerateParams.ResponseFormat.*;
+import static com.openai.models.images.ImageGenerateParams.Size.*;
+import static com.openai.models.images.ImageModel.*;
+import static de.MCmoderSD.openai.helper.Helper.addImage;
+import static de.MCmoderSD.openai.model.AudioModel.*;
+import static de.MCmoderSD.openai.model.EmbeddingModel.*;
+import static de.MCmoderSD.openai.model.ModerationModel.*;
+import static de.MCmoderSD.openai.model.SpeechModel.*;
 
 @SuppressWarnings("unused")
 public class Builder {
@@ -45,7 +55,7 @@ public class Builder {
     public static class Chat {
 
         // Setup
-        private static ChatModel model = ChatModel.CHATGPT_4O_LATEST;
+        private static ChatModel model = CHATGPT_4O_LATEST;
         private static String user = "";
         private static String devMessage = "";
 
@@ -58,7 +68,7 @@ public class Builder {
         private static Long maxTokens = 120L;
 
         // Builder
-        public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages) {
+        public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
             var params = ChatCompletionCreateParams.builder()
                     .model(chatModel != null ? chatModel : Chat.model)                                      // Model
@@ -78,6 +88,14 @@ public class Builder {
                     else params.addMessage(message.asAssistant());
                 }
             } else params.addDeveloperMessage(devMessage != null ? devMessage : Chat.devMessage);           // Add Developer Message
+
+            // Add Images
+            if (images != null && !images.isEmpty()) {
+                ArrayList<ChatCompletionContentPart> parts = new ArrayList<>();
+                for (var image : images) parts.add(addImage(image, null));                              // Add Image
+                params.addUserMessageOfArrayOfContentParts(parts);
+            }
+
             return params.addUserMessage(prompt).build();                                                   // Add User Message
         }
 
@@ -89,7 +107,7 @@ public class Builder {
             JsonNode chat = config.get("chat");
 
             // Load Setup
-            model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : ChatModel.CHATGPT_4O_LATEST;
+            model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : CHATGPT_4O_LATEST;
             user = config.has("user") ? config.get("user").asText() : "";
             devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : "";
 
@@ -179,7 +197,7 @@ public class Builder {
     public static class Transcription {
 
         // Setup
-        private static AudioModel model = AudioModel.WHISPER_1;
+        private static AudioModel model = WHISPER_1;
         private static Language language = null;
         private static String prompt = "";
 
@@ -213,7 +231,7 @@ public class Builder {
             JsonNode transcription = config.get("transcription");
 
             // Load Setup
-            model = transcription.has("model") ? AudioModel.getModel(transcription.get("model").asText()) : AudioModel.WHISPER_1;
+            model = transcription.has("model") ? AudioModel.getModel(transcription.get("model").asText()) : WHISPER_1;
             language = transcription.has("language") ? Language.getLanguage(transcription.get("language").asText()) : null;
             prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : "";
 
@@ -258,7 +276,7 @@ public class Builder {
     public static class Speech {
 
         // Setup
-        private static SpeechModel model = SpeechModel.TTS_1;
+        private static SpeechModel model = TTS_1;
         private static Voice voice = ALLOY;
         private static SpeechCreateParams.ResponseFormat format = WAV;
         private static Double speed = 1.0;
@@ -289,7 +307,7 @@ public class Builder {
             JsonNode speech = config.get("speech");
 
             // Load Setup
-            model = speech.has("model") ? SpeechModel.getModel(speech.get("model").asText()) : SpeechModel.TTS_1;
+            model = speech.has("model") ? SpeechModel.getModel(speech.get("model").asText()) : TTS_1;
             voice = speech.has("voice") ? Helper.getVoice(speech.get("voice").asText()) : ALLOY;
             format = speech.has("format") ? Helper.getResponseFormat(speech.get("format").asText()) : WAV;
             speed = speech.has("speed") ? speech.get("speed").asDouble() : 1.0;
@@ -341,11 +359,11 @@ public class Builder {
     public static class Images {
 
         // Setup
-        private static ImageModel model = ImageModel.DALL_E_2;
+        private static ImageModel model = DALL_E_2;
         private static String user = "";
 
         // Configuration
-        private static Size size = Size._256X256;
+        private static Size size = _256X256;
         private static Quality quality = null;
         private static Style style = null;
         private static Integer n = 1;
@@ -361,7 +379,7 @@ public class Builder {
             Integer i = n != null ? n : Images.n;
 
             // Check Model
-            if (ImageModel.DALL_E_2.equals(m)) {
+            if (DALL_E_2.equals(m)) {
                 if (q != null || y != null) System.err.println("Warning: DALL-E 2 does not support quality or style parameters, ignoring them.");
                 return buildParams(user, s, i, prompt);
             }
@@ -379,11 +397,12 @@ public class Builder {
 
             // Determine Size and check for DALL-E 2
             Size s = size != null ? size : Images.size;
-            if (s == Size._1024X1792 || s == Size._1792X1024) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
+            if (s == _1024X1792 || s == _1792X1024) throw new IllegalArgumentException("DALL-E 2 only supports sizes 1024x1024, 512x512 and 256x256, no quality or style");
 
             // Build Parameters
             return builder()
-                    .model(ImageModel.DALL_E_2)
+                    .responseFormat(B64_JSON)
+                    .model(DALL_E_2)
                     .user(user != null ? user : Images.user)
                     .size(s)
                     .n(n != null ? n : Images.n)
@@ -396,7 +415,7 @@ public class Builder {
 
             // Determine Size and check for DALL-E 3
             Size s = size != null ? size : Images.size;
-            if (s == Size._512X512 || s == Size._256X256) throw new IllegalArgumentException("DALL-E 3 only supports sizes 1024x1024, 1024x1792, 1792x1024 and only 1 image per prompt");
+            if (s == Size._512X512 || s == _256X256) throw new IllegalArgumentException("DALL-E 3 only supports sizes 1024x1024, 1024x1792, 1792x1024 and only 1 image per prompt");
 
             // Build Parameters
             return builder()
@@ -417,11 +436,11 @@ public class Builder {
             JsonNode image = config.get("image");
 
             // Load Setup
-            model = image.has("model") ? Helper.getImageModel(image.get("model").asText()) : ImageModel.DALL_E_2;
+            model = image.has("model") ? Helper.getImageModel(image.get("model").asText()) : DALL_E_2;
             user = config.has("user") ? config.get("user").asText() : "";
 
             // Load Configuration
-            size = image.has("size") ? Helper.getSize(image.get("size").asText()) : Size._1024X1024;
+            size = image.has("size") ? Helper.getSize(image.get("size").asText()) : _1024X1024;
             quality = image.has("quality") ? Helper.getQuality(image.get("quality").asText()) : null;
             style = image.has("style") ? Helper.getStyle(image.get("style").asText()) : null;
             n = image.has("n") ? image.get("n").asInt() : 1;
@@ -480,7 +499,7 @@ public class Builder {
     public static class Moderation {
 
         // Setup
-        private static ModerationModel model = ModerationModel.OMNI_MODERATION_LATEST;
+        private static ModerationModel model = OMNI_MODERATION_LATEST;
 
         // Builder
         public static ModerationCreateParams buildParams(@Nullable ModerationModel model, String input) {
@@ -498,7 +517,7 @@ public class Builder {
             JsonNode moderation = config.get("moderation");
 
             // Load Setup
-            model = moderation.has("model") ? ModerationModel.getModel(moderation.get("model").asText()) : ModerationModel.OMNI_MODERATION_LATEST;
+            model = moderation.has("model") ? ModerationModel.getModel(moderation.get("model").asText()) : OMNI_MODERATION_LATEST;
         }
 
         public static void setModel(ModerationModel model) {
@@ -509,7 +528,7 @@ public class Builder {
     public static class Embeddings {
 
         // Setup
-        private static EmbeddingModel model = EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+        private static EmbeddingModel model = TEXT_EMBEDDING_3_LARGE;
         private static String user = "";
 
         // Configuration
@@ -526,7 +545,7 @@ public class Builder {
             var params = EmbeddingCreateParams.builder().model(m.getModel()).user(user != null ? user : Embeddings.user);
 
             // Check Model
-            if (EmbeddingModel.TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
+            if (TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
             else if (d != null && d != 0) System.err.println("Warning: Only text-embedding-3-large supports custom dimensions, ignoring them.");
 
             // Return
@@ -541,7 +560,7 @@ public class Builder {
             JsonNode embeddings = config.get("embeddings");
 
             // Load Setup
-            model = embeddings.has("model") ? EmbeddingModel.getModel(embeddings.get("model").asText()) : EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+            model = embeddings.has("model") ? EmbeddingModel.getModel(embeddings.get("model").asText()) : TEXT_EMBEDDING_3_LARGE;
             user = config.has("user") ? config.get("user").asText() : "";
 
             // Load Configuration

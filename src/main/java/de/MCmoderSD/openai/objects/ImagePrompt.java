@@ -22,6 +22,9 @@ import java.sql.Timestamp;
 @SuppressWarnings("unused")
 public class ImagePrompt {
 
+    // Constants
+    private final static String BASE64_PREFIX = "data:image/png;base64,";
+
     // Parameters
     private final ImageGenerateParams input;
     private final Image output;
@@ -77,8 +80,8 @@ public class ImagePrompt {
         base64 = output.b64Json().orElse(null);
 
         // Validate URL or Base64
-        String imageData = url == null ? base64 : url;
-        if (imageData == null || imageData.isEmpty()) throw new IOException("Image URL or Base64 data is missing.");
+        String imageData = url == null ? BASE64_PREFIX + base64 : url;
+        if (imageData.endsWith(BASE64_PREFIX) || imageData.isEmpty()) throw new IOException("Image URL or Base64 data is missing.");
 
         // Initialize Content
         image = ImageLoader.loadImage(imageData, false);

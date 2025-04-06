@@ -54,7 +54,8 @@ public class PromptExample {
                     null,       // Number of Completions
                     null,       // Developer Message
                     null,       // ID
-                    userInput   // User Message
+                    userInput,  // User Message
+                    null        // System Message
             );
 
             // Get Response
