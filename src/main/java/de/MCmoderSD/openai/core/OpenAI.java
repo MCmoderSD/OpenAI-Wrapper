@@ -154,9 +154,10 @@ public class OpenAI {
     public ChatPrompt prompt(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
 
         // Encode Images
-        ArrayList<String> encodedImages = new ArrayList<>();
+        ArrayList<String> encodedImages = null;
         if (images != null && !images.isEmpty()) for (BufferedImage image : images) {
             try {
+                encodedImages = new ArrayList<>();
                 encodedImages.add(encodeToDataURI(convertToPNG(image), "png"));
             } catch (IOException e) {
                 System.err.println("Error encoding image: " + e.getMessage());

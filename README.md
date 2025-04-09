@@ -35,7 +35,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.5.5</version>
+    <version>2.5.6</version>
 </dependency>
 ```
 
