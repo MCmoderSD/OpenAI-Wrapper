@@ -79,6 +79,6 @@ public enum ModerationModel {
     public static ModerationModel getModel(String model) {
         if (model == null || model.isBlank()) return null;
         for (ModerationModel m : ModerationModel.values()) if (m.getName().equalsIgnoreCase(model)) return m;
-        throw new IllegalArgumentException("Invalid SpeechModel value: " + model);
+        throw new IllegalArgumentException("Invalid ModerationModel value: " + model);
     }
 }

@@ -9,6 +9,7 @@ import com.openai.models.audio.speech.SpeechCreateParams.Voice;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionCreateParams.WebSearchOptions;
 import com.openai.models.chat.completions.ChatCompletionMessageParam;
 import com.openai.models.embeddings.EmbeddingCreateParams;
 import com.openai.models.images.ImageGenerateParams;
@@ -16,10 +17,12 @@ import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationCreateParams;
 
 import de.MCmoderSD.openai.enums.Language;
+import de.MCmoderSD.openai.enums.SearchContextSize;
 
 import de.MCmoderSD.openai.model.AudioModel;
 import de.MCmoderSD.openai.model.EmbeddingModel;
 import de.MCmoderSD.openai.model.ModerationModel;
+import de.MCmoderSD.openai.model.SearchModel;
 import de.MCmoderSD.openai.model.SpeechModel;
 
 import org.jetbrains.annotations.Nullable;
@@ -56,8 +59,15 @@ public class Builder {
 
         // Setup
         private static ChatModel model = CHATGPT_4O_LATEST;
-        private static String user = "";
-        private static String devMessage = "";
+        private static SearchModel searchModel = SearchModel.GPT_4O_SEARCH_PREVIEW;
+        private static String user = null;
+        private static String devMessage = null;
+
+        // Location
+        private static String country = null;
+        private static String city = null;
+        private static String region = null;
+        private static String timezone = null;
 
         // Configuration
         private static Double temperature = 1d;
@@ -66,19 +76,39 @@ public class Builder {
         private static Double presencePenalty = 0d;
         private static Long n = 1L;
         private static Long maxTokens = 120L;
+        private static SearchContextSize searchContextSize = SearchContextSize.HIGH;
 
         // Builder
         public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
             var params = ChatCompletionCreateParams.builder()
                     .model(chatModel != null ? chatModel : Chat.model)                                      // Model
-                    .user(user != null ? user : Chat.user)                                                  // User
+                    .user(user != null ? user : Chat.user == null ? "" : Chat.user)                         // User
                     .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                    // Max Tokens
                     .temperature(Temperature != null ? Temperature : Chat.temperature)                      // Temperature
                     .topP(topP != null ? topP : Chat.topP)                                                  // Top P
                     .frequencyPenalty(frequencyPenalty != null ? frequencyPenalty : Chat.frequencyPenalty)  // Frequency Penalty
                     .presencePenalty(presencePenalty != null ? presencePenalty : Chat.presencePenalty)      // Presence Penalty
                     .n(n != null ? n : Chat.n);                                                             // Number of Completions
+
+            return buildParams(params, devMessage, prompt, messages, images);                               // Finalize Parameters
+        }
+
+        // Builder
+        public static ChatCompletionCreateParams buildParams(@Nullable SearchModel searchModel, @Nullable String user, @Nullable Long maxTokens, @Nullable SearchContextSize searchContextSize, @Nullable String country, @Nullable String region, @Nullable String city, @Nullable String timezone, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
+
+            // Determine WebSearch Options
+            var params = ChatCompletionCreateParams.builder()
+                    .model(searchModel != null ? searchModel.getName() : Chat.searchModel.getName())        // Model
+                    .user(user != null ? user : Chat.user == null ? "" : Chat.user)                         // User
+                    .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                    // Max Tokens
+                    .webSearchOptions(buildParams(searchContextSize, country, city, region, timezone));     // WebSearch Options
+
+            return buildParams(params, devMessage, prompt, messages, images);                               // Finalize Parameters
+        }
+
+        // Finalize Parameters
+        private static ChatCompletionCreateParams buildParams(ChatCompletionCreateParams.Builder params, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
             // Add Message History
             if (messages != null && !messages.isEmpty()) {
@@ -99,6 +129,27 @@ public class Builder {
             return params.addUserMessage(prompt).build();                                                   // Add User Message
         }
 
+        // Build WebSearch Options
+        public static WebSearchOptions buildParams(@Nullable SearchContextSize searchContextSize, @Nullable String country, @Nullable String city, @Nullable String region, @Nullable String timezone) {
+
+            // Determine User Location
+            var approximation = WebSearchOptions.UserLocation.Approximate.builder();
+            String s = country != null ? country : Chat.country;
+            String r = region != null ? region : Chat.region;
+            String c = city != null ? city : Chat.city;
+            String t = timezone != null ? timezone : Chat.timezone;
+
+            if (s != null) approximation.country(s);    // Country
+            if (r != null) approximation.region(r);     // Region
+            if (c != null) approximation.city(c);       // City
+            if (t != null) approximation.timezone(t);   // Timezone
+
+            // Build Parameters
+            var params = WebSearchOptions.builder().searchContextSize(searchContextSize != null ? searchContextSize.size() : Chat.searchContextSize.size()); // Search Context Size
+            if (s != null || c != null || r != null || t != null) params.userLocation(WebSearchOptions.UserLocation.builder().approximate(approximation.build()).build());
+            return params.build();
+        }
+
         // Setter
         public static void setConfig(JsonNode config) {
 
@@ -108,8 +159,15 @@ public class Builder {
 
             // Load Setup
             model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : CHATGPT_4O_LATEST;
-            user = config.has("user") ? config.get("user").asText() : "";
-            devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : "";
+            searchModel = chat.has("searchModel") ? SearchModel.getModel(chat.get("searchModel").asText()) : SearchModel.GPT_4O_SEARCH_PREVIEW;
+            user = config.has("user") ? config.get("user").asText() : null;
+            devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : null;
+
+            // Load Location
+            country = config.has("country") ? config.get("country").asText() : null;
+            city = config.has("city") ? config.get("city").asText() : null;
+            region = config.has("region") ? config.get("region").asText() : null;
+            timezone = config.has("timezone") ? config.get("timezone").asText() : null;
 
             // Load Configuration
             temperature = chat.has("temperature") ? chat.get("temperature").asDouble() : 1d;
@@ -118,6 +176,7 @@ public class Builder {
             presencePenalty = chat.has("presencePenalty") ? chat.get("presencePenalty").asDouble() : 0d;
             n = chat.has("n") ? chat.get("n").asLong() : 1L;
             maxTokens = chat.has("maxTokens") ? chat.get("maxTokens").asLong() : 120;
+            searchContextSize = chat.has("searchContextSize") ? SearchContextSize.getSearchContextSize(chat.get("searchContextSize").asText()) : SearchContextSize.HIGH;
         }
 
         public static void setTemperature(Double temperature) {
@@ -144,8 +203,32 @@ public class Builder {
             Chat.maxTokens = maxTokens;
         }
 
+        public static void setSearchContextSize(SearchContextSize searchContextSize) {
+            Chat.searchContextSize = searchContextSize;
+        }
+
+        public static void setCountry(String country) {
+            Chat.country = country;
+        }
+
+        public static void setCity(String city) {
+            Chat.city = city;
+        }
+
+        public static void setRegion(String region) {
+            Chat.region = region;
+        }
+
+        public static void setTimezone(String timezone) {
+            Chat.timezone = timezone;
+        }
+
         public static void setModel(ChatModel model) {
             Chat.model = model;
+        }
+
+        public static void setSearchModel(SearchModel searchModel) {
+            Chat.searchModel = searchModel;
         }
 
         public static void setUser(String user) {
@@ -181,8 +264,32 @@ public class Builder {
             return maxTokens;
         }
 
+        public static SearchContextSize getSearchContextSize() {
+            return searchContextSize;
+        }
+
+        public static String getCountry() {
+            return country;
+        }
+
+        public static String getCity() {
+            return city;
+        }
+
+        public static String getRegion() {
+            return region;
+        }
+
+        public static String getTimezone() {
+            return timezone;
+        }
+
         public static ChatModel getModel() {
             return model;
+        }
+
+        public static SearchModel getSearchModel() {
+            return searchModel;
         }
 
         public static String getUser() {
@@ -199,7 +306,7 @@ public class Builder {
         // Setup
         private static AudioModel model = WHISPER_1;
         private static Language language = null;
-        private static String prompt = "";
+        private static String prompt = null;
 
         // Configuration
         private static Double temperature = 1d;
@@ -233,7 +340,7 @@ public class Builder {
             // Load Setup
             model = transcription.has("model") ? AudioModel.getModel(transcription.get("model").asText()) : WHISPER_1;
             language = transcription.has("language") ? Language.getLanguage(transcription.get("language").asText()) : null;
-            prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : "";
+            prompt = transcription.has("prompt") ? transcription.get("prompt").asText() : null;
 
             // Load Configuration
             temperature = transcription.has("temperature") ? transcription.get("temperature").asDouble() : 1d;
@@ -360,7 +467,7 @@ public class Builder {
 
         // Setup
         private static ImageModel model = DALL_E_2;
-        private static String user = "";
+        private static String user = null;
 
         // Configuration
         private static Size size = _256X256;
@@ -403,7 +510,7 @@ public class Builder {
             return builder()
                     .responseFormat(B64_JSON)
                     .model(DALL_E_2)
-                    .user(user != null ? user : Images.user)
+                    .user(user != null ? user : Images.user == null ? "" : Images.user)
                     .size(s)
                     .n(n != null ? n : Images.n)
                     .prompt(prompt)
@@ -420,7 +527,7 @@ public class Builder {
             // Build Parameters
             return builder()
                     .model(ImageModel.DALL_E_3)
-                    .user(user != null ? user : Images.user)
+                    .user(user != null ? user : Images.user == null ? "" : Images.user)
                     .size(s)
                     .quality(quality != null ? quality : Images.quality)
                     .style(style != null ? style : Images.style)
@@ -437,7 +544,7 @@ public class Builder {
 
             // Load Setup
             model = image.has("model") ? Helper.getImageModel(image.get("model").asText()) : DALL_E_2;
-            user = config.has("user") ? config.get("user").asText() : "";
+            user = config.has("user") ? config.get("user").asText() : null;
 
             // Load Configuration
             size = image.has("size") ? Helper.getSize(image.get("size").asText()) : _1024X1024;
@@ -529,7 +636,7 @@ public class Builder {
 
         // Setup
         private static EmbeddingModel model = TEXT_EMBEDDING_3_LARGE;
-        private static String user = "";
+        private static String user = null;
 
         // Configuration
         private static Long dimensions = null;
@@ -539,10 +646,13 @@ public class Builder {
 
             // Determine Parameters
             var m = model != null ? model : Embeddings.model;
+            var u = user != null ? user : Embeddings.user;
             var d = dimensions != null ? dimensions : Embeddings.dimensions;
 
             // Build Parameters
-            var params = EmbeddingCreateParams.builder().model(m.getModel()).user(user != null ? user : Embeddings.user);
+            var params = EmbeddingCreateParams.builder();
+            if (m != null) params.model(m.getModel());      // Model
+            if (u != null && !u.isBlank()) params.user(u);  // User
 
             // Check Model
             if (TEXT_EMBEDDING_3_LARGE.equals(m) && d != null && d > 0) params.dimensions(d);
@@ -561,7 +671,7 @@ public class Builder {
 
             // Load Setup
             model = embeddings.has("model") ? EmbeddingModel.getModel(embeddings.get("model").asText()) : TEXT_EMBEDDING_3_LARGE;
-            user = config.has("user") ? config.get("user").asText() : "";
+            user = config.has("user") ? config.get("user").asText() : null;
 
             // Load Configuration
             dimensions = embeddings.has("dimensions") ? embeddings.get("dimensions").asLong() : null;

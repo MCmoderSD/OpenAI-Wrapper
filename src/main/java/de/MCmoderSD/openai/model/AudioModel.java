@@ -118,6 +118,6 @@ public enum AudioModel {
     public static AudioModel getModel(String model) {
         if (model == null || model.isBlank()) return null;
         for (AudioModel m : AudioModel.values()) if (m.getName().equalsIgnoreCase(model)) return m;
-        throw new IllegalArgumentException("Invalid SpeechModel value: " + model);
+        throw new IllegalArgumentException("Invalid AudioModel value: " + model);
     }
 }

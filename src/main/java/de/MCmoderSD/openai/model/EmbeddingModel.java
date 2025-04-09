@@ -137,6 +137,6 @@ public enum EmbeddingModel {
     public static EmbeddingModel getModel(String model) {
         if (model == null || model.isBlank()) return null;
         for (EmbeddingModel m : EmbeddingModel.values()) if (m.getName().equalsIgnoreCase(model)) return m;
-        throw new IllegalArgumentException("Invalid SpeechModel value: " + model);
+        throw new IllegalArgumentException("Invalid EmbeddingModel value: " + model);
     }
 }

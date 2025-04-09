@@ -6,6 +6,7 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.http.HttpResponse;
 
+import com.openai.core.http.StreamResponse;
 import com.openai.models.ChatModel;
 
 import com.openai.models.audio.speech.SpeechCreateParams;
@@ -13,7 +14,9 @@ import com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat;
 import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 
+import com.openai.models.audio.transcriptions.TranscriptionStreamEvent;
 import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionChunk;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 import com.openai.models.embeddings.CreateEmbeddingResponse;
@@ -28,11 +31,13 @@ import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
 
 import de.MCmoderSD.openai.enums.Language;
+import de.MCmoderSD.openai.enums.SearchContextSize;
 import de.MCmoderSD.openai.helper.Builder;
 
 import de.MCmoderSD.openai.model.AudioModel;
 import de.MCmoderSD.openai.model.EmbeddingModel;
 import de.MCmoderSD.openai.model.ModerationModel;
+import de.MCmoderSD.openai.model.SearchModel;
 import de.MCmoderSD.openai.model.SpeechModel;
 
 import de.MCmoderSD.openai.objects.ChatHistory;
@@ -105,8 +110,16 @@ public class OpenAI {
         return client.chat().completions().create(params);
     }
 
+    private StreamResponse<ChatCompletionChunk> createChatCompletionStream(ChatCompletionCreateParams params) {
+        return client.chat().completions().createStreaming(params);
+    }
+
     private Transcription createTranscription(TranscriptionCreateParams params) {
         return client.audio().transcriptions().create(params).asTranscription();
+    }
+
+    private StreamResponse<TranscriptionStreamEvent> createTranscriptionStream(TranscriptionCreateParams params) {
+        return client.audio().transcriptions().createStreaming(params);
     }
 
     private HttpResponse createSpeech(SpeechCreateParams params) {
@@ -181,6 +194,54 @@ public class OpenAI {
                 frequencyPenalty,   // Frequency Penalty
                 presencePenalty,    // Presence Penalty
                 n,                  // Number of Completions
+                devMessage,         // Developer Message
+                prompt,             // Prompt
+                messages,           // Messages
+                encodedImages       // Images
+        );
+
+        // Execute Chat Completion
+        var completion = createChatCompletion(params);
+
+        var chatPrompt = new ChatPrompt(prompt, completion);
+
+        // Add ChatPrompt to History
+        if (id != null) chatHistory.get(id).addPrompt(chatPrompt);
+
+        return chatPrompt;
+    }
+
+    // Search
+    public ChatPrompt search(@Nullable SearchModel searchModel, @Nullable String user, @Nullable Long maxTokens, @Nullable SearchContextSize searchContextSize, @Nullable String country, @Nullable String region, @Nullable String city, @Nullable String timezone, @Nullable String devMessage, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
+
+        // Encode Images
+        ArrayList<String> encodedImages = null;
+        if (images != null && !images.isEmpty()) for (BufferedImage image : images) {
+            try {
+                encodedImages = new ArrayList<>();
+                encodedImages.add(encodeToDataURI(convertToPNG(image), "png"));
+            } catch (IOException e) {
+                System.err.println("Error encoding image: " + e.getMessage());
+            }
+        }
+
+        // Check Parameters
+        if (!checkParameter(maxTokens, null, null, null, null, null, encodedImages)) return null;
+
+        // Check if Chat History exists
+        if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
+        var messages = id != null ? chatHistory.get(id).getMessages() : null;
+
+        // Create Chat Completion
+        var params = Builder.Chat.buildParams(
+                searchModel,        // Search Model
+                user,               // User
+                maxTokens,          // Max Tokens
+                searchContextSize,  // Search Context Size
+                country,            // Country
+                region,             // Region
+                city,               // City
+                timezone,           // Timezone
                 devMessage,         // Developer Message
                 prompt,             // Prompt
                 messages,           // Messages

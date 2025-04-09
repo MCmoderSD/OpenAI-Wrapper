@@ -7,15 +7,18 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 
 ### Supported Features:
 - **Chat API**: Generate conversational responses with advanced models.
-- **Vision API**: Analyze and understand images with state-of-the-art models.
+- **Web Search API**: Perform web searches and retrieve relevant information.
+- **Vision API**: Analyze and interpret images, including image generation.
 - **Moderation API**: Detect and filter inappropriate content from text inputs.
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
-- **Speech API**: Convert text to speech with customizable voices and formats.
+- **Speech API**: Convert text to speech with customizable voices.
 - **Image API**: Generate images from text prompts with various styles and qualities.
 - **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 
 ### Planned Features:
-- **Web Search API**: Integrate web search capabilities for enhanced data retrieval.
+- **Reasoning API**: Perform complex reasoning tasks with advanced models.
+- **Chat API Streaming**: Stream chat responses for real-time interactions.
+- **Transcription API Streaming**: Stream audio transcription for real-time processing.
 
 ## Usage
 
@@ -35,7 +38,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.5.6</version>
+    <version>2.6.0</version>
 </dependency>
 ```
 
@@ -49,15 +52,22 @@ To configure the utility, provide a `JsonNode` with the following structure:
   "organizationId": "YOUR_ORGANIZATION_ID",
   "projectId": "YOUR_PROJECT_ID",
 
+  "country": "YOUR_COUNTRY",
+  "region": "YOUR_REGION",
+  "city": "YOUR_CITY",
+  "timezone": "YOUR/TIMEZONE",
+
   "chat": {
     "model": "gpt-4o",
+    "searchModel": "gpt-4o-search-preview",
     "temperature": 1,
     "topP": 1,
     "frequencyPenalty": 0,
     "presencePenalty": 0,
     "n" : 1,
     "maxTokens": 120,
-    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr."
+    "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr.",
+    "searchContextSize": "high"
   },
 
   "moderation": {
@@ -97,20 +107,22 @@ Note: <br>
 - Obtain your API key from [OpenAI](https://platform.openai.com/signup). <br>
 - The `user` field such as the` organizationId` and `projectId` are optional. Leaving them empty or removing them will not affect the functionality of the wrapper. <br>
 - The IDs are used for tracking purposes and can be obtained from the [OpenAI dashboard](https://platform.openai.com/settings/organization/general). <br>
-
+- The location is used for web search user location, to improve the search results. <br>
 <hr>
 
 ### Chat Configuration
-| **Field**        | **Description**                                                                                |
-|:-----------------|:-----------------------------------------------------------------------------------------------|
-| model            | Model used for generating text. (Default: `chatgpt-4o-latest`)                                 |
-| temperature      | Controls randomness: `0` (deterministic) to `2` (creative). (Default: `1`)                     |
-| topP             | Nucleus sampling: `0` (plain) to `1` (creative). (Default: `1`)                                |
-| frequencyPenalty | Reduces repetition of words. Values range from `0` to `1`. (Default: `0`)                      |
-| presencePenalty  | Discourages repeating words from the conversation. Values range from `0` to `1` (Default: `0`) |
-| n                | Number of completions to generate. (Default: `1`)                                              |
-| maxTokens        | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
-| devMessage       | Provides guidance for the bot's behavior.                                                      |
+| **Field**         | **Description**                                                                                |
+|:------------------|:-----------------------------------------------------------------------------------------------|
+| model             | Model used for generating text. (Default: `chatgpt-4o-latest`)                                 |
+| searchModel       | Model used for web search. (Default: `gpt-4o-search-preview`)                                  |
+| temperature       | Controls randomness: `0` (deterministic) to `2` (creative). (Default: `1`)                     |
+| topP              | Nucleus sampling: `0` (plain) to `1` (creative). (Default: `1`)                                |
+| frequencyPenalty  | Reduces repetition of words. Values range from `0` to `1`. (Default: `0`)                      |
+| presencePenalty   | Discourages repeating words from the conversation. Values range from `0` to `1` (Default: `0`) |
+| n                 | Number of completions to generate. (Default: `1`)                                              |
+| maxTokens         | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
+| devMessage        | Provides guidance for the bot's behavior.                                                      |
+| searchContextSize | Size of the context for web search. Options: `low`, `medium`, `high`. (Default: `high`)        |
 
 ### Moderation Configuration
 | **Field** | **Description**                                                     |
@@ -491,6 +503,81 @@ public class VisionExample {
         System.out.println("Prompt Cost: " + chatPrompt.getCachedInputTokens());
         System.out.println("Output Tokens: " + chatPrompt.getOutputTokens());
         System.out.println("Total Tokens: " + chatPrompt.getTotalTokens());
+    }
+}
+```
+
+### Web Search Example
+```java
+package chat;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ChatPrompt;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+import static de.MCmoderSD.openai.enums.SearchContextSize.*;
+
+public class SearchExample {
+
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
+
+        // Configure OpenAI
+        Builder.Chat.setConfig(config);
+
+        // Setup Chat
+        System.out.println("Enter your search prompt (type 'exit' to quit):");
+        System.out.println("You: ");
+
+        // Prompt Loop
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Generate Chat Prompt
+            ChatPrompt chatPrompt = openAI.search(
+                    null,       // Search Model
+                    null,       // User
+                    null,       // Max Tokens
+                    HIGH,       // Search Context Size
+                    null,       // Country
+                    null,       // Region
+                    null,       // City
+                    null,       // Timezone
+                    null,       // Developer Message
+                    null,       // ID
+                    userInput,  // User Message
+                    null        // System Message
+            );
+
+            // Get Response
+            String response = chatPrompt.getText();
+
+            // Print Response
+            System.out.println("\nResponse: \n" + response + "\n");
+            System.out.print("You: \n");
+        }
     }
 }
 ```

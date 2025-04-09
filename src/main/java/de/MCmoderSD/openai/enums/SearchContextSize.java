@@ -33,4 +33,16 @@ public enum SearchContextSize {
     public ChatCompletionCreateParams.WebSearchOptions.SearchContextSize size() {
         return searchContextSize;
     }
+
+    /**
+     * Returns the search context size based on the provided string.
+     *
+     * @param string The string representation of the search context size.
+     * @return The corresponding SearchContextSize enum value, or null if not found.
+     */
+    public static SearchContextSize getSearchContextSize(String string) {
+        if (string == null || string.isBlank()) return null;
+        for (SearchContextSize size : SearchContextSize.values()) if (size.name().equalsIgnoreCase(string)) return size;
+        return null;
+    }
 }
