@@ -3,6 +3,7 @@ package de.MCmoderSD.openai.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import com.openai.models.ChatModel;
+import com.openai.models.ReasoningEffort;
 import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechCreateParams.Voice;
@@ -16,14 +17,11 @@ import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import com.openai.models.moderations.ModerationCreateParams;
 
+import de.MCmoderSD.openai.enums.Input;
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.enums.SearchContextSize;
 
-import de.MCmoderSD.openai.model.AudioModel;
-import de.MCmoderSD.openai.model.EmbeddingModel;
-import de.MCmoderSD.openai.model.ModerationModel;
-import de.MCmoderSD.openai.model.SearchModel;
-import de.MCmoderSD.openai.model.SpeechModel;
+import de.MCmoderSD.openai.model.*;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +58,7 @@ public class Builder {
         // Setup
         private static ChatModel model = CHATGPT_4O_LATEST;
         private static SearchModel searchModel = SearchModel.GPT_4O_SEARCH_PREVIEW;
+        private static ReasoningModel reasoningModel = ReasoningModel.O3_MINI;
         private static String user = null;
         private static String devMessage = null;
 
@@ -77,6 +76,7 @@ public class Builder {
         private static Long n = 1L;
         private static Long maxTokens = 120L;
         private static SearchContextSize searchContextSize = SearchContextSize.HIGH;
+        private static ReasoningEffort reasoningEffort = ReasoningEffort.HIGH;
 
         // Builder
         public static ChatCompletionCreateParams buildParams(@Nullable ChatModel chatModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
@@ -94,19 +94,49 @@ public class Builder {
             return buildParams(params, devMessage, prompt, messages, images);                               // Finalize Parameters
         }
 
-        // Builder
+        // Search Builder
         public static ChatCompletionCreateParams buildParams(@Nullable SearchModel searchModel, @Nullable String user, @Nullable Long maxTokens, @Nullable SearchContextSize searchContextSize, @Nullable String country, @Nullable String region, @Nullable String city, @Nullable String timezone, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
-            // Determine WebSearch Options
+            // Determine Search Model
+            var s = searchModel != null ? searchModel : Chat.searchModel;
+
+            // Check Images
+            if (images != null && !images.isEmpty() && !s.hasInput(Input.IMAGE)) throw new IllegalArgumentException("The Search Model " + s.getName() + " does not support image input.");
+
+            // Build Parameters
             var params = ChatCompletionCreateParams.builder()
-                    .model(searchModel != null ? searchModel.getName() : Chat.searchModel.getName())        // Model
+                    .model(s.getName())                                                                     // Model
                     .user(user != null ? user : Chat.user == null ? "" : Chat.user)                         // User
                     .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                    // Max Tokens
                     .webSearchOptions(buildParams(searchContextSize, country, city, region, timezone));     // WebSearch Options
 
             return buildParams(params, devMessage, prompt, messages, images);                               // Finalize Parameters
         }
+/*      ToDo: Wait for OpenAI to fix
+        // Reasoning Builder
+        public static ChatCompletionCreateParams buildParams(@Nullable ReasoningModel reasoningModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable ReasoningEffort reasoningEffort, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
+            // Determine Reasoning Model
+            var r = reasoningModel != null ? reasoningModel : Chat.reasoningModel;
+
+            // Check Images
+            if (images != null && !images.isEmpty() && !r.hasInput(Input.IMAGE)) throw new IllegalArgumentException("The Reasoning Model " + r.getName() + " does not support image input.");
+
+            // Build Parameters
+            var params = ChatCompletionCreateParams.builder()
+                    .model(r.getName())                                                                         // Model
+                    .user(user != null ? user : Chat.user == null ? "" : Chat.user)                             // User
+                    .maxCompletionTokens(maxTokens != null ? maxTokens : Chat.maxTokens)                        // Max Tokens
+                    .temperature(Temperature != null ? Temperature : Chat.temperature)                          // Temperature
+                    .topP(topP != null ? topP : Chat.topP)                                                      // Top P
+                    .frequencyPenalty(frequencyPenalty != null ? frequencyPenalty : Chat.frequencyPenalty)      // Frequency Penalty
+                    .presencePenalty(presencePenalty != null ? presencePenalty : Chat.presencePenalty)          // Presence Penalty
+                    .n(n != null ? n : Chat.n)                                                                  // Number of Completions
+                    .reasoningEffort(reasoningEffort != null ? reasoningEffort : Chat.reasoningEffort);         // Reasoning Effort
+
+            return buildParams(params, "", prompt, messages, images);                                   // Finalize Parameters
+        }
+*/
         // Finalize Parameters
         private static ChatCompletionCreateParams buildParams(ChatCompletionCreateParams.Builder params, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
@@ -160,6 +190,7 @@ public class Builder {
             // Load Setup
             model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : CHATGPT_4O_LATEST;
             searchModel = chat.has("searchModel") ? SearchModel.getModel(chat.get("searchModel").asText()) : SearchModel.GPT_4O_SEARCH_PREVIEW;
+            reasoningModel = chat.has("reasoningModel") ? ReasoningModel.getModel(chat.get("reasoningModel").asText()) : ReasoningModel.O3_MINI;
             user = config.has("user") ? config.get("user").asText() : null;
             devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : null;
 
@@ -177,6 +208,7 @@ public class Builder {
             n = chat.has("n") ? chat.get("n").asLong() : 1L;
             maxTokens = chat.has("maxTokens") ? chat.get("maxTokens").asLong() : 120;
             searchContextSize = chat.has("searchContextSize") ? SearchContextSize.getSearchContextSize(chat.get("searchContextSize").asText()) : SearchContextSize.HIGH;
+            reasoningEffort = chat.has("reasoningEffort") ? Helper.getReasoningEffort(chat.get("reasoningEffort").asText()) : ReasoningEffort.HIGH;
         }
 
         public static void setTemperature(Double temperature) {
@@ -207,6 +239,10 @@ public class Builder {
             Chat.searchContextSize = searchContextSize;
         }
 
+        public static void setReasoningEffort(ReasoningEffort reasoningEffort) {
+            Chat.reasoningEffort = reasoningEffort;
+        }
+
         public static void setCountry(String country) {
             Chat.country = country;
         }
@@ -229,6 +265,10 @@ public class Builder {
 
         public static void setSearchModel(SearchModel searchModel) {
             Chat.searchModel = searchModel;
+        }
+
+        public static void setReasoningModel(ReasoningModel reasoningModel) {
+            Chat.reasoningModel = reasoningModel;
         }
 
         public static void setUser(String user) {
@@ -268,6 +308,10 @@ public class Builder {
             return searchContextSize;
         }
 
+        public static ReasoningEffort getReasoningEffort() {
+            return reasoningEffort;
+        }
+
         public static String getCountry() {
             return country;
         }
@@ -290,6 +334,10 @@ public class Builder {
 
         public static SearchModel getSearchModel() {
             return searchModel;
+        }
+
+        public static ReasoningModel getReasoningModel() {
+            return reasoningModel;
         }
 
         public static String getUser() {

@@ -1,6 +1,7 @@
 package de.MCmoderSD.openai.helper;
 
 import com.openai.models.ChatModel;
+import com.openai.models.ReasoningEffort;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
 import com.openai.models.chat.completions.ChatCompletionContentPartImage;
@@ -84,6 +85,17 @@ public class Helper {
         else {
             try {
                 return ImageModel.Companion.of(model);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public static ReasoningEffort getReasoningEffort(String reasoningEffort) {
+        if (reasoningEffort == null || reasoningEffort.isBlank()) return null;
+        else {
+            try {
+                return ReasoningEffort.Companion.of(reasoningEffort);
             } catch (IllegalArgumentException e) {
                 return null;
             }

@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static de.MCmoderSD.openai.helper.Dates.KNOWLEDGE_CUTOFF_2023_10_01;
+import static de.MCmoderSD.openai.other.Dates.KNOWLEDGE_CUTOFF_2023_10_01;
 
 /**
  * The {@code SearchModel} enum represents various search models available in the OpenAI API.

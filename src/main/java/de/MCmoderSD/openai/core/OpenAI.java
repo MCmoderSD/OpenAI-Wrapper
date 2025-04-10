@@ -34,11 +34,7 @@ import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.enums.SearchContextSize;
 import de.MCmoderSD.openai.helper.Builder;
 
-import de.MCmoderSD.openai.model.AudioModel;
-import de.MCmoderSD.openai.model.EmbeddingModel;
-import de.MCmoderSD.openai.model.ModerationModel;
-import de.MCmoderSD.openai.model.SearchModel;
-import de.MCmoderSD.openai.model.SpeechModel;
+import de.MCmoderSD.openai.model.*;
 
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
@@ -211,7 +207,7 @@ public class OpenAI {
         return chatPrompt;
     }
 
-    // Search
+    // Search with all Parameters
     public ChatPrompt search(@Nullable SearchModel searchModel, @Nullable String user, @Nullable Long maxTokens, @Nullable SearchContextSize searchContextSize, @Nullable String country, @Nullable String region, @Nullable String city, @Nullable String timezone, @Nullable String devMessage, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
 
         // Encode Images

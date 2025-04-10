@@ -16,7 +16,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 
 ### Planned Features:
-- **Reasoning API**: Perform complex reasoning tasks with advanced models.
+- **Reasoning API**: Perform complex reasoning tasks with advanced models. **[WIP]**
 - **Chat API Streaming**: Stream chat responses for real-time interactions.
 - **Transcription API Streaming**: Stream audio transcription for real-time processing.
 
@@ -60,6 +60,7 @@ To configure the utility, provide a `JsonNode` with the following structure:
   "chat": {
     "model": "gpt-4o",
     "searchModel": "gpt-4o-search-preview",
+    "reasoningModel": "o3-mini",
     "temperature": 1,
     "topP": 1,
     "frequencyPenalty": 0,
@@ -67,7 +68,8 @@ To configure the utility, provide a `JsonNode` with the following structure:
     "n" : 1,
     "maxTokens": 120,
     "devMessage": "Answer like a Pirate, use the word 'Arrr' in your sentences and especially at the end. You don't use emojis just common pirate words and especially the Arrr.",
-    "searchContextSize": "high"
+    "searchContextSize": "high",
+    "reasoningEffort": "high"
   },
 
   "moderation": {

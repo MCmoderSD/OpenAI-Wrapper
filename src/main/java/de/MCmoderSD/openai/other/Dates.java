@@ -1,4 +1,4 @@
-package de.MCmoderSD.openai.helper;
+package de.MCmoderSD.openai.other;
 
 import java.util.Calendar;
 import java.util.Date;

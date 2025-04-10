@@ -2,6 +2,7 @@ package de.MCmoderSD.openai.objects;
 
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletion.Choice.FinishReason;
 import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
@@ -42,6 +43,7 @@ public class ChatPrompt {
     // Content
     private final ArrayList<ChatCompletion.Choice> choices;
     private final ArrayList<ChatCompletionMessage> messages;
+    private final ArrayList<FinishReason> finishReasons;
     private final ArrayList<String> content = new ArrayList<>();
 
     /**
@@ -79,7 +81,14 @@ public class ChatPrompt {
         // Extract Content
         choices = new ArrayList<>(output.choices());
         messages = new ArrayList<>();
-        choices.forEach(choice -> messages.add(choice.message()));
+        finishReasons = new ArrayList<>();
+
+        // Extract Content from Choices
+        choices.forEach(choice -> {
+            messages.add(choice.message());
+            finishReasons.add(choice.finishReason());
+        });
+
         messages.forEach(message -> {
             StringBuilder content = new StringBuilder();
             message.content().ifPresent(content::append);
@@ -229,6 +238,15 @@ public class ChatPrompt {
      */
     public ArrayList<ChatCompletionMessage> getMessages() {
         return messages;
+    }
+
+    /**
+     * Gets the list of finish reasons from the chat completion response.
+     *
+     * @return The list of finish reasons
+     */
+    public ArrayList<FinishReason> getFinishReasons() {
+        return finishReasons;
     }
 
     /**
