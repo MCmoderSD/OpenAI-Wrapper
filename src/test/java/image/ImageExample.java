@@ -39,7 +39,8 @@ public class ImageExample {
         OpenAI openAI = new OpenAI(
                 apiKey,     // API Key (required)
                 null,       // Organization (optional)
-                null        // Project (optional)
+                null,       // Project (optional)
+                null        // Endpoint (optional)
         );
 
         // Configure OpenAI
