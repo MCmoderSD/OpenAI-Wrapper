@@ -4,7 +4,7 @@ import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import de.MCmoderSD.openai.enums.Language;
-import de.MCmoderSD.openai.model.AudioModel;
+import de.MCmoderSD.openai.models.AudioModel;
 
 /**
  * Represents a prompt for audio transcription.

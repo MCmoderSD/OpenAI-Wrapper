@@ -1,10 +1,14 @@
-package de.MCmoderSD.openai.model;
+package de.MCmoderSD.openai.models;
 
+import de.MCmoderSD.openai.enums.Input;
+import de.MCmoderSD.openai.enums.Output;
 import de.MCmoderSD.openai.enums.Performance;
 import de.MCmoderSD.openai.enums.Speed;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Enum representing different embedding models with their respective performance, speed, cost, and dimensions.
@@ -13,32 +17,38 @@ import java.math.RoundingMode;
 public enum EmbeddingModel {
 
     // Enum Values
-    TEXT_EMBEDDING_ADA_002(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_ADA_002, Performance.LOW, Speed.SLOW, 10, 1536, 1536),
-    TEXT_EMBEDDING_3_SMALL(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_3_SMALL, Performance.AVERAGE, Speed.MEDIUM, 2, 1536, 1536),
-    TEXT_EMBEDDING_3_LARGE(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_3_LARGE, Performance.HIGH, Speed.SLOW, 13, 1, 3072);
+    TEXT_EMBEDDING_ADA_002(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_ADA_002, Performance.LOW, Speed.SLOW, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)), 10, 1536, 1536),
+    TEXT_EMBEDDING_3_SMALL(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_3_SMALL, Performance.AVERAGE, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)), 2, 1536, 1536),
+    TEXT_EMBEDDING_3_LARGE(com.openai.models.embeddings.EmbeddingModel.TEXT_EMBEDDING_3_LARGE, Performance.HIGH, Speed.SLOW, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)), 13, 1, 3072);
 
     // Attributes
     private final com.openai.models.embeddings.EmbeddingModel model;
     private final Performance performance;
     private final Speed speed;
+    private final HashSet<Input> inputs;
+    private final HashSet<Output> outputs;
     private final BigDecimal cost;
     private final int minDimensions;
     private final int maxDimensions;
 
     /**
-     * Constructor for EmbeddingModel enum.
+     * Constructs an {@code EmbeddingModel} with the specified attributes.
      *
-     * @param model The embedding model.
-     * @param performance The performance level.
-     * @param speed The speed level.
-     * @param centPerMillionTokens The cost in cents per million tokens.
-     * @param minDimensions The minimum dimensions.
-     * @param maxDimensions The maximum dimensions.
+     * @param model          The underlying embedding model.
+     * @param performance    The performance level of the model.
+     * @param speed          The speed of the model.
+     * @param inputs         The supported input types.
+     * @param outputs        The supported output types.
+     * @param centPerMillionTokens The cost per million tokens in cents.
+     * @param minDimensions  The minimum dimensions for the embedding.
+     * @param maxDimensions  The maximum dimensions for the embedding.
      */
-    EmbeddingModel(com.openai.models.embeddings.EmbeddingModel model, Performance performance, Speed speed, int centPerMillionTokens, int minDimensions, int maxDimensions) {
+    EmbeddingModel(com.openai.models.embeddings.EmbeddingModel model, Performance performance, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs, int centPerMillionTokens, int minDimensions, int maxDimensions) {
         this.model = model;
         this.performance = performance;
         this.speed = speed;
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.minDimensions = minDimensions;
         this.maxDimensions = maxDimensions;
         this.cost = BigDecimal.valueOf(centPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
@@ -78,6 +88,26 @@ public enum EmbeddingModel {
      */
     public Speed getSpeed() {
         return speed;
+    }
+
+    /**
+     * Checks if the model supports the specified input type.
+     *
+     * @param input The input type to check.
+     * @return {@code true} if the input type is supported, {@code false} otherwise.
+     */
+    public boolean hasInput(Input input) {
+        return inputs.contains(input);
+    }
+
+    /**
+     * Checks if the model supports the specified output type.
+     *
+     * @param output The output type to check.
+     * @return {@code true} if the output type is supported, {@code false} otherwise.
+     */
+    public boolean hasOutput(Output output) {
+        return outputs.contains(output);
     }
 
     /**

@@ -4,7 +4,7 @@ import com.openai.models.embeddings.CreateEmbeddingResponse;
 import com.openai.models.embeddings.CreateEmbeddingResponse.Usage;
 import com.openai.models.embeddings.EmbeddingCreateParams;
 import com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat;
-import de.MCmoderSD.openai.model.EmbeddingModel;
+import de.MCmoderSD.openai.models.EmbeddingModel;
 
 import java.math.BigDecimal;
 

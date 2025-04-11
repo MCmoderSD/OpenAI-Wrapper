@@ -71,89 +71,73 @@ public class Helper {
     // Get Models
     public static ChatModel getChatModel(String model) {
         if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return ChatModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ChatModel.Companion.of(model);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static ImageModel getImageModel(String model) {
         if (model == null || model.isBlank()) return null;
-        else {
-            try {
-                return ImageModel.Companion.of(model);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ImageModel.Companion.of(model);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static ReasoningEffort getReasoningEffort(String reasoningEffort) {
         if (reasoningEffort == null || reasoningEffort.isBlank()) return null;
-        else {
-            try {
-                return ReasoningEffort.Companion.of(reasoningEffort);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ReasoningEffort.Companion.of(reasoningEffort);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static SpeechCreateParams.Voice getVoice(String voice) {
         if (voice == null || voice.isBlank()) return null;
-        else {
-            try {
-                return SpeechCreateParams.Voice.Companion.of(voice);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return SpeechCreateParams.Voice.Companion.of(voice);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static SpeechCreateParams.ResponseFormat getResponseFormat(String format) {
         if (format == null || format.isBlank()) return null;
-        else {
-            try {
-                return SpeechCreateParams.ResponseFormat.Companion.of(format);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return SpeechCreateParams.ResponseFormat.Companion.of(format);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static ImageGenerateParams.Size getSize(String size) {
         if (size == null || size.isBlank()) return null;
-        else {
-            try {
-                return ImageGenerateParams.Size.Companion.of(size);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ImageGenerateParams.Size.Companion.of(size);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static ImageGenerateParams.Quality getQuality(String quality) {
         if (quality == null || quality.isBlank()) return null;
-        else {
-            try {
-                return ImageGenerateParams.Quality.Companion.of(quality);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ImageGenerateParams.Quality.Companion.of(quality);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     public static ImageGenerateParams.Style getStyle(String style) {
         if (style == null || style.isBlank()) return null;
-        else {
-            try {
-                return ImageGenerateParams.Style.Companion.of(style);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+        try {
+            return ImageGenerateParams.Style.Companion.of(style);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 }

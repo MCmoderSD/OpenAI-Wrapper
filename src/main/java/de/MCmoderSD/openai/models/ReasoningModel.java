@@ -1,4 +1,4 @@
-package de.MCmoderSD.openai.model;
+package de.MCmoderSD.openai.models;
 
 import com.openai.models.ChatModel;
 import de.MCmoderSD.openai.enums.*;

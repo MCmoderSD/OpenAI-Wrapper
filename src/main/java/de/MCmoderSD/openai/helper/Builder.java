@@ -21,7 +21,7 @@ import de.MCmoderSD.openai.enums.Input;
 import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.enums.SearchContextSize;
 
-import de.MCmoderSD.openai.model.*;
+import de.MCmoderSD.openai.models.*;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -36,10 +36,12 @@ import static com.openai.models.images.ImageGenerateParams.ResponseFormat.*;
 import static com.openai.models.images.ImageGenerateParams.Size.*;
 import static com.openai.models.images.ImageModel.*;
 import static de.MCmoderSD.openai.helper.Helper.addImage;
-import static de.MCmoderSD.openai.model.AudioModel.*;
-import static de.MCmoderSD.openai.model.EmbeddingModel.*;
-import static de.MCmoderSD.openai.model.ModerationModel.*;
-import static de.MCmoderSD.openai.model.SpeechModel.*;
+import static de.MCmoderSD.openai.models.AudioModel.*;
+import static de.MCmoderSD.openai.models.EmbeddingModel.*;
+import static de.MCmoderSD.openai.models.ModerationModel.*;
+import static de.MCmoderSD.openai.models.ReasoningModel.O3_MINI;
+import static de.MCmoderSD.openai.models.SearchModel.GPT_4O_SEARCH_PREVIEW;
+import static de.MCmoderSD.openai.models.SpeechModel.*;
 
 @SuppressWarnings("unused")
 public class Builder {
@@ -57,8 +59,8 @@ public class Builder {
 
         // Setup
         private static ChatModel model = CHATGPT_4O_LATEST;
-        private static SearchModel searchModel = SearchModel.GPT_4O_SEARCH_PREVIEW;
-        private static ReasoningModel reasoningModel = ReasoningModel.O3_MINI;
+        private static SearchModel searchModel = GPT_4O_SEARCH_PREVIEW;
+        private static ReasoningModel reasoningModel = O3_MINI;
         private static String user = null;
         private static String devMessage = null;
 
@@ -189,8 +191,8 @@ public class Builder {
 
             // Load Setup
             model = chat.has("model") ? Helper.getChatModel(chat.get("model").asText()) : CHATGPT_4O_LATEST;
-            searchModel = chat.has("searchModel") ? SearchModel.getModel(chat.get("searchModel").asText()) : SearchModel.GPT_4O_SEARCH_PREVIEW;
-            reasoningModel = chat.has("reasoningModel") ? ReasoningModel.getModel(chat.get("reasoningModel").asText()) : ReasoningModel.O3_MINI;
+            searchModel = chat.has("searchModel") ? SearchModel.getModel(chat.get("searchModel").asText()) : GPT_4O_SEARCH_PREVIEW;
+            reasoningModel = chat.has("reasoningModel") ? ReasoningModel.getModel(chat.get("reasoningModel").asText()) : O3_MINI;
             user = config.has("user") ? config.get("user").asText() : null;
             devMessage = chat.has("devMessage") ? chat.get("devMessage").asText() : null;
 

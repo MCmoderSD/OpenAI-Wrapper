@@ -34,7 +34,11 @@ import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.enums.SearchContextSize;
 import de.MCmoderSD.openai.helper.Builder;
 
-import de.MCmoderSD.openai.model.*;
+import de.MCmoderSD.openai.models.AudioModel;
+import de.MCmoderSD.openai.models.EmbeddingModel;
+import de.MCmoderSD.openai.models.ModerationModel;
+import de.MCmoderSD.openai.models.SearchModel;
+import de.MCmoderSD.openai.models.SpeechModel;
 
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
@@ -57,10 +61,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static com.openai.models.audio.speech.SpeechCreateParams.*;
-import static com.openai.models.images.ImageGenerateParams.*;
 import static de.MCmoderSD.imageloader.Converter.convertToPNG;
 import static de.MCmoderSD.imageloader.Encoder.encodeToDataURI;
+import static com.openai.models.audio.speech.SpeechCreateParams.*;
+import static com.openai.models.images.ImageGenerateParams.*;
 import static de.MCmoderSD.openai.helper.Helper.*;
 
 @SuppressWarnings("unused")
@@ -280,14 +284,17 @@ public class OpenAI {
         return transcription(model, null, null, null, data);
     }
 
+    // Transcription with Model and Temperature
     public TranscriptionPrompt transcription(@Nullable AudioModel model, @Nullable Double temperature, byte[] data) {
         return transcription(model, temperature, null, null, data);
     }
 
+    // Transcription with Model and Prompt
     public TranscriptionPrompt transcription(@Nullable AudioModel model, @Nullable String prompt, byte[] data) {
         return transcription(model, null, null, prompt, data);
     }
 
+    // Transcription with Language and Prompt
     public TranscriptionPrompt transcription(@Nullable Language language, @Nullable String prompt, byte[] data) {
         return transcription(null, null, language, prompt, data);
     }

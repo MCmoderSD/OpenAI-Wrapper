@@ -3,7 +3,7 @@ package de.MCmoderSD.openai.objects;
 import com.openai.models.moderations.Moderation;
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
-import de.MCmoderSD.openai.model.ModerationModel;
+import de.MCmoderSD.openai.models.ModerationModel;
 
 @SuppressWarnings("unused")
 public class ModerationPrompt {
