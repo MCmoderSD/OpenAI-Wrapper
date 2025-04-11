@@ -38,7 +38,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.6.1</version>
+    <version>2.6.2</version>
 </dependency>
 ```
 
@@ -51,6 +51,7 @@ To configure the utility, provide a `JsonNode` with the following structure:
   "user": "YOUR_USER",
   "organizationId": "YOUR_ORGANIZATION_ID",
   "projectId": "YOUR_PROJECT_ID",
+  "baseUrl": null,
 
   "country": "YOUR_COUNTRY",
   "region": "YOUR_REGION",
@@ -106,10 +107,11 @@ To configure the utility, provide a `JsonNode` with the following structure:
 }
 ```
 Note: <br>
-- Obtain your API key from [OpenAI](https://platform.openai.com/signup). <br>
-- The `user` field such as the` organizationId` and `projectId` are optional. Leaving them empty or removing them will not affect the functionality of the wrapper. <br>
-- The IDs are used for tracking purposes and can be obtained from the [OpenAI dashboard](https://platform.openai.com/settings/organization/general). <br>
-- The location is used for web search user location, to improve the search results. <br>
+- Obtain your API key from [OpenAI](https://platform.openai.com/signup).
+- The `baseUrl` is used for the OpenAI API. If you want to use the OpenAI API, set it to `null`.
+- The `user` field such as the` organizationId` and `projectId` are optional. Leaving them empty or removing them will not affect the functionality of the wrapper.
+- The IDs are used for tracking purposes and can be obtained from the [OpenAI dashboard](https://platform.openai.com/settings/organization/general).
+- The location is used for web search user location, to improve the search results.
 <hr>
 
 ### Chat Configuration

@@ -79,26 +79,34 @@ public class OpenAI {
         this(
                 config.get("apiKey").asText(),
                 config.has("organizationId") ? config.get("organizationId").asText() : null,
-                config.has("projectId") ? config.get("projectId").asText() : null
+                config.has("projectId") ? config.get("projectId").asText() : null,
+                config.has("baseUrl") ? config.get("baseUrl").asText() : null
         );
     }
 
     // Constructor
     public OpenAI(String apiKey) {
-        this(apiKey, null, null);
+        this(apiKey, null, null, null);
     }
 
     // Constructor
-    public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId) {
+    public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId, @Nullable String baseUrl) {
 
         // Initialize OpenAI Client
         var builder = OpenAIOkHttpClient.builder().apiKey(apiKey);
         if (organizationId != null && !organizationId.isBlank()) builder.organization(organizationId);
         if (projectId != null && !projectId.isBlank()) builder.project(projectId);
+        if (baseUrl != null && !baseUrl.isBlank()) builder.baseUrl(baseUrl);
         this.client = builder.build();
 
         // Initialize Chat History
         this.chatHistory = new HashMap<>();
+    }
+
+    // Custom Client
+    public OpenAI(OpenAIOkHttpClient.Builder builder) {
+        client = builder.build();
+        chatHistory = new HashMap<>();
     }
 
     // Set Config

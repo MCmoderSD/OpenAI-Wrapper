@@ -3,6 +3,7 @@
   "user": "YOUR_USER",
   "organizationId": "YOUR_ORGANIZATION_ID",
   "projectId": "YOUR_PROJECT_ID",
+  "baseUrl": null,
 
   "country": "YOUR_COUNTRY",
   "region": "YOUR_REGION",
