@@ -1,10 +1,12 @@
 package de.MCmoderSD.openai.models;
 
 import com.openai.models.ChatModel;
-import de.MCmoderSD.openai.enums.*;
+import de.MCmoderSD.openai.enums.Input;
+import de.MCmoderSD.openai.enums.Output;
+import de.MCmoderSD.openai.enums.Reasoning;
+import de.MCmoderSD.openai.enums.Speed;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -66,9 +68,9 @@ public enum ReasoningModel {
         this.speed = speed;
         this.inputs = inputs;
         this.outputs = outputs;
-        this.inputCost = BigDecimal.valueOf(inputCentPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
-        this.cachedInputCost = BigDecimal.valueOf(cachedInputCentPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
-        this.outputCost = BigDecimal.valueOf(outputCentPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
+        this.inputCost = BigDecimal.valueOf(inputCentPerMillionTokens).movePointLeft(8);
+        this.cachedInputCost = BigDecimal.valueOf(cachedInputCentPerMillionTokens).movePointLeft(8);
+        this.outputCost = BigDecimal.valueOf(outputCentPerMillionTokens).movePointLeft(8);
         this.contextWindow = contextWindow;
         this.maxOutputTokens = maxOutputTokens;
         this.knowledgeCutoff = knowledgeCutoff;

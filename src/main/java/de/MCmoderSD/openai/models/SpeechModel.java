@@ -6,7 +6,6 @@ import de.MCmoderSD.openai.enums.Performance;
 import de.MCmoderSD.openai.enums.Speed;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public enum SpeechModel {
         this.speed = speed;
         this.inputs = inputs;
         this.outputs = outputs;
-        this.cost = BigDecimal.valueOf(centPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
+        this.cost = BigDecimal.valueOf(centPerMillionTokens).movePointLeft(8);
     }
 
     /**

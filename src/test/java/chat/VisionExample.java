@@ -26,8 +26,7 @@ public class VisionExample {
         OpenAI openAI = new OpenAI(
                 apiKey,     // API Key (required)
                 null,       // Organization (optional)
-                null,       // Project (optional)
-                null        // Endpoint (optional)
+                null        // Project (optional)
         );
 
         // Configure OpenAI

@@ -90,6 +90,11 @@ public class OpenAI {
     }
 
     // Constructor
+    public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId) {
+        this(apiKey, organizationId, projectId, null);
+    }
+
+    // Constructor
     public OpenAI(String apiKey, @Nullable String organizationId, @Nullable String projectId, @Nullable String baseUrl) {
 
         // Initialize OpenAI Client

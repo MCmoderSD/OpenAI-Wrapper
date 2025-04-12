@@ -2,12 +2,12 @@ package de.MCmoderSD.openai.models;
 
 import com.openai.models.ChatModel;
 import de.MCmoderSD.openai.enums.Input;
-import de.MCmoderSD.openai.enums.Intelligence;
 import de.MCmoderSD.openai.enums.Output;
+import de.MCmoderSD.openai.enums.Intelligence;
 import de.MCmoderSD.openai.enums.Speed;
+import de.MCmoderSD.openai.enums.SearchContextSize;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,10 +26,10 @@ import static de.MCmoderSD.openai.other.Dates.KNOWLEDGE_CUTOFF_2023_10_01;
 public enum SearchModel {
 
     // Enum Values
-    GPT_4O_SEARCH_PREVIEW(ChatModel.GPT_4O_SEARCH_PREVIEW, Intelligence.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 250, 1000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
-    GPT_4O_SEARCH_PREVIEW_2025_03_11(ChatModel.GPT_4O_SEARCH_PREVIEW_2025_03_11, Intelligence.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 250, 1000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
-    GPT_4O_MINI_SEARCH_PREVIEW(ChatModel.GPT_4O_MINI_SEARCH_PREVIEW, Intelligence.AVERAGE, Speed.FAST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 15, 60, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
-    GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11(ChatModel.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11, Intelligence.AVERAGE, Speed.FAST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 15, 60, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01);
+    GPT_4O_SEARCH_PREVIEW(ChatModel.GPT_4O_SEARCH_PREVIEW, Intelligence.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 250, 1000, 3000, 3500, 5000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
+    GPT_4O_SEARCH_PREVIEW_2025_03_11(ChatModel.GPT_4O_SEARCH_PREVIEW_2025_03_11, Intelligence.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 250, 1000, 3000, 3500, 5000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
+    GPT_4O_MINI_SEARCH_PREVIEW(ChatModel.GPT_4O_MINI_SEARCH_PREVIEW, Intelligence.AVERAGE, Speed.FAST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 15, 60, 2500, 2750, 3000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01),
+    GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11(ChatModel.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11, Intelligence.AVERAGE, Speed.FAST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 15, 60, 2500, 2750, 3000, 128000L, 16384L, KNOWLEDGE_CUTOFF_2023_10_01);
 
     // Attributes
     private final ChatModel model;
@@ -39,6 +39,9 @@ public enum SearchModel {
     private final HashSet<Output> outputs;
     private final BigDecimal inputCost;
     private final BigDecimal outputCost;
+    private final BigDecimal lowSearchCost;
+    private final BigDecimal mediumSearchCost;
+    private final BigDecimal highSearchCost;
     private final long contextWindow;
     private final long maxOutputTokens;
     private final Date knowledgeCutoff;
@@ -46,25 +49,31 @@ public enum SearchModel {
     /**
      * Constructs a {@code SearchModel} with the specified attributes.
      *
-     * @param model                      The underlying chat model.
-     * @param intelligence               The intelligence level of the model.
-     * @param speed                      The speed of the model.
-     * @param inputs                     The supported input types.
-     * @param outputs                    The supported output types.
-     * @param inputCentPerMillionTokens  The cost per million input tokens in cents.
+     * @param model The underlying chat model.
+     * @param intelligence The intelligence level of the model.
+     * @param speed The speed of the model.
+     * @param inputs The supported input types.
+     * @param outputs The supported output types.
+     * @param inputCentPerMillionTokens The cost per million input tokens in cents.
      * @param outputCentPerMillionTokens The cost per million output tokens in cents.
-     * @param contextWindow              The maximum context window size in tokens.
-     * @param maxOutputTokens            The maximum number of output tokens.
-     * @param knowledgeCutoff            The knowledge cutoff date for the model.
+     * @param lowSearchCentCostPerThousand The low search cost per thousand calls in cents.
+     * @param mediumSearchCentCostPerThousand The medium search cost per thousand calls in cents.
+     * @param highSearchCentCostPerThousand The high search cost per thousand calls in cents.
+     * @param contextWindow The maximum context window size in tokens.
+     * @param maxOutputTokens The maximum number of output tokens supported by the model.
+     * @param knowledgeCutoff The knowledge cutoff date for the model.
      */
-    SearchModel(ChatModel model, Intelligence intelligence, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs, int inputCentPerMillionTokens, int outputCentPerMillionTokens, long contextWindow, long maxOutputTokens, Date knowledgeCutoff) {
+    SearchModel(ChatModel model, Intelligence intelligence, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs, int inputCentPerMillionTokens, int outputCentPerMillionTokens, int lowSearchCentCostPerThousand, int mediumSearchCentCostPerThousand, int highSearchCentCostPerThousand, long contextWindow, long maxOutputTokens, Date knowledgeCutoff) {
         this.model = model;
         this.intelligence = intelligence;
         this.speed = speed;
         this.inputs = inputs;
         this.outputs = outputs;
-        this.inputCost = BigDecimal.valueOf(inputCentPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
-        this.outputCost = BigDecimal.valueOf(outputCentPerMillionTokens).divide(BigDecimal.valueOf(1_000_000), 10, RoundingMode.HALF_UP);
+        this.inputCost = BigDecimal.valueOf(inputCentPerMillionTokens).movePointLeft(8);
+        this.outputCost = BigDecimal.valueOf(outputCentPerMillionTokens).movePointLeft(8);
+        this.lowSearchCost = BigDecimal.valueOf(lowSearchCentCostPerThousand).movePointLeft(5);
+        this.mediumSearchCost = BigDecimal.valueOf(mediumSearchCentCostPerThousand).movePointLeft(5);
+        this.highSearchCost = BigDecimal.valueOf(highSearchCentCostPerThousand).movePointLeft(5);
         this.contextWindow = contextWindow;
         this.maxOutputTokens = maxOutputTokens;
         this.knowledgeCutoff = knowledgeCutoff;
@@ -143,6 +152,20 @@ public enum SearchModel {
     }
 
     /**
+     * Returns the cost of search operations based on the specified context size.
+     *
+     * @param searchContextSize The context size for the search operation.
+     * @return The cost of the search operation.
+     */
+    public BigDecimal getSearchCost(SearchContextSize searchContextSize) {
+        return switch (searchContextSize) {
+            case LOW -> lowSearchCost;
+            case MEDIUM -> mediumSearchCost;
+            case HIGH -> highSearchCost;
+        };
+    }
+
+    /**
      * Returns the maximum context window size in tokens.
      *
      * @return The context window size.
@@ -190,23 +213,25 @@ public enum SearchModel {
     }
 
     /**
-     * Calculates the cost for a given number of input tokens.
+     * Calculates the cost for a given number of input tokens and search context size.
      *
      * @param tokens The number of input tokens.
-     * @return The calculated input cost.
+     * @param searchContextSize The search context size.
+     * @return The total cost for the input tokens and search operation.
      */
-    public BigDecimal getInputCost(long tokens) {
-        return inputCost.multiply(BigDecimal.valueOf(tokens));
+    public BigDecimal getInputCost(long tokens, SearchContextSize searchContextSize) {
+        return inputCost.multiply(BigDecimal.valueOf(tokens)).add(getSearchCost(searchContextSize));
     }
 
     /**
-     * Calculates the cost for a given number of output tokens.
+     * Calculates the cost for a given number of output tokens and search context size.
      *
      * @param tokens The number of output tokens.
-     * @return The calculated output cost.
+     * @param searchContextSize The search context size.
+     * @return The total cost for the output tokens and search operation.
      */
-    public BigDecimal getOutputCost(long tokens) {
-        return outputCost.multiply(BigDecimal.valueOf(tokens));
+    public BigDecimal getOutputCost(long tokens, SearchContextSize searchContextSize) {
+        return outputCost.multiply(BigDecimal.valueOf(tokens)).add(getSearchCost(searchContextSize));
     }
 
     /**

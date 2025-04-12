@@ -2,7 +2,6 @@ package de.MCmoderSD.openai.objects;
 
 import com.openai.core.http.HttpResponse;
 import com.openai.models.audio.speech.SpeechCreateParams;
-import com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat;
 import de.MCmoderSD.openai.models.SpeechModel;
 
 import java.io.IOException;
