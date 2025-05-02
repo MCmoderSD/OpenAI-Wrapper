@@ -10,7 +10,8 @@ public enum Performance {
     LOW(1),
     AVERAGE(2),
     HIGH(3),
-    HIGHER(4);
+    HIGHER(4),
+    HIGHEST(5);
 
     // Attributes
     private final int performance;

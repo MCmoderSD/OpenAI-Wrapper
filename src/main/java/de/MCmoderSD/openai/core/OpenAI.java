@@ -271,7 +271,55 @@ public class OpenAI {
 
         return chatPrompt;
     }
+/*
+    // Reasoning with all Parameters
+    public ChatPrompt reasoning(@Nullable ReasoningModel reasoningModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable ReasoningEffort reasoningEffort, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
 
+        // Encode Images
+        ArrayList<String> encodedImages = null;
+        if (images != null && !images.isEmpty()) for (BufferedImage image : images) {
+            try {
+                encodedImages = new ArrayList<>();
+                encodedImages.add(encodeToDataURI(convertToPNG(image), "png"));
+            } catch (IOException e) {
+                System.err.println("Error encoding image: " + e.getMessage());
+            }
+        }
+
+        // Check Parameters
+        if (!checkParameter(maxTokens, Temperature, topP, frequencyPenalty, presencePenalty, n, encodedImages)) return null;
+
+        // Check if Chat History exists
+        if (id != null) chatHistory.putIfAbsent(id, new ChatHistory(null));
+        var messages = id != null ? chatHistory.get(id).getMessages() : null;
+
+        // Create Chat Completion
+        var params = Builder.Chat.buildParams(
+                reasoningModel,     // Reasoning Model
+                user,               // User
+                maxTokens,          // Max Tokens
+                Temperature,        // Max Tokens
+                topP,               // Top P
+                frequencyPenalty,   // Frequency Penalty
+                presencePenalty,    // Presence Penalty
+                n,                  // Number of Completions
+                reasoningEffort,    // Reasoning Effort
+                prompt,             // Prompt
+                messages,           // Messages
+                encodedImages       // Images
+        );
+
+        // Execute Chat Completion
+        var completion = createChatCompletion(params);
+
+        var chatPrompt = new ChatPrompt(prompt, completion);
+
+        // Add ChatPrompt to History
+        if (id != null) chatHistory.get(id).addPrompt(chatPrompt);
+
+        return chatPrompt;
+    }
+*/
     // Transcription
     public TranscriptionPrompt transcription(byte[] data) {
         return transcription(null, null, null, null, data);
@@ -626,7 +674,7 @@ public class OpenAI {
         ArrayList<ImagePrompt> images = new ArrayList<>();
 
         // Extract Images
-        for (Image image : response.data()) {
+        for (Image image : response.data().orElse(new ArrayList<>())) {
             try {
                 images.add(new ImagePrompt(params, image, created));
             } catch (IOException | URISyntaxException e) {

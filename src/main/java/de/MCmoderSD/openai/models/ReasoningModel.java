@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static de.MCmoderSD.openai.other.Dates.KNOWLEDGE_CUTOFF_2023_10_01;
+import static de.MCmoderSD.openai.other.Dates.*;
 
 /**
  * The {@code SearchModel} enum represents various search models available in the OpenAI API.
@@ -25,6 +25,10 @@ import static de.MCmoderSD.openai.other.Dates.KNOWLEDGE_CUTOFF_2023_10_01;
 public enum ReasoningModel {
 
     // Enum Values
+    O4_MINI(ChatModel.O4_MINI, Reasoning.HIGHER, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 110, 27.5f, 440, 200000L, 100000L, KNOWLEDGE_CUTOFF_2024_06_01),
+    O4_MINI_2025_04_16(ChatModel.O4_MINI_2025_04_16, Reasoning.HIGHER, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 110, 27.5f, 440, 200000L, 100000L, KNOWLEDGE_CUTOFF_2024_06_01),
+    O3(ChatModel.O3, Reasoning.HIGHEST, Speed.SLOWEST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 1000, 250, 4000, 200000L, 100000L, KNOWLEDGE_CUTOFF_2024_06_01),
+    O3_2025_04_16(ChatModel.O3_2025_04_16, Reasoning.HIGHEST, Speed.SLOWEST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 1000, 250, 4000, 200000L, 100000L, KNOWLEDGE_CUTOFF_2024_06_01),
     O3_MINI(ChatModel.O3_MINI, Reasoning.HIGHER, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)), 110, 55, 440, 200000L, 100000L, KNOWLEDGE_CUTOFF_2023_10_01),
     O3_MINI_2025_01_31(ChatModel.O3_MINI_2025_01_31, Reasoning.HIGHER, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)), 110, 55, 440, 200000L, 100000L, KNOWLEDGE_CUTOFF_2023_10_01),
     O1(ChatModel.O1, Reasoning.HIGHER, Speed.SLOWEST, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT)), 1500, 750, 6000, 200000L, 100000L, KNOWLEDGE_CUTOFF_2023_10_01),
@@ -63,6 +67,35 @@ public enum ReasoningModel {
      * @param knowledgeCutoff                 The knowledge cutoff date.
      */
     ReasoningModel(ChatModel model, Reasoning reasoning, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs, int inputCentPerMillionTokens, int cachedInputCentPerMillionTokens, int outputCentPerMillionTokens, long contextWindow, long maxOutputTokens, Date knowledgeCutoff) {
+        this.model = model;
+        this.reasoning = reasoning;
+        this.speed = speed;
+        this.inputs = inputs;
+        this.outputs = outputs;
+        this.inputCost = BigDecimal.valueOf(inputCentPerMillionTokens).movePointLeft(8);
+        this.cachedInputCost = BigDecimal.valueOf(cachedInputCentPerMillionTokens).movePointLeft(8);
+        this.outputCost = BigDecimal.valueOf(outputCentPerMillionTokens).movePointLeft(8);
+        this.contextWindow = contextWindow;
+        this.maxOutputTokens = maxOutputTokens;
+        this.knowledgeCutoff = knowledgeCutoff;
+    }
+
+    /**
+     * Constructs a new {@code ReasoningModel} with the specified attributes.
+     *
+     * @param model                           The underlying chat model.
+     * @param reasoning                       The reasoning capability of the model.
+     * @param speed                           The speed of the model.
+     * @param inputs                          The supported input types.
+     * @param outputs                         The supported output types.
+     * @param inputCentPerMillionTokens       The cost per million tokens for input in cents.
+     * @param cachedInputCentPerMillionTokens The cost per million tokens for cached input in cents.
+     * @param outputCentPerMillionTokens      The cost per million tokens for output in cents.
+     * @param contextWindow                   The context window size.
+     * @param maxOutputTokens                 The maximum number of output tokens.
+     * @param knowledgeCutoff                 The knowledge cutoff date.
+     */
+    ReasoningModel(ChatModel model, Reasoning reasoning, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs, float inputCentPerMillionTokens, float cachedInputCentPerMillionTokens, float outputCentPerMillionTokens, long contextWindow, long maxOutputTokens, Date knowledgeCutoff) {
         this.model = model;
         this.reasoning = reasoning;
         this.speed = speed;
