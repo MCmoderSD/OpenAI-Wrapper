@@ -41,6 +41,12 @@ jobs:
           echo "repository=$REPO" >> $GITHUB_ENV
           echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
+      - name: Print Nexus credentials and URL hash
+        run: |
+          echo -n "https://mcmodersd.de/nexus/repository/maven-releases/" | sha256sum
+          echo -n "${{ secrets.NEXUS_USERNAME }}" | sha256sum
+          echo -n "${{ secrets.NEXUS_PASSWORD }}" | sha256sum
+
       - name: Set up Maven with Nexus credentials
         run: |
           cat <<EOL > ~/.m2/settings.xml
