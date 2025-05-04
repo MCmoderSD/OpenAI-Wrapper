@@ -52,18 +52,18 @@ jobs:
                 <password>${{ secrets.NEXUS_PASSWORD }}</password>
               </server>
             </servers>
+            <profiles>
+              <profile>
+                <id>Nexus</id>
+                  <repositories>
+                    <repository>
+                      <id>Nexus</id>
+                      <url>https://mcmodersd.de/nexus/repository/maven-releases/</url>
+                    </repository>
+                  </repositories>
+              </profile>
+            </profiles>
           </settings>
-          <profiles>
-            <profile>
-              <id>Nexus</id>
-                <repositories>
-                  <repository>
-                    <id>Nexus</id>
-                    <url>https://mcmodersd.de/nexus/repository/maven-releases/</url>
-                  </repository>
-                </repositories>
-            </profile>
-          </profiles>
           EOL
 
       - name: Build and Deploy
