@@ -53,6 +53,17 @@ jobs:
               </server>
             </servers>
           </settings>
+          <profiles>
+            <profile>
+              <id>Nexus</id>
+                <repositories>
+                  <repository>
+                    <id>Nexus</id>
+                    <url>https://mcmodersd.de/nexus/repository/maven-releases/</url>
+                  </repository>
+                </repositories>
+            </profile>
+          </profiles>
           EOL
 
       - name: Build and Deploy
