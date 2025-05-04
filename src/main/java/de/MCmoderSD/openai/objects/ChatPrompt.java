@@ -7,6 +7,7 @@ import com.openai.models.chat.completions.ChatCompletionMessage;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
 import com.openai.models.completions.CompletionUsage.PromptTokensDetails;
+import com.sun.nio.sctp.IllegalReceiveException;
 import de.MCmoderSD.openai.helper.Helper;
 
 import java.sql.Timestamp;
@@ -89,11 +90,15 @@ public class ChatPrompt {
             finishReasons.add(choice.finishReason());
         });
 
+        // Extract Content from Messages
         messages.forEach(message -> {
             StringBuilder content = new StringBuilder();
             message.content().ifPresent(content::append);
             if (!content.isEmpty()) this.content.add(content.toString());
         });
+
+        // Check for empty content
+        if (content.isEmpty() && outputTokens > 0) throw new IllegalReceiveException("No content received, try increasing the max output tokens.");
     }
 
     /**

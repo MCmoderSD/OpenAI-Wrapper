@@ -8,6 +8,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 ### Supported Features:
 - **Chat API**: Generate conversational responses with advanced models.
 - **Web Search API**: Perform web searches and retrieve relevant information.
+- **Reasoning API**: Perform complex reasoning tasks with advanced models.
 - **Vision API**: Analyze and interpret images, including image generation.
 - **Moderation API**: Detect and filter inappropriate content from text inputs.
 - **Transcription API**: Accurately transcribe audio files with support for multiple languages.
@@ -16,7 +17,6 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 
 ### Planned Features:
-- **Reasoning API**: Perform complex reasoning tasks with advanced models. **[WIP]**
 - **Chat API Streaming**: Stream chat responses for real-time interactions.
 - **Transcription API Streaming**: Stream audio transcription for real-time processing.
 
@@ -38,7 +38,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>2.6.4</version>
+    <version>2.7.0</version>
 </dependency>
 ```
 
@@ -127,6 +127,7 @@ Note: <br>
 | maxTokens         | Maximum tokens in a response. So 500 characters are approximately 125 tokens). (Default `120`) |
 | devMessage        | Provides guidance for the bot's behavior.                                                      |
 | searchContextSize | Size of the context for web search. Options: `low`, `medium`, `high`. (Default: `high`)        |
+| reasoningEffort   | Effort level for reasoning tasks. Options: `low`, `medium`, `high`. (Default: `high`)          |
 
 ### Moderation Configuration
 | **Field** | **Description**                                                     |
@@ -570,6 +571,81 @@ public class SearchExample {
                     null,       // City
                     null,       // Timezone
                     null,       // Developer Message
+                    null,       // ID
+                    userInput,  // User Message
+                    null        // System Message
+            );
+
+            // Get Response
+            String response = chatPrompt.getText();
+
+            // Print Response
+            System.out.println("\nResponse: \n" + response + "\n");
+            System.out.print("You: \n");
+        }
+    }
+}
+```
+
+### Reasoning Example
+```java
+package chat;
+
+
+import com.fasterxml.jackson.databind.JsonNode;
+import de.MCmoderSD.json.JsonUtility;
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.helper.Builder;
+import de.MCmoderSD.openai.objects.ChatPrompt;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
+public class ReasoningExample {
+
+    // Scanner for user input
+    private final static Scanner scanner = new Scanner(System.in);
+
+    // Main method
+    public static void main(String[] args) throws IOException, URISyntaxException {
+
+        // Variables
+        String userInput;
+
+        // Load Config
+        JsonNode config = JsonUtility.loadJson("/config.json", false);
+        String apiKey = config.get("apiKey").asText();
+
+        // Initialize OpenAI
+        OpenAI openAI = new OpenAI(
+                apiKey,     // API Key (required)
+                null,       // Organization (optional)
+                null        // Project (optional)
+        );
+
+        // Configure OpenAI
+        Builder.Chat.setConfig(config);
+        var maxTokens = Builder.Chat.getMaxTokens() * 3; // 3x for reasoning
+
+        // Setup Chat
+        System.out.println("Enter your prompt (type 'exit' to quit):");
+        System.out.println("You: ");
+
+        // Prompt Loop
+        while (!(userInput = scanner.nextLine()).equalsIgnoreCase("exit")) {
+
+            // Generate Chat Prompt
+            ChatPrompt chatPrompt = openAI.reasoning(
+                    null,       // Chat Model
+                    null,       // User
+                    maxTokens,  // Max Tokens
+                    null,       // Temperature
+                    null,       // Top P
+                    null,       // Frequency Penalty
+                    null,       // Presence Penalty
+                    null,       // Number of Completions
+                    null,       // Reasoning Effort
                     null,       // ID
                     userInput,  // User Message
                     null        // System Message

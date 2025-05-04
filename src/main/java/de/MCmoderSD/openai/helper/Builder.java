@@ -40,6 +40,7 @@ import static de.MCmoderSD.openai.models.AudioModel.*;
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 import static de.MCmoderSD.openai.models.ModerationModel.*;
 import static de.MCmoderSD.openai.models.ReasoningModel.O3_MINI;
+import static de.MCmoderSD.openai.models.ReasoningModel.O4_MINI;
 import static de.MCmoderSD.openai.models.SearchModel.GPT_4O_SEARCH_PREVIEW;
 import static de.MCmoderSD.openai.models.SpeechModel.*;
 
@@ -60,7 +61,7 @@ public class Builder {
         // Setup
         private static ChatModel model = CHATGPT_4O_LATEST;
         private static SearchModel searchModel = GPT_4O_SEARCH_PREVIEW;
-        private static ReasoningModel reasoningModel = O3_MINI;
+        private static ReasoningModel reasoningModel = O4_MINI;
         private static String user = null;
         private static String devMessage = null;
 
@@ -114,7 +115,7 @@ public class Builder {
 
             return buildParams(params, devMessage, prompt, messages, images);                               // Finalize Parameters
         }
-/*      ToDo: Wait for OpenAI to fix
+
         // Reasoning Builder
         public static ChatCompletionCreateParams buildParams(@Nullable ReasoningModel reasoningModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable ReasoningEffort reasoningEffort, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 
@@ -138,7 +139,7 @@ public class Builder {
 
             return buildParams(params, "", prompt, messages, images);                                   // Finalize Parameters
         }
-*/
+
         // Finalize Parameters
         private static ChatCompletionCreateParams buildParams(ChatCompletionCreateParams.Builder params, @Nullable String devMessage, String prompt, @Nullable ArrayList<ChatCompletionMessageParam> messages, @Nullable ArrayList<String> images) {
 

@@ -9,6 +9,7 @@ import com.openai.core.http.HttpResponse;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.ChatModel;
 
+import com.openai.models.ReasoningEffort;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat;
 import com.openai.models.audio.transcriptions.Transcription;
@@ -34,11 +35,7 @@ import de.MCmoderSD.openai.enums.Language;
 import de.MCmoderSD.openai.enums.SearchContextSize;
 import de.MCmoderSD.openai.helper.Builder;
 
-import de.MCmoderSD.openai.models.AudioModel;
-import de.MCmoderSD.openai.models.EmbeddingModel;
-import de.MCmoderSD.openai.models.ModerationModel;
-import de.MCmoderSD.openai.models.SearchModel;
-import de.MCmoderSD.openai.models.SpeechModel;
+import de.MCmoderSD.openai.models.*;
 
 import de.MCmoderSD.openai.objects.ChatHistory;
 import de.MCmoderSD.openai.objects.ChatPrompt;
@@ -105,7 +102,7 @@ public class OpenAI {
         this.client = builder.build();
 
         // Initialize Chat History
-        this.chatHistory = new HashMap<>();
+        chatHistory = new HashMap<>();
     }
 
     // Custom Client
@@ -271,7 +268,7 @@ public class OpenAI {
 
         return chatPrompt;
     }
-/*
+
     // Reasoning with all Parameters
     public ChatPrompt reasoning(@Nullable ReasoningModel reasoningModel, @Nullable String user, @Nullable Long maxTokens, @Nullable Double Temperature, @Nullable Double topP, @Nullable Double frequencyPenalty, @Nullable Double presencePenalty, @Nullable Long n, @Nullable ReasoningEffort reasoningEffort, @Nullable Integer id, String prompt, @Nullable ArrayList<BufferedImage> images) {
 
@@ -319,7 +316,7 @@ public class OpenAI {
 
         return chatPrompt;
     }
-*/
+
     // Transcription
     public TranscriptionPrompt transcription(byte[] data) {
         return transcription(null, null, null, null, data);
