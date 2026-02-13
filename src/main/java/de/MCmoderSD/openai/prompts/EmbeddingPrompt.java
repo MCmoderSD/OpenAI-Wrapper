@@ -83,7 +83,7 @@ public class EmbeddingPrompt {
         return user;
     }
 
-    public long getDimension() {
+    public int getDimension() {
         return dimension;
     }
 
