@@ -1,115 +1,91 @@
 package de.MCmoderSD.openai.models;
 
-import de.MCmoderSD.openai.enums.Input;
-import de.MCmoderSD.openai.enums.Output;
+import de.MCmoderSD.openai.enums.Modality;
 import de.MCmoderSD.openai.enums.Performance;
 import de.MCmoderSD.openai.enums.Speed;
 
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Enum representing different Moderation Models.
- */
+import static de.MCmoderSD.openai.enums.Performance.*;
+import static de.MCmoderSD.openai.enums.Speed.*;
+import static de.MCmoderSD.openai.enums.Modality.*;
+
 @SuppressWarnings("unused")
 public enum ModerationModel {
 
     // Enum Values
-    OMNI_MODERATION_LATEST(com.openai.models.moderations.ModerationModel.OMNI_MODERATION_LATEST, Performance.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT))),
-    OMNI_MODERATION_2024_09_26(com.openai.models.moderations.ModerationModel.OMNI_MODERATION_2024_09_26, Performance.HIGH, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT, Input.IMAGE)), new HashSet<>(List.of(Output.TEXT))),
-    TEXT_MODERATION_LATEST(com.openai.models.moderations.ModerationModel.TEXT_MODERATION_LATEST, Performance.AVERAGE, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT))),
-    TEXT_MODERATION_STABLE(com.openai.models.moderations.ModerationModel.TEXT_MODERATION_STABLE, Performance.AVERAGE, Speed.MEDIUM, new HashSet<>(List.of(Input.TEXT)), new HashSet<>(List.of(Output.TEXT)));
+    //@Deprecated TEXT_MODERATION_STABLE(AVERAGE, MEDIUM, List.of(TEXT), List.of(TEXT)),
+    //@Deprecated TEXT_MODERATION_LATEST(AVERAGE, MEDIUM, List.of(TEXT), List.of(TEXT)),
+    OMNI_MODERATION_2024_09_26(HIGH, MEDIUM, List.of(TEXT, IMAGE), List.of(TEXT)),
+    OMNI_MODERATION_LATEST(HIGH, MEDIUM, List.of(TEXT, IMAGE), List.of(TEXT));
 
     // Attributes
-    private final com.openai.models.moderations.ModerationModel model;
     private final Performance performance;
     private final Speed speed;
-    private final HashSet<Input> inputs;
-    private final HashSet<Output> outputs;
+    private final HashSet<Modality> input;
+    private final HashSet<Modality> output;
+    private final String name;
+    private final com.openai.models.moderations.ModerationModel model;
 
-    /**
-     * Constructs a {@code ModerationModel} with the specified attributes.
-     *
-     * @param model    The underlying moderation model.
-     * @param performance The performance level of the model.
-     * @param speed    The speed of the model.
-     * @param inputs   The supported input types.
-     * @param outputs  The supported output types.
-     */
-    ModerationModel(com.openai.models.moderations.ModerationModel model, Performance performance, Speed speed, HashSet<Input> inputs, HashSet<Output> outputs) {
-        this.model = model;
+    // Constructor
+    ModerationModel(
+            Performance performance,    // Performance
+            Speed speed,                // Speed
+            List<Modality> input,       // Supported Input Modalities
+            List<Modality> output       // Supported Output Modalities
+    ) {
+        // Set Attributes
         this.performance = performance;
         this.speed = speed;
-        this.inputs = inputs;
-        this.outputs = outputs;
+
+        // Set Modalities
+        this.input = new HashSet<>(input);
+        this.output = new HashSet<>(output);
+
+        // Parse Name
+        this.name = name().toLowerCase().replace('_', '-');
+
+        // Parse Model
+        this.model = com.openai.models.moderations.ModerationModel.of(name());
     }
 
-    /**
-     * Gets the underlying model.
-     *
-     * @return The underlying model.
-     */
+    // Getter
     public com.openai.models.moderations.ModerationModel getModel() {
         return model;
     }
 
-    /**
-     * Gets the name of the model.
-     *
-     * @return The name of the model.
-     */
     public String getName() {
-        return model.asString();
+        return name;
     }
 
-    /**
-     * Gets the performance level of the model.
-     *
-     * @return The performance level of the model.
-     */
     public Performance getPerformance() {
         return performance;
     }
 
-    /**
-     * Gets the speed of the model.
-     *
-     * @return The speed of the model.
-     */
     public Speed getSpeed() {
         return speed;
     }
 
-    /**
-     * Checks if the model supports the specified input type.
-     *
-     * @param input The input type to check.
-     * @return {@code true} if the input type is supported, {@code false} otherwise.
-     */
-    public boolean hasInput(Input input) {
-        return inputs.contains(input);
+    public HashSet<Modality> getInput() {
+        return input;
     }
 
-    /**
-     * Checks if the model supports the specified output type.
-     *
-     * @param output The output type to check.
-     * @return {@code true} if the output type is supported, {@code false} otherwise.
-     */
-    public boolean hasOutput(Output output) {
-        return outputs.contains(output);
+    public HashSet<Modality> getOutput() {
+        return output;
     }
 
-    /**
-     * Gets the ModerationModel enum value based on the model name.
-     *
-     * @param model The name of the model.
-     * @return The corresponding ModerationModel enum value.
-     * @throws IllegalArgumentException If the model name is invalid.
-     */
-    public static ModerationModel getModel(String model) {
-        if (model == null || model.isBlank()) return null;
-        for (ModerationModel m : ModerationModel.values()) if (m.getName().equalsIgnoreCase(model)) return m;
-        throw new IllegalArgumentException("Invalid ModerationModel value: " + model);
+    public boolean hasInput(Modality... modality) {
+        return input.containsAll(List.of(modality));
+    }
+
+    public boolean hasOutput(Modality... modality) {
+        return output.containsAll(List.of(modality));
+    }
+
+    // Static Methods
+    public static ModerationModel getModel(String name) {
+        for (var model : ModerationModel.values()) if (model.getName().equalsIgnoreCase(name)) return model;
+        throw new IllegalArgumentException("Invalid embedding model name: " + name);
     }
 }

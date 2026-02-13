@@ -1,18 +1,14 @@
-package de.MCmoderSD.openai.objects;
+package de.MCmoderSD.openai.prompts;
 
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import com.openai.models.embeddings.CreateEmbeddingResponse.Usage;
 import com.openai.models.embeddings.EmbeddingCreateParams;
 import com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat;
 import de.MCmoderSD.openai.models.EmbeddingModel;
+import de.MCmoderSD.openai.objects.Embedding;
 
 import java.math.BigDecimal;
 
-/**
- * Represents an embedding prompt containing input parameters, AI-generated response, and metadata.
- * This class encapsulates all information related to a single embedding interaction with the OpenAI API,
- * including tokens usage statistics, response content, and cost information.
- */
 @SuppressWarnings("unused")
 public class EmbeddingPrompt {
 
@@ -23,7 +19,7 @@ public class EmbeddingPrompt {
     // Input
     private final EncodingFormat format;
     private final String user;
-    private final long dimensions;
+    private final int dimension;
     private final String text;
 
     // Output
@@ -41,22 +37,20 @@ public class EmbeddingPrompt {
     // Content
     private final Embedding embedding;
 
-    /**
-     * Constructs a new EmbeddingPrompt with the specified input and output.
-     *
-     * @param input  The input parameters for creating the embedding
-     * @param output The AI-generated response associated with the input
-     */
+    // Constructor
     public EmbeddingPrompt(EmbeddingCreateParams input, CreateEmbeddingResponse output) {
 
         // Initialize Parameters
         this.input = input;
         this.output = output;
 
+        // Extract Content
+        embedding = new Embedding(Embedding.convertToFloatArray(output.data().getFirst().embedding()));
+
         // Extract Input
         format = input.encodingFormat().orElse(null);
         user = input.user().orElse(null);
-        dimensions = input.dimensions().orElse(0L);
+        dimension = Math.toIntExact(input.dimensions().orElse((long) embedding.getDimension()));
         text = input.input().asString();
 
         // Extract Output
@@ -70,124 +64,57 @@ public class EmbeddingPrompt {
         // Calculate Cost
         promptCost = model.getCost(promptTokens);
         totalCost = model.getCost(totalTokens);
-
-        // Extract Content
-        embedding = new Embedding(output.data().getFirst().embedding());
     }
 
-    /**
-     * Gets the input parameters for creating the embedding.
-     *
-     * @return The input parameters
-     */
+    // Getter
     public EmbeddingCreateParams getInput() {
         return input;
     }
 
-    /**
-     * Gets the AI-generated response associated with the input.
-     *
-     * @return The AI-generated response
-     */
     public CreateEmbeddingResponse getOutput() {
         return output;
     }
 
-    /**
-     * Gets the encoding format used for the embedding.
-     *
-     * @return The encoding format
-     */
     public EncodingFormat getEncodingFormat() {
         return format;
     }
 
-    /**
-     * Gets the user associated with the embedding request.
-     *
-     * @return The user
-     */
     public String getUser() {
         return user;
     }
 
-    /**
-     * Gets the number of dimensions of the embedding.
-     *
-     * @return The number of dimensions
-     */
-    public long getDimensions() {
-        return dimensions;
+    public long getDimension() {
+        return dimension;
     }
 
-    /**
-     * Gets the input text for the embedding.
-     *
-     * @return The input text
-     */
     public String getText() {
         return text;
     }
 
-    /**
-     * Gets the embedding model used for the response.
-     *
-     * @return The embedding model
-     */
     public EmbeddingModel getModel() {
         return model;
     }
 
-    /**
-     * Gets the usage details of the embedding response.
-     *
-     * @return The usage details
-     */
     public Usage getUsage() {
         return usage;
     }
 
-    /**
-     * Gets the number of prompt tokens used in the embedding response.
-     *
-     * @return The number of prompt tokens
-     */
     public long getPromptTokens() {
         return promptTokens;
     }
 
-    /**
-     * Gets the total number of tokens used in the embedding response.
-     *
-     * @return The total number of tokens
-     */
     public long getTotalTokens() {
         return totalTokens;
     }
 
-    /**
-     * Gets the cost associated with the prompt tokens.
-     *
-     * @return The prompt cost
-     */
     public BigDecimal getPromptCost() {
         return promptCost;
     }
 
-    /**
-     * Gets the total cost associated with the embedding response.
-     *
-     * @return The total cost
-     */
     public BigDecimal getTotalCost() {
         return totalCost;
     }
 
-    /**
-     * Gets the embedding content from the response.
-     *
-     * @return The embedding content
-     */
     public Embedding getEmbedding() {
         return embedding;
     }

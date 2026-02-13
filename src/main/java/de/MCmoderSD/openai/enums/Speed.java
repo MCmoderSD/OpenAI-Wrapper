@@ -1,8 +1,5 @@
 package de.MCmoderSD.openai.enums;
 
-/**
- * Enum representing different levels of speed.
- */
 @SuppressWarnings("unused")
 public enum Speed {
 
@@ -16,33 +13,18 @@ public enum Speed {
     // Attributes
     private final int speed;
 
-    /**
-     * Constructor for the Speed enum.
-     *
-     * @param speed the speed level
-     */
+    // Constructor
     Speed(int speed) {
         this.speed = speed;
     }
 
-    /**
-     * Gets the speed level.
-     *
-     * @return the speed level
-     */
+    // Getter
     public int getSpeed() {
         return speed;
     }
 
-    /**
-     * Gets the Speed enum value corresponding to the given speed level.
-     *
-     * @param speed the speed level
-     * @return the corresponding Speed enum value
-     * @throws IllegalArgumentException if the speed level is invalid
-     */
     public static Speed getSpeed(int speed) {
-        for (Speed s : Speed.values()) if (s.getSpeed() == speed) return s;
+        for (var s : Speed.values()) if (s.getSpeed() == speed) return s;
         throw new IllegalArgumentException("Invalid speed value: " + speed);
     }
 }

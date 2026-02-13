@@ -1,8 +1,5 @@
 package de.MCmoderSD.openai.enums;
 
-/**
- * Enum representing different levels of performance.
- */
 @SuppressWarnings("unused")
 public enum Performance {
 
@@ -16,33 +13,18 @@ public enum Performance {
     // Attributes
     private final int performance;
 
-    /**
-     * Constructor for Performance enum.
-     *
-     * @param performance The performance level.
-     */
+    // Constructor
     Performance(int performance) {
         this.performance = performance;
     }
 
-    /**
-     * Gets the performance level.
-     *
-     * @return The performance level.
-     */
+    // Getter
     public int getPerformance() {
         return performance;
     }
 
-    /**
-     * Returns the Performance enum corresponding to the given performance value.
-     *
-     * @param performance The performance value.
-     * @return The Performance enum.
-     * @throws IllegalArgumentException If the performance value is invalid.
-     */
     public static Performance getPerformance(int performance) {
-        for (Performance p : Performance.values()) if (p.getPerformance() == performance) return p;
+        for (var p : Performance.values()) if (p.getPerformance() == performance) return p;
         throw new IllegalArgumentException("Invalid performance value: " + performance);
     }
 }
