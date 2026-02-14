@@ -90,7 +90,7 @@ public class ChatService {
 
         // Check Parameters
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("Prompt must not be null or blank");
-        if (previousResponseId == null || previousResponseId.startsWith("resp_")) throw new IllegalArgumentException("Previous response ID must be null or start with 'resp_'");
+        if (previousResponseId == null || !previousResponseId.startsWith("resp_")) throw new IllegalArgumentException("Previous response ID must be null or start with 'resp_'");
 
         // Build Params
         ResponseCreateParams params = buildParams(prompt, previousResponseId);
