@@ -43,6 +43,7 @@ public class EmbeddingService {
         return builder.build();
     }
 
+    // Create Embedding
     public EmbeddingPrompt create(String prompt) {
 
         // Check Parameters
@@ -58,10 +59,12 @@ public class EmbeddingService {
         return new EmbeddingPrompt(params, response);
     }
 
+    // Static Builder
     public static Builder builder() {
         return new Builder();
     }
 
+    // Builder Class
     public static class Builder {
 
         // Parameter

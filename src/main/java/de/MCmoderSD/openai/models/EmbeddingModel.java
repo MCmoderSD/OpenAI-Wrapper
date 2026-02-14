@@ -99,6 +99,6 @@ public enum EmbeddingModel {
     // Static Methods
     public static EmbeddingModel getModel(String name) {
         for (var model : EmbeddingModel.values()) if (model.getName().equalsIgnoreCase(name)) return model;
-        throw new IllegalArgumentException("Invalid embedding model name: " + name);
+        throw new IllegalArgumentException("Invalid model name: " + name);
     }
 }

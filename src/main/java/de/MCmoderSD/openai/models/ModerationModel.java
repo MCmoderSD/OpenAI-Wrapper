@@ -86,6 +86,6 @@ public enum ModerationModel {
     // Static Methods
     public static ModerationModel getModel(String name) {
         for (var model : ModerationModel.values()) if (model.getName().equalsIgnoreCase(name)) return model;
-        throw new IllegalArgumentException("Invalid embedding model name: " + name);
+        throw new IllegalArgumentException("Invalid model name: " + name);
     }
 }

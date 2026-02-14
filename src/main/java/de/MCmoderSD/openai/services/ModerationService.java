@@ -38,6 +38,7 @@ public class ModerationService {
         return builder.build();
     }
 
+    // Create Moderation
     public ModerationPrompt create(String prompt) {
 
         // Check Parameters
@@ -53,10 +54,12 @@ public class ModerationService {
         return new ModerationPrompt(params, response);
     }
 
+    // Static Builder
     public static Builder builder() {
         return new Builder();
     }
 
+    // Builder Class
     public static class Builder {
 
         // Parameter

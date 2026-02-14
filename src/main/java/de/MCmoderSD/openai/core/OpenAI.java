@@ -2,6 +2,7 @@ package de.MCmoderSD.openai.core;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import de.MCmoderSD.openai.services.ChatService;
 import de.MCmoderSD.openai.services.EmbeddingService;
 import de.MCmoderSD.openai.services.ModerationService;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,10 @@ public class OpenAI {
     }
 
     // Service
+    public ChatService chat() {
+        return ChatService.builder().build(this);
+    }
+
     public EmbeddingService embeddings() {
         return EmbeddingService.builder().build(this);
     }

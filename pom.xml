@@ -6,7 +6,7 @@
 
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
 
     <name>OpenAI</name>
     <description>A Java Wrapper for the official OpenAI Java SDK</description>
