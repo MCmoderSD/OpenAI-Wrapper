@@ -43,7 +43,7 @@ public class ChatPrompt {
         // Data
         id = output.id();
         createdAt = Instant.ofEpochSecond(Math.round(output.createdAt()));
-        completedAt = Instant.ofEpochSecond(Math.round(output.completedAt().orElseThrow()));
+        completedAt = Instant.ofEpochSecond(Math.round(output.completedAt().orElse((double) Instant.now().toEpochMilli() / 1000)));
 
         // Usage
         var usage = output.usage().orElseThrow();
