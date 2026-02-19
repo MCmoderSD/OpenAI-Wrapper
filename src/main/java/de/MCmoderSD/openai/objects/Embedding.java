@@ -1,6 +1,7 @@
 package de.MCmoderSD.openai.objects;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -68,5 +69,15 @@ public class Embedding implements Serializable {
 
     public float[] getUnit() {
         return unit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(vector);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.getClass() == getClass() && hashCode() == obj.hashCode();
     }
 }

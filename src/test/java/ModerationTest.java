@@ -1,20 +1,14 @@
-import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.prompts.ModerationPrompt;
 import de.MCmoderSD.openai.services.ModerationService;
-
-import tools.jackson.databind.JsonNode;
 
 import static de.MCmoderSD.openai.models.ModerationModel.*;
 import static de.MCmoderSD.openai.objects.Rating.Data.*;
 
 void main() {
 
-    // Load Config
-    JsonNode config = JsonUtility.getInstance().loadResource("/config.json");
-
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI(config.get("apiKey").asString());
+    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
 
     // Configure Service
     ModerationService service = ModerationService.builder()

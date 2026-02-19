@@ -3,9 +3,9 @@ package de.MCmoderSD.openai.services;
 import com.openai.client.OpenAIClient;
 import com.openai.models.Reasoning;
 import com.openai.models.ReasoningEffort;
-import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.services.blocking.ResponseService;
+
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.models.ChatModel;
 import de.MCmoderSD.openai.prompts.ChatPrompt;
@@ -42,7 +42,7 @@ public class ChatService {
     private ResponseCreateParams.Builder initBuilder() {
 
         // Init Builder
-        ResponseCreateParams.Builder builder = ResponseCreateParams.builder();
+        var builder = ResponseCreateParams.builder();
 
         // Set Parameters
         builder.model(model.getName());
@@ -58,7 +58,7 @@ public class ChatService {
     private ResponseCreateParams buildParams(String prompt, String previousResponseId) {
 
         // Init Builder
-        ResponseCreateParams.Builder builder = initBuilder();
+        var builder = initBuilder();
 
         // Set Parameters
         if (model.hasReasoning(reasoningEffort)) builder.reasoning(Reasoning.builder().effort(reasoningEffort).build());
@@ -75,14 +75,14 @@ public class ChatService {
         // Check Parameters
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("Prompt must not be null or blank");
 
-        // Build Params
-        ResponseCreateParams params = buildParams(prompt, "");
+        // Create Chat request
+        var request = buildParams(prompt, "");
 
         // Create Response
-        Response response = service.create(params);
+        var response = service.create(request);
 
         // Return Chat Prompt
-        return new ChatPrompt(params, response);
+        return new ChatPrompt(request, response);
     }
 
     // Create Chat with previous chat history
@@ -92,14 +92,14 @@ public class ChatService {
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("Prompt must not be null or blank");
         if (previousResponseId == null || !previousResponseId.startsWith("resp_")) throw new IllegalArgumentException("Previous response ID must be null or start with 'resp_'");
 
-        // Build Params
-        ResponseCreateParams params = buildParams(prompt, previousResponseId);
+        // Create Chat request
+        var request = buildParams(prompt, previousResponseId);
 
         // Create Response
-        Response response = service.create(params);
+        var response = service.create(request);
 
         // Return Chat Prompt
-        return new ChatPrompt(params, response);
+        return new ChatPrompt(request, response);
     }
 
     // Static Builder

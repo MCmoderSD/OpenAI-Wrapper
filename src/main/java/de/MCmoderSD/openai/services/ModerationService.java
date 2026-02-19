@@ -2,7 +2,7 @@ package de.MCmoderSD.openai.services;
 
 import com.openai.client.OpenAIClient;
 import com.openai.models.moderations.ModerationCreateParams;
-import com.openai.models.moderations.ModerationCreateResponse;
+
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.models.ModerationModel;
 import de.MCmoderSD.openai.prompts.ModerationPrompt;
@@ -28,7 +28,7 @@ public class ModerationService {
     private ModerationCreateParams buildParams(String prompt) {
 
         // Init Builder
-        ModerationCreateParams.Builder builder = ModerationCreateParams.builder();
+        var builder = ModerationCreateParams.builder();
 
         // Set Parameters
         builder.model(model.getName());
@@ -44,14 +44,14 @@ public class ModerationService {
         // Check Parameters
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("Prompt must not be null or blank");
 
-        // Build Params
-        ModerationCreateParams params = buildParams(prompt);
+        // Create Moderation request
+        var request = buildParams(prompt);
 
         // Create Moderation
-        ModerationCreateResponse response = service.create(params);
+        var response = service.create(request);
 
         // Return Moderation Prompt
-        return new ModerationPrompt(params, response);
+        return new ModerationPrompt(request, response);
     }
 
     // Static Builder

@@ -47,27 +47,22 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.1.2</version>
+    <version>3.1.3</version>
 </dependency>
 ```
 
 ### Chat API Example
 ```java
-import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.prompts.ChatPrompt;
 import de.MCmoderSD.openai.services.ChatService;
-import tools.jackson.databind.JsonNode;
 
 import static de.MCmoderSD.openai.models.ChatModel.*;
 
 void main() {
 
-    // Load Config
-    JsonNode config = JsonUtility.getInstance().loadResource("/config.json");
-
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI(config.get("apiKey").asString());
+    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
 
     // Configure Chat Service
     ChatService service = ChatService.builder()
@@ -97,22 +92,16 @@ void main() {
 
 ### Embedding API Example
 ```java
-import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.prompts.EmbeddingPrompt;
 import de.MCmoderSD.openai.services.EmbeddingService;
-
-import tools.jackson.databind.JsonNode;
 
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 
 void main() {
 
-    // Load Config
-    JsonNode config = JsonUtility.getInstance().loadResource("/config.json");
-
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI(config.get("apiKey").asString());
+    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
 
     // Configure Service
     EmbeddingService service = EmbeddingService.builder()
@@ -134,23 +123,17 @@ void main() {
 
 ### Moderation API Example
 ```java
-import de.MCmoderSD.json.JsonUtility;
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.prompts.ModerationPrompt;
 import de.MCmoderSD.openai.services.ModerationService;
-
-import tools.jackson.databind.JsonNode;
 
 import static de.MCmoderSD.openai.models.ModerationModel.*;
 import static de.MCmoderSD.openai.objects.Rating.Data.*;
 
 void main() {
 
-    // Load Config
-    JsonNode config = JsonUtility.getInstance().loadResource("/config.json");
-
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI(config.get("apiKey").asString());
+    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
 
     // Configure Service
     ModerationService service = ModerationService.builder()

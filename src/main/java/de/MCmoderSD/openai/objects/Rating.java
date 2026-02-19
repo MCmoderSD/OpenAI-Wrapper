@@ -5,6 +5,7 @@ import com.openai.models.moderations.Moderation;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 import static de.MCmoderSD.openai.objects.Rating.Data.*;
 
@@ -147,5 +148,15 @@ public class Rating implements Serializable {
     // Data Enum
     public enum Data {
         ALL, POSITIVE, NEGATIVE
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(flagged, harassment, harassmentThreatening, hate, hateThreatening, illicit, illicitViolent, selfHarm, selfHarmInstructions, selfHarmIntent, sexual, sexualMinors, violence, violenceGraphic);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.getClass() == getClass() && hashCode() == obj.hashCode();
     }
 }

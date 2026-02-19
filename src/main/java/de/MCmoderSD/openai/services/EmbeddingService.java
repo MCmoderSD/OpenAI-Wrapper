@@ -1,14 +1,14 @@
 package de.MCmoderSD.openai.services;
 
 import com.openai.client.OpenAIClient;
-import com.openai.models.embeddings.CreateEmbeddingResponse;
 import com.openai.models.embeddings.EmbeddingCreateParams;
+
 import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.models.EmbeddingModel;
 import de.MCmoderSD.openai.prompts.EmbeddingPrompt;
 
-import static com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat.FLOAT;
-import static de.MCmoderSD.openai.models.EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
+import static com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat.*;
+import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 
 @SuppressWarnings("unused")
 public class EmbeddingService {
@@ -31,7 +31,7 @@ public class EmbeddingService {
     private EmbeddingCreateParams buildParams(String prompt) {
 
         // Init Builder
-        EmbeddingCreateParams.Builder builder = EmbeddingCreateParams.builder();
+        var builder = EmbeddingCreateParams.builder();
 
         // Set Parameters
         builder.model(model.getName());
@@ -49,14 +49,14 @@ public class EmbeddingService {
         // Check Parameters
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("Prompt must not be null or blank");
 
-        // Build Params
-        EmbeddingCreateParams params = buildParams(prompt);
+        // Create Embedding request
+        var request = buildParams(prompt);
 
         // Create Embedding
-        CreateEmbeddingResponse response = service.create(params);
+        var response = service.create(request);
 
         // Return Embedding Prompt
-        return new EmbeddingPrompt(params, response);
+        return new EmbeddingPrompt(request, response);
     }
 
     // Static Builder
