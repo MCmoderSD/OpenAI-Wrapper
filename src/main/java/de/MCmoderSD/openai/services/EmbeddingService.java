@@ -7,8 +7,8 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.models.EmbeddingModel;
 import de.MCmoderSD.openai.prompts.EmbeddingPrompt;
 
-import static com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat.*;
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
+import static com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat.*;
 
 @SuppressWarnings("unused")
 public class EmbeddingService {

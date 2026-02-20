@@ -7,7 +7,7 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.models.ModerationModel;
 import de.MCmoderSD.openai.prompts.ModerationPrompt;
 
-import static de.MCmoderSD.openai.models.ModerationModel.OMNI_MODERATION_LATEST;
+import static de.MCmoderSD.openai.models.ModerationModel.*;
 
 @SuppressWarnings("unused")
 public class ModerationService {

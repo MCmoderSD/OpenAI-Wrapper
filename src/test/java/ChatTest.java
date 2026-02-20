@@ -3,16 +3,24 @@ import de.MCmoderSD.openai.prompts.ChatPrompt;
 import de.MCmoderSD.openai.services.ChatService;
 
 import static de.MCmoderSD.openai.models.ChatModel.*;
+import static com.openai.models.ReasoningEffort.*;
 
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+
+    // Instructions
+    String instructions = "Talk like a pirate! Don't use markdown or formatting!";
 
     // Configure Chat Service
     ChatService service = ChatService.builder()
-            .setInstructions("Don't use markdown or formatting!")
-            .setModel(GPT_5_NANO)
+            .setModel(GPT_5_NANO)           // Model (required)
+            .setReasoningEffort(MINIMAL)    // Reasoning Effort (optional, default: lowest-available)
+            .setInstructions(instructions)  // Instructions (optional)
+            .setTemperature(1.0)            // Temperature (optional, default: 1.0)
+            .setTopP(1.0)                   // Top P (optional, default: 1.0)
+            .setMaxOutputTokens(64)         // Max Output Tokens (optional)
             .build(openAI);
 
     ChatPrompt chatPrompt = null;

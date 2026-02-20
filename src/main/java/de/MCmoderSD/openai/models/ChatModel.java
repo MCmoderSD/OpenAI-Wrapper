@@ -12,6 +12,7 @@ import java.util.List;
 import static com.openai.models.ReasoningEffort.*;
 import static de.MCmoderSD.openai.enums.Modality.*;
 import static de.MCmoderSD.openai.enums.Tool.*;
+import static java.util.List.of;
 
 @SuppressWarnings("unused")
 public enum ChatModel {
@@ -21,10 +22,10 @@ public enum ChatModel {
             Speed.SLOWEST,
             21_00,
             168_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(MEDIUM, HIGH, XHIGH),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(MEDIUM, HIGH, XHIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, MCP),
             400_000,
             128_000
     ),
@@ -34,10 +35,10 @@ public enum ChatModel {
             Speed.MEDIUM,
             1_75,
             14_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(NONE, LOW, MEDIUM, HIGH, XHIGH),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
             400_000,
             128_000
     ),
@@ -47,10 +48,10 @@ public enum ChatModel {
             Speed.MEDIUM,
             1_25,
             10_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(MINIMAL, LOW, MEDIUM, HIGH),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(MINIMAL, LOW, MEDIUM, HIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
             400_000,
             128_000
     ),
@@ -61,10 +62,10 @@ public enum ChatModel {
             Speed.FAST,
             25,
             2_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(MINIMAL, LOW, MEDIUM, HIGH),
-            List.of(WEBSEARCH, FILESEARCH, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(MINIMAL, LOW, MEDIUM, HIGH),
+            of(WEBSEARCH, FILESEARCH, CODE_INTERPRETATION, MCP),
             400_000,
             128_000
     ),
@@ -74,10 +75,10 @@ public enum ChatModel {
             Speed.FASTEST,
             5,
             40,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(MINIMAL, LOW, MEDIUM, HIGH),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(MINIMAL, LOW, MEDIUM, HIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
             400_000,
             128_000
     ),
@@ -87,10 +88,10 @@ public enum ChatModel {
             Speed.MEDIUM,
             1_25,
             10_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
             128_000,
             16_384
     ),
@@ -100,10 +101,10 @@ public enum ChatModel {
             Speed.SLOWEST,
             2_00,
             8_00,
-            List.of(TEXT, IMAGE),
-            List.of(TEXT),
-            List.of(),
-            List.of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, MCP),
             1_047_576,
             32_768
     );
@@ -200,19 +201,19 @@ public enum ChatModel {
     }
 
     public boolean hasInput(Modality... modality) {
-        return input.containsAll(List.of(modality));
+        return input.containsAll(of(modality));
     }
 
     public boolean hasOutput(Modality... modality) {
-        return output.containsAll(List.of(modality));
+        return output.containsAll(of(modality));
     }
 
     public boolean hasReasoning(ReasoningEffort... reasoningEffort) {
-        return reasoning.containsAll(List.of(reasoningEffort));
+        return reasoning.containsAll(of(reasoningEffort));
     }
 
     public boolean hasTool(Tool... tool) {
-        return this.tool.containsAll(List.of(tool));
+        return this.tool.containsAll(of(tool));
     }
 
     public BigDecimal getInputCost(long tokens) {

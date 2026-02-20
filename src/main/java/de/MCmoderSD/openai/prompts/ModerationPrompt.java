@@ -3,6 +3,7 @@ package de.MCmoderSD.openai.prompts;
 import com.openai.models.moderations.Moderation;
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.models.moderations.ModerationCreateResponse;
+
 import de.MCmoderSD.openai.models.ModerationModel;
 import de.MCmoderSD.openai.objects.Rating;
 

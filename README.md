@@ -9,6 +9,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Chat API**: Create conversational agents that can interact with users in a natural and engaging way.
 - **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 - **Moderation API**: Detect and filter inappropriate content from text inputs.
+- **Speech API**: Convert text to speech using OpenAI's advanced TTS models.
 
 ### Supported Models:
 
@@ -29,6 +30,11 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 #### Moderation Models:
 - [omni-moderation-latest](https://platform.openai.com/docs/models/omni-moderation-latest)
 
+### Speech Models:
+- [GPT-4o mini TTS](https://platform.openai.com/docs/models/gpt-4o-mini-tts)
+- [TTS-1 HD](https://platform.openai.com/docs/models/tts-1-hd)
+- [TTS-1](https://platform.openai.com/docs/models/tts-1)
+
 ## Usage
 
 ### Maven
@@ -47,7 +53,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.1.3</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 
@@ -58,16 +64,24 @@ import de.MCmoderSD.openai.prompts.ChatPrompt;
 import de.MCmoderSD.openai.services.ChatService;
 
 import static de.MCmoderSD.openai.models.ChatModel.*;
+import static com.openai.models.ReasoningEffort.*;
 
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+
+    // Instructions
+    String instructions = "Talk like a pirate! Don't use markdown or formatting!";
 
     // Configure Chat Service
     ChatService service = ChatService.builder()
-            .setInstructions("Don't use markdown or formatting!")
-            .setModel(GPT_5_NANO)
+            .setModel(GPT_5_NANO)           // Model (required)
+            .setReasoningEffort(MINIMAL)    // Reasoning Effort (optional, default: lowest-available)
+            .setInstructions(instructions)  // Instructions (optional)
+            .setTemperature(1.0)            // Temperature (optional, default: 1.0)
+            .setTopP(1.0)                   // Top P (optional, default: 1.0)
+            .setMaxOutputTokens(64)         // Max Output Tokens (optional)
             .build(openAI);
 
     ChatPrompt chatPrompt = null;
@@ -101,11 +115,12 @@ import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
     EmbeddingService service = EmbeddingService.builder()
-            .setModel(TEXT_EMBEDDING_3_LARGE)
+            .setModel(TEXT_EMBEDDING_3_LARGE)   // Model (required)
+            .setUser("Debug-User")              // User (optional)
             .build(openAI);
 
     // Create Prompt
@@ -133,11 +148,11 @@ import static de.MCmoderSD.openai.objects.Rating.Data.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
     ModerationService service = ModerationService.builder()
-            .setModel(OMNI_MODERATION_LATEST)
+            .setModel(OMNI_MODERATION_LATEST)   // Model (required)
             .build(openAI);
 
     // Create Prompt
@@ -148,5 +163,43 @@ void main() {
     IO.println("Model: " + prompt.getModel().getName());
     IO.println("Flagged: " + prompt.getRating().isFlagged());
     IO.println(prompt.getRating().getData(POSITIVE));
+}
+```
+
+### Speech API Example
+```java
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.prompts.SpeechPrompt;
+import de.MCmoderSD.openai.services.SpeechService;
+
+import static de.MCmoderSD.openai.models.SpeechModel.*;
+import static de.MCmoderSD.openai.enums.Voice.*;
+import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*;
+
+void main() {
+
+    // Initialize OpenAI
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+
+    // Instructions
+    String instructions = "Talk like a pirate!";
+
+    // Configure Service
+    SpeechService service = SpeechService.builder()
+            .setModel(GPT_4O_MINI_TTS)      // Model (required)
+            .setInstructions(instructions)  // Instructions (optional)
+            .setSpeed(1.0)                  // Speed (optional, default: 1.0)
+            .setVoice(MARIN)                // Voice (optional, default: CEDAR)
+            .setFormat(WAV)                 // Format (optional, default: WAV)
+            .build(openAI);
+
+    // Create Prompt
+    SpeechPrompt prompt = service.create("Hello, how are you doing today?");
+
+    // Write Output to File
+    File file = prompt.toFile(new File("output.wav"));
+
+    // Print File Path
+    IO.println("Audio file saved at: " + file.getAbsolutePath());
 }
 ```

@@ -1,9 +1,10 @@
 package de.MCmoderSD.openai.prompts;
 
-import com.openai.models.embeddings.CreateEmbeddingResponse;
-import com.openai.models.embeddings.CreateEmbeddingResponse.Usage;
 import com.openai.models.embeddings.EmbeddingCreateParams;
 import com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat;
+import com.openai.models.embeddings.CreateEmbeddingResponse;
+import com.openai.models.embeddings.CreateEmbeddingResponse.Usage;
+
 import de.MCmoderSD.openai.models.EmbeddingModel;
 import de.MCmoderSD.openai.objects.Embedding;
 

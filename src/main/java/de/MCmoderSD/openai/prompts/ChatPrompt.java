@@ -2,6 +2,7 @@ package de.MCmoderSD.openai.prompts;
 
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.Response;
+
 import de.MCmoderSD.openai.models.ChatModel;
 
 import java.time.Instant;

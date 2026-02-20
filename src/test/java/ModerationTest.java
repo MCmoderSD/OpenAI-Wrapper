@@ -8,11 +8,11 @@ import static de.MCmoderSD.openai.objects.Rating.Data.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
     ModerationService service = ModerationService.builder()
-            .setModel(OMNI_MODERATION_LATEST)
+            .setModel(OMNI_MODERATION_LATEST)   // Model (required)
             .build(openAI);
 
     // Create Prompt

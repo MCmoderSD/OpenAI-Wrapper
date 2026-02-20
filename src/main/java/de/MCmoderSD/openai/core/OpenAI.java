@@ -5,6 +5,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import de.MCmoderSD.openai.services.ChatService;
 import de.MCmoderSD.openai.services.EmbeddingService;
 import de.MCmoderSD.openai.services.ModerationService;
+import de.MCmoderSD.openai.services.SpeechService;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
@@ -45,6 +46,10 @@ public class OpenAI {
 
     public ModerationService moderations() {
         return ModerationService.builder().build(this);
+    }
+
+    public SpeechService speech() {
+        return SpeechService.builder().build(this);
     }
 
     // Getter

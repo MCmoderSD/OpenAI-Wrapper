@@ -10,15 +10,38 @@ import java.util.List;
 import static de.MCmoderSD.openai.enums.Performance.*;
 import static de.MCmoderSD.openai.enums.Speed.*;
 import static de.MCmoderSD.openai.enums.Modality.*;
+import static java.util.List.of;
 
 @SuppressWarnings("unused")
 public enum ModerationModel {
 
-    // Enum Values
-    //@Deprecated TEXT_MODERATION_STABLE(AVERAGE, MEDIUM, List.of(TEXT), List.of(TEXT)),
-    //@Deprecated TEXT_MODERATION_LATEST(AVERAGE, MEDIUM, List.of(TEXT), List.of(TEXT)),
-    OMNI_MODERATION_2024_09_26(HIGH, MEDIUM, List.of(TEXT, IMAGE), List.of(TEXT)),
-    OMNI_MODERATION_LATEST(HIGH, MEDIUM, List.of(TEXT, IMAGE), List.of(TEXT));
+    OMNI_MODERATION_LATEST(
+            HIGH,               // Performance
+            MEDIUM,             // Speed
+            of(TEXT, IMAGE),    // Supported Input Modalities
+            of(TEXT)            // Supported Output Modalities
+    ),
+
+    OMNI_MODERATION_2024_09_26(
+            HIGH,               // Performance
+            MEDIUM,             // Speed
+            of(TEXT, IMAGE),    // Supported Input Modalities
+            of(TEXT)            // Supported Output Modalities
+    ),
+
+    @Deprecated TEXT_MODERATION_LATEST(
+            AVERAGE,            // Performance
+            MEDIUM,             // Speed
+            of(TEXT),           // Supported Input Modalities
+            of(TEXT)            // Supported Output Modalities
+    ),
+
+    @Deprecated TEXT_MODERATION_STABLE(
+            AVERAGE,            // Performance
+            MEDIUM,             // Speed
+            of(TEXT),           // Supported Input Modalities
+            of(TEXT)            // Supported Output Modalities
+    );
 
     // Attributes
     private final Performance performance;
@@ -76,11 +99,11 @@ public enum ModerationModel {
     }
 
     public boolean hasInput(Modality... modality) {
-        return input.containsAll(List.of(modality));
+        return input.containsAll(of(modality));
     }
 
     public boolean hasOutput(Modality... modality) {
-        return output.containsAll(List.of(modality));
+        return output.containsAll(of(modality));
     }
 
     // Static Methods

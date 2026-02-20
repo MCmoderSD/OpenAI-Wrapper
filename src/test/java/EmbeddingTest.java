@@ -7,11 +7,12 @@ import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("YOUR API KEY HERE"); // Replace with your actual API key
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
     EmbeddingService service = EmbeddingService.builder()
-            .setModel(TEXT_EMBEDDING_3_LARGE)
+            .setModel(TEXT_EMBEDDING_3_LARGE)   // Model (required)
+            .setUser("Debug-User")              // User (optional)
             .build(openAI);
 
     // Create Prompt
