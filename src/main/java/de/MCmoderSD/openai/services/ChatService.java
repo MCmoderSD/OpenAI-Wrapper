@@ -39,7 +39,7 @@ public class ChatService {
     }
 
     // Builder
-    private ResponseCreateParams.Builder initBuilder() {
+    private ResponseCreateParams buildParams(String prompt, String previousResponseId) {
 
         // Init Builder
         var builder = ResponseCreateParams.builder();
@@ -48,21 +48,16 @@ public class ChatService {
         builder.model(model.getName());
         builder.temperature(temperature);
         builder.topP(topP);
+
+        // Add optional parameters
         if (!instructions.isBlank()) builder.instructions(instructions);
+        if (model.hasReasoning(reasoningEffort)) builder.reasoning(Reasoning.builder().effort(reasoningEffort).build());
         if (maxOutputTokens > 0) builder.maxOutputTokens(maxOutputTokens);
 
-        // Return Builder
-        return builder;
-    }
-
-    private ResponseCreateParams buildParams(String prompt, String previousResponseId) {
-
-        // Init Builder
-        var builder = initBuilder();
-
-        // Set Parameters
-        if (model.hasReasoning(reasoningEffort)) builder.reasoning(Reasoning.builder().effort(reasoningEffort).build());
+        // Add previous response ID if provided
         if (previousResponseId.startsWith("resp_")) builder.previousResponseId(previousResponseId);
+
+        // Set Prompt
         builder.input(prompt);
 
         // Build and return
