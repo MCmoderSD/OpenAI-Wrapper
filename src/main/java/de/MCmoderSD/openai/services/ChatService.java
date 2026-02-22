@@ -109,8 +109,8 @@ public class ChatService {
         private ChatModel model = GPT_5_2;
         private ReasoningEffort reasoningEffort;
         private String instructions = "";
-        private double temperature = 1;
-        private double topP = 1;
+        private double temperature = 1d;
+        private double topP = 1d;
         private int maxOutputTokens = 0;
 
         // Build

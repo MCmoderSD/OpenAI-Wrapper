@@ -24,10 +24,10 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    SpeechPrompt prompt = service.create("Hello, how are you doing today?");
+    SpeechPrompt response = service.create("Hello, how are you doing today?");
 
     // Write Output to File
-    File file = prompt.toFile(new File("output.wav"));
+    File file = response.toFile(new File("output.wav"));
 
     // Print File Path
     IO.println("Audio file saved at: " + file.getAbsolutePath());

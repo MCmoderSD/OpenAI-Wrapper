@@ -16,11 +16,11 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    ModerationPrompt prompt = service.create("I want to kill myself.");
+    ModerationPrompt response = service.create("I want to kill myself.");
 
     // Print Moderation Data
-    IO.println("ID: " + prompt.getId());
-    IO.println("Model: " + prompt.getModel().getName());
-    IO.println("Flagged: " + prompt.getRating().isFlagged());
-    IO.println(prompt.getRating().getData(POSITIVE));
+    IO.println("ID: " + response.getId());
+    IO.println("Model: " + response.getModel().getName());
+    IO.println("Flagged: " + response.getRating().isFlagged());
+    IO.println(response.getRating().getData(POSITIVE));
 }

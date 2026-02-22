@@ -10,6 +10,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - **Embedding API**: Generate embeddings to measure semantic similarity between text inputs.
 - **Moderation API**: Detect and filter inappropriate content from text inputs.
 - **Speech API**: Convert text to speech using OpenAI's advanced TTS models.
+- **Translation API**: Transcribe and translate audio into text using OpenAI's Whisper model.
 
 ### Supported Models:
 
@@ -35,6 +36,9 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 - [TTS-1 HD](https://platform.openai.com/docs/models/tts-1-hd)
 - [TTS-1](https://platform.openai.com/docs/models/tts-1)
 
+### Translation Models:
+- [Whisper](https://platform.openai.com/docs/models/whisper-1)
+
 ## Usage
 
 ### Maven
@@ -53,7 +57,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.2.1</version>
+    <version>3.3.0</version>
 </dependency>
 ```
 
@@ -89,6 +93,7 @@ void main() {
 
     IO.println("Type 'exit' to end the conversation.\nYou:");
     while (!(userInput = IO.readln()).equalsIgnoreCase("exit")) {
+        if (userInput.trim().isBlank()) continue;
 
         // Create Chat Prompt
         if (chatPrompt == null) chatPrompt = service.create(userInput);     // New Chat
@@ -124,15 +129,15 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    EmbeddingPrompt prompt = service.create("Hello World!");
+    EmbeddingPrompt response = service.create("Hello World!");
 
     // Print Embedding Data
-    IO.println("Prompt Tokens: " + prompt.getPromptTokens());
-    IO.println("Total Tokens: " + prompt.getTotalTokens());
-    IO.println("Prompt Cost: " + prompt.getPromptCost());
-    IO.println("Total Cost: " + prompt.getTotalCost());
-    IO.println("Dimension: " + prompt.getDimension());
-    IO.println("Embedding: " + Arrays.toString(prompt.getEmbedding().getVector()));
+    IO.println("Prompt Tokens: " + response.getPromptTokens());
+    IO.println("Total Tokens: " + response.getTotalTokens());
+    IO.println("Prompt Cost: " + response.getPromptCost());
+    IO.println("Total Cost: " + response.getTotalCost());
+    IO.println("Dimension: " + response.getDimension());
+    IO.println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
 }
 ```
 
@@ -156,13 +161,13 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    ModerationPrompt prompt = service.create("I want to kill myself.");
+    ModerationPrompt response = service.create("I want to kill myself.");
 
     // Print Moderation Data
-    IO.println("ID: " + prompt.getId());
-    IO.println("Model: " + prompt.getModel().getName());
-    IO.println("Flagged: " + prompt.getRating().isFlagged());
-    IO.println(prompt.getRating().getData(POSITIVE));
+    IO.println("ID: " + response.getId());
+    IO.println("Model: " + response.getModel().getName());
+    IO.println("Flagged: " + response.getRating().isFlagged());
+    IO.println(response.getRating().getData(POSITIVE));
 }
 ```
 
@@ -194,12 +199,46 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    SpeechPrompt prompt = service.create("Hello, how are you doing today?");
+    SpeechPrompt response = service.create("Hello, how are you doing today?");
 
     // Write Output to File
-    File file = prompt.toFile(new File("output.wav"));
+    File file = response.toFile(new File("output.wav"));
 
     // Print File Path
     IO.println("Audio file saved at: " + file.getAbsolutePath());
+}
+```
+
+### Translation API Example
+```java
+import de.MCmoderSD.openai.core.OpenAI;
+import de.MCmoderSD.openai.prompts.TranslationPrompt;
+import de.MCmoderSD.openai.services.TranslationService;
+
+import static de.MCmoderSD.openai.models.TranslationModel.*;
+
+void main() {
+
+    // Initialize OpenAI
+    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+
+    // Prompt
+    String prompt = "Translate the following audio file to English:";
+
+    // Configure Service
+    TranslationService service = TranslationService.builder()
+            .setModel(WHISPER_1)    // Model (required)
+            .setPrompt(prompt)      // Prompt (optional)
+            .setTemperature(1.0)    // Temperature (optional, default: 1.0)
+            .build(openAI);
+
+    // Input File
+    File input = new File("output.wav"); // Supported file formats: flac, mp3, mp4, mpeg, mpga, m4a, wav, webm
+
+    // Create Translation
+    TranslationPrompt response = service.create(input);
+
+    // Print Translation
+    IO.println(response.getText());
 }
 ```

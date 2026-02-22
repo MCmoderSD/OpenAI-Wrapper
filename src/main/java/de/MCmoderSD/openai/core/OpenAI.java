@@ -6,6 +6,7 @@ import de.MCmoderSD.openai.services.ChatService;
 import de.MCmoderSD.openai.services.EmbeddingService;
 import de.MCmoderSD.openai.services.ModerationService;
 import de.MCmoderSD.openai.services.SpeechService;
+import de.MCmoderSD.openai.services.TranslationService;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
@@ -50,6 +51,10 @@ public class OpenAI {
 
     public SpeechService speech() {
         return SpeechService.builder().build(this);
+    }
+
+    public TranslationService translations() {
+        return TranslationService.builder().build(this);
     }
 
     // Getter

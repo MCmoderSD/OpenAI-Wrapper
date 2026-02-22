@@ -1,8 +1,8 @@
 package de.MCmoderSD.openai.models;
 
-import com.openai.models.ReasoningEffort;
-import de.MCmoderSD.openai.enums.Modality;
 import de.MCmoderSD.openai.enums.Speed;
+import de.MCmoderSD.openai.enums.Modality;
+import com.openai.models.ReasoningEffort;
 import de.MCmoderSD.openai.enums.Tool;
 
 import java.math.BigDecimal;

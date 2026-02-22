@@ -28,6 +28,7 @@ void main() {
 
     IO.println("Type 'exit' to end the conversation.\nYou:");
     while (!(userInput = IO.readln()).equalsIgnoreCase("exit")) {
+        if (userInput.trim().isBlank()) continue;
 
         // Create Chat Prompt
         if (chatPrompt == null) chatPrompt = service.create(userInput);     // New Chat

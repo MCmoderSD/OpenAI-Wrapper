@@ -16,13 +16,13 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    EmbeddingPrompt prompt = service.create("Hello World!");
+    EmbeddingPrompt response = service.create("Hello World!");
 
     // Print Embedding Data
-    IO.println("Prompt Tokens: " + prompt.getPromptTokens());
-    IO.println("Total Tokens: " + prompt.getTotalTokens());
-    IO.println("Prompt Cost: " + prompt.getPromptCost());
-    IO.println("Total Cost: " + prompt.getTotalCost());
-    IO.println("Dimension: " + prompt.getDimension());
-    IO.println("Embedding: " + Arrays.toString(prompt.getEmbedding().getVector()));
+    IO.println("Prompt Tokens: " + response.getPromptTokens());
+    IO.println("Total Tokens: " + response.getTotalTokens());
+    IO.println("Prompt Cost: " + response.getPromptCost());
+    IO.println("Total Cost: " + response.getTotalCost());
+    IO.println("Dimension: " + response.getDimension());
+    IO.println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
 }
