@@ -3,7 +3,6 @@ package de.MCmoderSD.openai.prompts;
 import com.openai.models.embeddings.EmbeddingCreateParams;
 import com.openai.models.embeddings.EmbeddingCreateParams.EncodingFormat;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
-import com.openai.models.embeddings.CreateEmbeddingResponse.Usage;
 
 import de.MCmoderSD.openai.models.EmbeddingModel;
 import de.MCmoderSD.openai.objects.Embedding;
@@ -23,9 +22,8 @@ public class EmbeddingPrompt {
     private final int dimension;
     private final String text;
 
-    // Output
+    // Variables
     private final EmbeddingModel model;
-    private final Usage usage;
 
     // Usage
     private final long promptTokens;
@@ -56,9 +54,9 @@ public class EmbeddingPrompt {
 
         // Extract Output
         model = EmbeddingModel.getModel(output.model());
-        usage = output.usage();
 
         // Extract Usage
+        var usage = output.usage();
         promptTokens = usage.promptTokens();
         totalTokens = usage.totalTokens();
 
@@ -94,10 +92,6 @@ public class EmbeddingPrompt {
 
     public EmbeddingModel getModel() {
         return model;
-    }
-
-    public Usage getUsage() {
-        return usage;
     }
 
     public long getPromptTokens() {

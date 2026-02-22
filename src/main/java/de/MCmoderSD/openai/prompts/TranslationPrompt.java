@@ -29,14 +29,14 @@ public class TranslationPrompt {
         this.output = output;
 
         // Extract Content
-        var translation = output.asVerbose();
-        duration = translation.duration();
-        language = translation.language();
-        text = translation.text();
+        var data = output.asVerbose();
+        duration = data.duration();
+        language = data.language();
+        text = data.text();
 
         // Extract Segments
-        segments = new ArrayList<>(translation.segments().orElseThrow().size());
-        for (var segment : translation.segments().orElseThrow()) segments.add(new Segment(segment));
+        segments = new ArrayList<>(data.segments().orElseThrow().size());
+        data.segments().orElseThrow().forEach(segment -> segments.add(new Segment(segment)));
     }
 
     // Getters

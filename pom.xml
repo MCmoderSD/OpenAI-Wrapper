@@ -6,7 +6,7 @@
 
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.3.0</version>
+    <version>3.3.1</version>
 
     <name>OpenAI</name>
     <description>A Java Wrapper for the official OpenAI Java SDK</description>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java</artifactId>
-            <version>4.21.0</version>
+            <version>4.22.0</version>
         </dependency>
     </dependencies>
 
