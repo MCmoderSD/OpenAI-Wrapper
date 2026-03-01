@@ -65,6 +65,11 @@ public class ModerationService {
         // Parameter
         private ModerationModel model;
 
+        // Constructor
+        private Builder() {
+            model = OMNI_MODERATION_LATEST;
+        }
+
         // Build
         public ModerationService build(OpenAI openAI) {
 
@@ -72,7 +77,7 @@ public class ModerationService {
             if (openAI == null) throw new IllegalArgumentException("OpenAI must not be null");
 
             // Return Service
-            return new ModerationService(openAI.getClient(), model == null ? OMNI_MODERATION_LATEST : model);
+            return new ModerationService(openAI.getClient(), model);
         }
 
         // Set Model

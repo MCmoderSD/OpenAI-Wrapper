@@ -106,12 +106,22 @@ public class ChatService {
     public static class Builder {
 
         // Parameter
-        private ChatModel model = GPT_5_2;
+        private ChatModel model;
         private ReasoningEffort reasoningEffort;
-        private String instructions = "";
-        private double temperature = 1d;
-        private double topP = 1d;
-        private int maxOutputTokens = 0;
+        private String instructions;
+        private double temperature;
+        private double topP;
+        private int maxOutputTokens;
+
+        // Constructor
+        private Builder() {
+            model = GPT_5_2;
+            reasoningEffort = null;
+            instructions = "";
+            temperature = 1d;
+            topP = 1d;
+            maxOutputTokens = 0;
+        }
 
         // Build
         public ChatService build(OpenAI openAI) {

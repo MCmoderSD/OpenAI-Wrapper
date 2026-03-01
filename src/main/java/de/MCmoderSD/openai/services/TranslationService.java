@@ -143,9 +143,16 @@ public class TranslationService {
     public static class Builder {
 
         // Parameter
-        private TranslationModel model = WHISPER_1;
-        private String prompt = "";
-        private double temperature = 1d;
+        private TranslationModel model;
+        private String prompt;
+        private double temperature;
+
+        // Constructor
+        private Builder() {
+            model = WHISPER_1;
+            prompt = "";
+            temperature = 1d;
+        }
 
         // Build
         public TranslationService build(OpenAI openAI) {

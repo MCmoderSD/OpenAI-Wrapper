@@ -82,11 +82,20 @@ public class SpeechService {
     public static class Builder {
 
         // Parameter
-        private SpeechModel model = GPT_4O_MINI_TTS;
-        private String instructions = "";
-        private double speed = 1d;
-        private Voice voice = CEDAR;
-        private ResponseFormat format = WAV;
+        private SpeechModel model;
+        private String instructions;
+        private double speed;
+        private Voice voice;
+        private ResponseFormat format;
+
+        // Constructor
+        private Builder() {
+            model = GPT_4O_MINI_TTS;
+            instructions = "";
+            speed = 1d;
+            voice = CEDAR;
+            format = WAV;
+        }
 
         // Build
         public SpeechService build(OpenAI openAI) {

@@ -69,7 +69,13 @@ public class EmbeddingService {
 
         // Parameter
         private EmbeddingModel model;
-        private String user = "";
+        private String user;
+
+        // Constructor
+        private Builder() {
+            model = TEXT_EMBEDDING_3_LARGE;
+            user = "";
+        }
 
         // Build
         public EmbeddingService build(OpenAI openAI) {
@@ -78,7 +84,7 @@ public class EmbeddingService {
             if (openAI == null) throw new IllegalArgumentException("OpenAI must not be null");
 
             // Return Service
-            return new EmbeddingService(openAI.getClient(), model == null ? TEXT_EMBEDDING_3_LARGE : model, user);
+            return new EmbeddingService(openAI.getClient(), model, user);
         }
 
         // Set Model
