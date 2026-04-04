@@ -115,7 +115,7 @@ public class ChatService {
 
         // Constructor
         private Builder() {
-            model = GPT_5_2;
+            model = GPT_5_4;
             reasoningEffort = null;
             instructions = "";
             temperature = 1d;

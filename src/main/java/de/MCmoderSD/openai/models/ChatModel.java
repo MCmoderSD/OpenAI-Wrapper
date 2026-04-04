@@ -17,6 +17,45 @@ import static java.util.List.of;
 @SuppressWarnings("unused")
 public enum ChatModel {
 
+    GPT_5_4(
+            "gpt-5.4",
+            Speed.MEDIUM,
+            2_50,
+            15_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
+    GPT_5_4_MINI(
+            "gpt-5.4-mini",
+            Speed.FAST,
+            75,
+            4_50,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            400_000,
+            128_000
+    ),
+
+    GPT_5_4_NANO(
+            "gpt-5.4-nano",
+            Speed.FAST,
+            20,
+            1_25,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, MCP),
+            400_000,
+            128_000
+    ),
+
     GPT_5_2_PRO(
             "gpt-5.2-pro",
             Speed.SLOWEST,
