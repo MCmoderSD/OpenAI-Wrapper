@@ -55,7 +55,7 @@ public class ChatPrompt {
         reasoningTokens = usage.outputTokensDetails().reasoningTokens();
 
         // Variables
-        model = ChatModel.getModel(output.model().asChat().asString());
+        model = ChatModel.getModel(output.model().asString());
         temperature = output.temperature().orElseThrow();
         topP = output.topP().orElseThrow();
 
