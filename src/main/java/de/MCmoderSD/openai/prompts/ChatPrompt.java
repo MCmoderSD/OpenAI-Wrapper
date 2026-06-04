@@ -1,5 +1,6 @@
 package de.MCmoderSD.openai.prompts;
 
+import com.openai.models.ResponsesModel;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.Response;
 
@@ -55,12 +56,16 @@ public class ChatPrompt {
         reasoningTokens = usage.outputTokensDetails().reasoningTokens();
 
         // Variables
-        model = ChatModel.getModel(output.model().asString());
+        model = ChatModel.getModel(extractModel(output.model()));
         temperature = output.temperature().orElseThrow();
         topP = output.topP().orElseThrow();
 
         // Extract Content
         content = output.output().getLast().asMessage().content().getFirst().asOutputText().text().trim();
+    }
+
+    private static String extractModel(ResponsesModel model) {
+        return model.toString().replaceAll("^.*?=|}$", "").trim();
     }
 
     // Getters
