@@ -44,7 +44,7 @@ public class TranslationService {
     private static File createTempFile(byte[] data) {
 
         // Create Temp File
-        File tempFile = new File(TEMP_DIR, UUID.randomUUID() + ".wav");
+        var tempFile = new File(TEMP_DIR, UUID.randomUUID() + ".wav");
 
         // Write Data to Temp File
         try (var bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
@@ -92,7 +92,7 @@ public class TranslationService {
         if (data.length > MAX_SIZE) throw new IllegalArgumentException("Data must not exceed 25MB");
 
         // Create Temp File
-        File tempFile = createTempFile(data);
+        var tempFile = createTempFile(data);
 
         // Build Request
         var request = buildParams(tempFile);
@@ -119,7 +119,7 @@ public class TranslationService {
         if (file.length() > MAX_SIZE) throw new IllegalArgumentException("File must not exceed 25MB");
 
         // Create Temp File
-        File tempFile = createTempFile(file);
+        var tempFile = createTempFile(file);
 
         // Build Request
         var request = buildParams(tempFile);

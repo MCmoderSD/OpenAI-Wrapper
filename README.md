@@ -63,7 +63,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.3.7</version>
+    <version>3.3.8</version>
 </dependency>
 ```
 
@@ -79,13 +79,13 @@ import static com.openai.models.ReasoningEffort.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Instructions
-    String instructions = "Talk like a pirate! Don't use markdown or formatting!";
+    var instructions = "Talk like a pirate! Don't use markdown or formatting!";
 
     // Configure Chat Service
-    ChatService service = ChatService.builder()
+    var service = ChatService.builder()
             .setModel(GPT_5_NANO)           // Model (required)
             .setReasoningEffort(MINIMAL)    // Reasoning Effort (optional, default: lowest-available)
             .setInstructions(instructions)  // Instructions (optional)
@@ -106,7 +106,7 @@ void main() {
         else chatPrompt = service.create(userInput, chatPrompt.getId());    // Continue Chat
 
         // Get Response
-        String response = chatPrompt.getContent();
+        var response = chatPrompt.getContent();
 
         // Print Response
         IO.println("\nResponse: \n" + response + "\n");
@@ -118,7 +118,6 @@ void main() {
 ### Embedding API Example
 ```java
 import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.prompts.EmbeddingPrompt;
 import de.MCmoderSD.openai.services.EmbeddingService;
 
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
@@ -126,16 +125,16 @@ import static de.MCmoderSD.openai.models.EmbeddingModel.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
-    EmbeddingService service = EmbeddingService.builder()
+    var service = EmbeddingService.builder()
             .setModel(TEXT_EMBEDDING_3_LARGE)   // Model (required)
             .setUser("Debug-User")              // User (optional)
             .build(openAI);
 
     // Create Prompt
-    EmbeddingPrompt response = service.create("Hello World!");
+    var response = service.create("Hello World!");
 
     // Print Embedding Data
     IO.println("Prompt Tokens: " + response.getPromptTokens());
@@ -150,7 +149,6 @@ void main() {
 ### Moderation API Example
 ```java
 import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.prompts.ModerationPrompt;
 import de.MCmoderSD.openai.services.ModerationService;
 
 import static de.MCmoderSD.openai.models.ModerationModel.*;
@@ -159,15 +157,15 @@ import static de.MCmoderSD.openai.objects.Rating.Data.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Configure Service
-    ModerationService service = ModerationService.builder()
+    var service = ModerationService.builder()
             .setModel(OMNI_MODERATION_LATEST)   // Model (required)
             .build(openAI);
 
     // Create Prompt
-    ModerationPrompt response = service.create("I want to kill myself.");
+    var response = service.create("I want to kill myself.");
 
     // Print Moderation Data
     IO.println("ID: " + response.getId());
@@ -180,7 +178,6 @@ void main() {
 ### Speech API Example
 ```java
 import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.prompts.SpeechPrompt;
 import de.MCmoderSD.openai.services.SpeechService;
 
 import static de.MCmoderSD.openai.models.SpeechModel.*;
@@ -190,13 +187,13 @@ import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Instructions
-    String instructions = "Talk like a pirate!";
+    var instructions = "Talk like a pirate!";
 
     // Configure Service
-    SpeechService service = SpeechService.builder()
+    var service = SpeechService.builder()
             .setModel(GPT_4O_MINI_TTS)      // Model (required)
             .setInstructions(instructions)  // Instructions (optional)
             .setSpeed(1.0)                  // Speed (optional, default: 1.0)
@@ -205,10 +202,10 @@ void main() {
             .build(openAI);
 
     // Create Prompt
-    SpeechPrompt response = service.create("Hello, how are you doing today?");
+    var response = service.create("Hello, how are you doing today?");
 
     // Write Output to File
-    File file = response.toFile(new File("output.wav"));
+    var file = response.toFile(new File("output.wav"));
 
     // Print File Path
     IO.println("Audio file saved at: " + file.getAbsolutePath());
@@ -218,7 +215,6 @@ void main() {
 ### Translation API Example
 ```java
 import de.MCmoderSD.openai.core.OpenAI;
-import de.MCmoderSD.openai.prompts.TranslationPrompt;
 import de.MCmoderSD.openai.services.TranslationService;
 
 import static de.MCmoderSD.openai.models.TranslationModel.*;
@@ -226,23 +222,23 @@ import static de.MCmoderSD.openai.models.TranslationModel.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Prompt
-    String prompt = "Translate the following audio file to English:";
+    var prompt = "Translate the following audio file to English:";
 
     // Configure Service
-    TranslationService service = TranslationService.builder()
+    var service = TranslationService.builder()
             .setModel(WHISPER_1)    // Model (required)
             .setPrompt(prompt)      // Prompt (optional)
             .setTemperature(1.0)    // Temperature (optional, default: 1.0)
             .build(openAI);
 
     // Input File
-    File input = new File("output.wav"); // Supported file formats: flac, mp3, mp4, mpeg, mpga, m4a, wav, webm
+    var input = new File("output.wav"); // Supported file formats: flac, mp3, mp4, mpeg, mpga, m4a, wav, webm
 
     // Create Translation
-    TranslationPrompt response = service.create(input);
+    var response = service.create(input);
 
     // Print Translation
     IO.println(response.getText());

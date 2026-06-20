@@ -60,9 +60,9 @@ public class SpeechPrompt {
         if (file.isDirectory()) throw new IllegalArgumentException("File must not be a directory");
 
         // Check File Extension
-        String fileName = file.getName();
-        String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        String format = input.responseFormat().orElseThrow().asString();
+        var fileName = file.getName();
+        var extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        var format = input.responseFormat().orElseThrow().asString();
         if (!format.equalsIgnoreCase(extension)) throw new IllegalArgumentException("File extension must match response format: " + format);
 
         // Write Data to File

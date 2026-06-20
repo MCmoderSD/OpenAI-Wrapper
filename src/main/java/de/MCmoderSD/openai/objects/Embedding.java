@@ -34,7 +34,7 @@ public class Embedding implements Serializable {
 
     // Helper Methods
     public static float[] convertToFloatArray(List<Float> data) {
-        float[] array = new float[data.size()];
+        var array = new float[data.size()];
         for (var i = 0; i < data.size(); i++) array[i] = data.get(i);
         return array;
     }

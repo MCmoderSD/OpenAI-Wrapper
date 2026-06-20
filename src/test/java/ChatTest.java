@@ -8,13 +8,13 @@ import static com.openai.models.ReasoningEffort.*;
 void main() {
 
     // Initialize OpenAI
-    OpenAI openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
 
     // Instructions
-    String instructions = "Talk like a pirate! Don't use markdown or formatting!";
+    var instructions = "Talk like a pirate! Don't use markdown or formatting!";
 
     // Configure Chat Service
-    ChatService service = ChatService.builder()
+    var service = ChatService.builder()
             .setModel(GPT_5_NANO)           // Model (required)
             .setReasoningEffort(MINIMAL)    // Reasoning Effort (optional, default: lowest-available)
             .setInstructions(instructions)  // Instructions (optional)
@@ -35,7 +35,7 @@ void main() {
         else chatPrompt = service.create(userInput, chatPrompt.getId());    // Continue Chat
 
         // Get Response
-        String response = chatPrompt.getContent();
+        var response = chatPrompt.getContent();
 
         // Print Response
         IO.println("\nResponse: \n" + response + "\n");
