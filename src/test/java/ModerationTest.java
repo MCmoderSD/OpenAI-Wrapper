@@ -3,6 +3,7 @@ import de.MCmoderSD.openai.services.ModerationService;
 
 import static de.MCmoderSD.openai.models.ModerationModel.*;
 import static de.MCmoderSD.openai.objects.Rating.Data.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -18,8 +19,8 @@ void main() {
     var response = service.create("I want to kill myself.");
 
     // Print Moderation Data
-    IO.println("ID: " + response.getId());
-    IO.println("Model: " + response.getModel().getName());
-    IO.println("Flagged: " + response.getRating().isFlagged());
-    IO.println(response.getRating().getData(POSITIVE));
+    println("ID: " + response.getId());
+    println("Model: " + response.getModel().getName());
+    println("Flagged: " + response.getRating().isFlagged());
+    println(response.getRating().getData(POSITIVE));
 }

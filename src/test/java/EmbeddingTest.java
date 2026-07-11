@@ -2,6 +2,7 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.services.EmbeddingService;
 
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -18,10 +19,10 @@ void main() {
     var response = service.create("Hello World!");
 
     // Print Embedding Data
-    IO.println("Prompt Tokens: " + response.getPromptTokens());
-    IO.println("Total Tokens: " + response.getTotalTokens());
-    IO.println("Prompt Cost: " + response.getPromptCost());
-    IO.println("Total Cost: " + response.getTotalCost());
-    IO.println("Dimension: " + response.getDimension());
-    IO.println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
+    println("Prompt Tokens: " + response.getPromptTokens());
+    println("Total Tokens: " + response.getTotalTokens());
+    println("Prompt Cost: " + response.getPromptCost());
+    println("Total Cost: " + response.getTotalCost());
+    println("Dimension: " + response.getDimension());
+    println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
 }

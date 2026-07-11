@@ -75,6 +75,7 @@ import de.MCmoderSD.openai.services.ChatService;
 
 import static de.MCmoderSD.openai.models.ChatModel.*;
 import static com.openai.models.ReasoningEffort.*;
+import static java.lang.IO.*;
 
 void main() {
 
@@ -97,7 +98,7 @@ void main() {
     ChatPrompt chatPrompt = null;
     String userInput;
 
-    IO.println("Type 'exit' to end the conversation.\nYou:");
+    println("Type 'exit' to end the conversation.\nYou:");
     while (!(userInput = IO.readln()).equalsIgnoreCase("exit")) {
         if (userInput.trim().isBlank()) continue;
 
@@ -109,8 +110,8 @@ void main() {
         var response = chatPrompt.getContent();
 
         // Print Response
-        IO.println("\nResponse: \n" + response + "\n");
-        IO.print("You:\n");
+        println("\nResponse: \n" + response + "\n");
+        print("You:\n");
     }
 }
 ```
@@ -121,6 +122,7 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.services.EmbeddingService;
 
 import static de.MCmoderSD.openai.models.EmbeddingModel.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -137,12 +139,12 @@ void main() {
     var response = service.create("Hello World!");
 
     // Print Embedding Data
-    IO.println("Prompt Tokens: " + response.getPromptTokens());
-    IO.println("Total Tokens: " + response.getTotalTokens());
-    IO.println("Prompt Cost: " + response.getPromptCost());
-    IO.println("Total Cost: " + response.getTotalCost());
-    IO.println("Dimension: " + response.getDimension());
-    IO.println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
+    println("Prompt Tokens: " + response.getPromptTokens());
+    println("Total Tokens: " + response.getTotalTokens());
+    println("Prompt Cost: " + response.getPromptCost());
+    println("Total Cost: " + response.getTotalCost());
+    println("Dimension: " + response.getDimension());
+    println("Embedding: " + Arrays.toString(response.getEmbedding().getVector()));
 }
 ```
 
@@ -153,6 +155,7 @@ import de.MCmoderSD.openai.services.ModerationService;
 
 import static de.MCmoderSD.openai.models.ModerationModel.*;
 import static de.MCmoderSD.openai.objects.Rating.Data.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -168,10 +171,10 @@ void main() {
     var response = service.create("I want to kill myself.");
 
     // Print Moderation Data
-    IO.println("ID: " + response.getId());
-    IO.println("Model: " + response.getModel().getName());
-    IO.println("Flagged: " + response.getRating().isFlagged());
-    IO.println(response.getRating().getData(POSITIVE));
+    println("ID: " + response.getId());
+    println("Model: " + response.getModel().getName());
+    println("Flagged: " + response.getRating().isFlagged());
+    println(response.getRating().getData(POSITIVE));
 }
 ```
 
@@ -183,6 +186,7 @@ import de.MCmoderSD.openai.services.SpeechService;
 import static de.MCmoderSD.openai.models.SpeechModel.*;
 import static de.MCmoderSD.openai.enums.Voice.*;
 import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -208,7 +212,7 @@ void main() {
     var file = response.toFile(new File("output.wav"));
 
     // Print File Path
-    IO.println("Audio file saved at: " + file.getAbsolutePath());
+    println("Audio file saved at: " + file.getAbsolutePath());
 }
 ```
 
@@ -218,6 +222,7 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.services.TranslationService;
 
 import static de.MCmoderSD.openai.models.TranslationModel.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -241,6 +246,6 @@ void main() {
     var response = service.create(input);
 
     // Print Translation
-    IO.println(response.getText());
+    println(response.getText());
 }
 ```

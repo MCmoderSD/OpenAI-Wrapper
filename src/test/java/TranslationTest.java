@@ -2,6 +2,7 @@ import de.MCmoderSD.openai.core.OpenAI;
 import de.MCmoderSD.openai.services.TranslationService;
 
 import static de.MCmoderSD.openai.models.TranslationModel.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -25,5 +26,5 @@ void main() {
     var response = service.create(input);
 
     // Print Translation
-    IO.println(response.getText());
+    println(response.getText());
 }

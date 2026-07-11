@@ -4,6 +4,7 @@ import de.MCmoderSD.openai.services.ChatService;
 
 import static de.MCmoderSD.openai.models.ChatModel.*;
 import static com.openai.models.ReasoningEffort.*;
+import static java.lang.IO.*;
 
 void main() {
 
@@ -26,7 +27,7 @@ void main() {
     ChatPrompt chatPrompt = null;
     String userInput;
 
-    IO.println("Type 'exit' to end the conversation.\nYou:");
+    println("Type 'exit' to end the conversation.\nYou:");
     while (!(userInput = IO.readln()).equalsIgnoreCase("exit")) {
         if (userInput.trim().isBlank()) continue;
 
@@ -38,7 +39,7 @@ void main() {
         var response = chatPrompt.getContent();
 
         // Print Response
-        IO.println("\nResponse: \n" + response + "\n");
-        IO.print("You:\n");
+        println("\nResponse: \n" + response + "\n");
+        print("You:\n");
     }
 }

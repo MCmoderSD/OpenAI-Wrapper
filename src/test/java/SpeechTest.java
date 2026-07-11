@@ -4,6 +4,7 @@ import de.MCmoderSD.openai.services.SpeechService;
 import static de.MCmoderSD.openai.models.SpeechModel.*;
 import static de.MCmoderSD.openai.enums.Voice.*;
 import static com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat.*;
+import static java.lang.IO.println;
 
 void main() {
 
@@ -29,5 +30,5 @@ void main() {
     var file = response.toFile(new File("output.wav"));
 
     // Print File Path
-    IO.println("Audio file saved at: " + file.getAbsolutePath());
+    println("Audio file saved at: " + file.getAbsolutePath());
 }
