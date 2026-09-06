@@ -66,7 +66,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.3.14</version>
+    <version>3.3.15</version>
 </dependency>
 ```
 
@@ -83,10 +83,10 @@ import static java.lang.IO.*;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Instructions
-    var instructions = "Talk like a pirate! Don't use markdown or formatting!";
+    var instructions = "Talk like a pirate! Don't use Markdown or formatting!";
 
     // Configure Chat Service
     var service = ChatService.builder()
@@ -130,7 +130,7 @@ import static java.lang.IO.println;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Configure Service
     var service = EmbeddingService.builder()
@@ -163,7 +163,7 @@ import static java.lang.IO.println;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Configure Service
     var service = ModerationService.builder()
@@ -194,7 +194,7 @@ import static java.lang.IO.println;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Instructions
     var instructions = "Talk like a pirate!";
@@ -230,7 +230,7 @@ import static java.lang.IO.println;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Prompt
     var prompt = "Translate the following audio file to English:";
