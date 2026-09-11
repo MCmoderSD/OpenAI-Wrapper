@@ -19,7 +19,7 @@ public enum EmbeddingModel {
     TEXT_EMBEDDING_ADA_002(
             LOW,        // Performance
             SLOW,       // Speed
-            10,         // Cent Per Million Tokens
+            10,         // Cent per Million Tokens
             of(TEXT),   // Supported Input Modalities
             of(TEXT)    // Supported Output Modalities
     ),
@@ -27,7 +27,7 @@ public enum EmbeddingModel {
     TEXT_EMBEDDING_3_SMALL(
             AVERAGE,    // Performance
             MEDIUM,     // Speed
-            2,          // Cent Per Million Tokens
+            2,          // Cent per Million Tokens
             of(TEXT),   // Supported Input Modalities
             of(TEXT)    // Supported Output Modalities
     ),
@@ -35,7 +35,7 @@ public enum EmbeddingModel {
     TEXT_EMBEDDING_3_LARGE(
             HIGH,       // Performance
             SLOW,       // Speed
-            13,         // Cent Per Million Tokens
+            13,         // Cent per Million Tokens
             of(TEXT),   // Supported Input Modalities
             of(TEXT)    // Supported Output Modalities
     );
@@ -53,7 +53,7 @@ public enum EmbeddingModel {
     EmbeddingModel(
             Performance performance,    // Performance
             Speed speed,                // Speed
-            int CPMT,                   // Cent Per Million Tokens
+            int CPMT,                   // Cent per Million Tokens
             List<Modality> input,       // Supported Input Modalities
             List<Modality> output       // Supported Output Modalities
     ) {

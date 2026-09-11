@@ -15,6 +15,7 @@ This new wrapper is completely rewritten and uses the official [OpenAI Java SDK]
 ### Supported Models:
 
 #### Chat Models:
+- [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)
 - [GPT-5.6 Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol)
 - [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra)
 - [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
@@ -66,7 +67,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.3.15</version>
+    <version>3.4.0</version>
 </dependency>
 ```
 

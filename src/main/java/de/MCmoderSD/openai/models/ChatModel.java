@@ -17,11 +17,24 @@ import static java.util.List.of;
 @SuppressWarnings("unused")
 public enum ChatModel {
 
+    GPT_6_ASTRA(
+            "gpt-6-astra",
+            Speed.FAST,
+            10_0,
+            50_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
     GPT_5_6_SOL(
             "gpt-5.6-sol",
             Speed.FAST,
-            5,
-            30,
+            4_00,
+            20_00,
             of(TEXT, IMAGE),
             of(TEXT),
             of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),

@@ -53,7 +53,7 @@ public class TranslationService {
             tempFile.deleteOnExit();    // Delete Temp File on Exit
             return tempFile;            // Return Temp File
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create temp file: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create a temp file: " + e.getMessage(), e);
         }
     }
 
@@ -62,7 +62,7 @@ public class TranslationService {
         try (var bis = new BufferedInputStream(new FileInputStream(file))) {
             return createTempFile(bis.readAllBytes());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create temp file: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create a temp file: " + e.getMessage(), e);
         }
     }
 
@@ -101,7 +101,7 @@ public class TranslationService {
         var response = service.create(request);
 
         // Delete Temp File
-        if (!tempFile.delete()) throw new RuntimeException("Failed to delete temp file: " + tempFile.getAbsolutePath());
+        if (!tempFile.delete()) throw new RuntimeException("Failed to delete a temp file: " + tempFile.getAbsolutePath());
 
         // Return Translation Prompt
         return new TranslationPrompt(request, response);
@@ -128,7 +128,7 @@ public class TranslationService {
         var response = service.create(request);
 
         // Delete Temp File
-        if (!tempFile.delete()) throw new RuntimeException("Failed to delete temp file: " + tempFile.getAbsolutePath());
+        if (!tempFile.delete()) throw new RuntimeException("Failed to delete a temp file: " + tempFile.getAbsolutePath());
 
         // Return Translation Prompt
         return new TranslationPrompt(request, response);

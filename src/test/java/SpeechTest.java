@@ -9,7 +9,7 @@ import static java.lang.IO.println;
 void main() {
 
     // Initialize OpenAI
-    var openAI = new OpenAI("sk-proj-"); // Replace with your actual API key
+    var openAI = new OpenAI("sk-proj-"); // Replace it with your actual API key
 
     // Instructions
     var instructions = "Talk like a pirate!";

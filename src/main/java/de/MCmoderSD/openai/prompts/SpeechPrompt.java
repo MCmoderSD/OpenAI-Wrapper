@@ -63,7 +63,7 @@ public class SpeechPrompt {
         var fileName = file.getName();
         var extension = fileName.substring(fileName.lastIndexOf('.') + 1);
         var format = input.responseFormat().orElseThrow().asString();
-        if (!format.equalsIgnoreCase(extension)) throw new IllegalArgumentException("File extension must match response format: " + format);
+        if (!format.equalsIgnoreCase(extension)) throw new IllegalArgumentException("File extension must match the response format: " + format);
 
         // Write Data to File
         try (
