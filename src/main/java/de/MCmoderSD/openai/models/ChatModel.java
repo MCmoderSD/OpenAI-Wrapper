@@ -30,6 +30,45 @@ public enum ChatModel {
             128_000
     ),
 
+    GPT_6_1_SOL(
+            "gpt-6.1-sol",
+            Speed.FAST,
+            2_00,
+            10_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
+    GPT_6_SOL(
+            "gpt-6-sol",
+            Speed.FAST,
+            2_00,
+            10_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
+    GPT_6_LUNA(
+            "gpt-6-luna",
+            Speed.FAST,
+            10,
+            50,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
     GPT_5_6_SOL(
             "gpt-5.6-sol",
             Speed.FAST,
