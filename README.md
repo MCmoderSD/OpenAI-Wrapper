@@ -70,7 +70,7 @@ Add the dependency to your `pom.xml` file:
 <dependency>
     <groupId>de.MCmoderSD</groupId>
     <artifactId>OpenAI</artifactId>
-    <version>3.4.4</version>
+    <version>3.4.5</version>
 </dependency>
 ```
 
