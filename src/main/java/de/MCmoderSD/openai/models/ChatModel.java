@@ -17,6 +17,19 @@ import static java.util.List.of;
 @SuppressWarnings("unused")
 public enum ChatModel {
 
+    GPT_6_2_ASTRA(
+            "gpt-6.2-astra",
+            Speed.FAST,
+            8_00,
+            40_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
     GPT_6_ASTRA(
             "gpt-6-astra",
             Speed.FAST,
@@ -30,11 +43,37 @@ public enum ChatModel {
             128_000
     ),
 
+    GPT_6_2_SOL(
+            "gpt-6.2-sol",
+            Speed.FAST,
+            2_00,
+            10_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
     GPT_6_1_SOL(
             "gpt-6.1-sol",
             Speed.FAST,
             2_00,
             10_00,
+            of(TEXT, IMAGE),
+            of(TEXT),
+            of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
+            of(WEBSEARCH, FILESEARCH, IMAGEGEN, CODE_INTERPRETATION, HOSTED_SHELL, APPLY_PATCH, SKILLS, COMPUTER_USE, MCP, TOOL_SEARCH),
+            1_050_000,
+            128_000
+    ),
+
+    GPT_6_1_TERRA(
+            "gpt-6.1-terra",
+            Speed.FAST,
+            1_00,
+            5_00,
             of(TEXT, IMAGE),
             of(TEXT),
             of(NONE, LOW, MEDIUM, HIGH, XHIGH, MAX),
